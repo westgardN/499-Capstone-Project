@@ -14,4 +14,10 @@ public class GreetingWebController {
         return "greeting";
     }
 
+    @GetMapping("/greetingwebgroovy")
+    public String greetingGroovy(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
+        model.addAttribute("name", name);
+        return "greetinggroovy";
+    }
+
 }

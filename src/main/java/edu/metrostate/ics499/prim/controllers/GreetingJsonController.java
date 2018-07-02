@@ -15,8 +15,12 @@ public class GreetingJsonController {
     private final AtomicLong counter = new AtomicLong();
 
     @RequestMapping(value = "/greetingjson", method = RequestMethod.GET)
-    public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Greeting(counter.incrementAndGet(),
-                String.format(template, name));
+    public Greeting greeting(@RequestParam(value = "name", required = false, defaultValue = "World") String name) {
+        return new Greeting(counter.incrementAndGet(), String.format(template, name));
+    }
+
+    @RequestMapping(value = "/greetingjson-javaconfig", method = RequestMethod.GET)
+    public Greeting greetingWithJavaconfig(@RequestParam(value = "name", required = false, defaultValue = "World") String name) {
+        return new Greeting(counter.incrementAndGet(), String.format(template, name));
     }
 }
