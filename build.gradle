@@ -19,12 +19,18 @@ jar {
 bootWar {
     baseName = 'prim'
     version = '0.1.0'
+    mainClassName = 'edu.metrostate.ics499.prim.TomcatApplication'
 }
 
 bootJar {
     baseName = 'prim'
     version =  '0.1.0'
     classifier = 'boot'
+    mainClassName = 'edu.metrostate.ics499.prim.Application'
+}
+
+springBoot {
+    mainClassName = 'edu.metrostate.ics499.prim.Application'
 }
 
 repositories {
