@@ -1,29 +1,44 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+How to build and run PRIM
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
+* PRIM is Public Relations Interaction Management and is used for managing your social media presence.
+* Current version is 0.9.0
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+If you don't have the source you first need to clone the repository.
 
-### Contribution guidelines ###
+* git clone https://bitbucket.org/partyofv/ics499_project_alpha.git
 
-* Writing tests
-* Code review
-* Other guidelines
+### Building PRIM ###
 
-### Who do I talk to? ###
+On Windows:
 
-* Repo owner or admin
-* Other community or team contact
+* Open a command window and navigate to the root of the project folder
+* gradlew build
+
+On *nix based systems:
+
+* Open a shell window and navigate to the root of the project folder
+* gradle build
+
+The above will build PRIM using Gradle and execute any tests in the project.
+
+### Running PRIM ###
+
+On Windows:
+
+* Open a command window and navigate to the root of the project folder
+* gradlew bootRun
+
+On *nix based systems:
+
+* Open a shell window and navigate to the root of the project folder
+* gradle bootRun
+
+The above will run PRIM. Once it is running you can open a browswer and navigate to http://localhost:8080 to use PRIM
+
