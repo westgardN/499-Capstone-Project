@@ -42,3 +42,28 @@ On *nix based systems:
 
 The above will run PRIM. Once it is running you can open a browswer and navigate to http://localhost:8080 to use PRIM
 
+### Using Eclipse ###
+
+Because the project is Gradle based you can easily contribute using any development environment.
+
+That being said, the preferred IDEs are Eclipse and IntelliJ.
+
+IntelliJ just works and so there is no explanation needed on how to setup the project in it.
+
+For Eclipse, you must have the Buildship Gradle Integration 2.0 or later installed. This plugin can be installed through the Eclipse Marketplace.
+
+Once you have that plug-in installed, click File->Import and select Gradle as the type of project to import.
+
+Point to the root folder of the repository you cloned earlier and simply click Next / Finish to import the Prim project.
+
+### Using Netbeans ###
+
+Unfortunately, I haven't spent much time trying to get the Netbeans IDE to work with the project and so I can't recommend that you use it. That being said, if you can get it to work more power to you!
+
+### Other IDEs and Editors ###
+
+Visual Studio Code works great and I am sure there are others that work as well.
+
+### Notes on Checking in Changes ###
+
+Under no circustances should any IDE project files being checked in to the git repository. Just don't do it.
