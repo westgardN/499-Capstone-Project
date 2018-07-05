@@ -46,9 +46,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/", "/list")
+        http.authorizeRequests().antMatchers("/", "/home").permitAll()
+                .antMatchers("/hello", "/greetingweb", "/greetingwebgroovy", "/greetingjson", "/greetingjson-javaconfig", "/users/list")
                 .access("hasRole('USER') or hasRole('ADMIN') or hasRole('DBA')")
-                .antMatchers("/newuser/**", "/delete-user-*").access("hasRole('ADMIN')").antMatchers("/edit-user-*")
+                .antMatchers("/user/new/**", "/user/delete/*").access("hasRole('ADMIN')").antMatchers("/user/edit/*")
                 .access("hasRole('ADMIN') or hasRole('DBA')").and().formLogin().loginPage("/login")
                 .loginProcessingUrl("/login").usernameParameter("ssoId").passwordParameter("password").and()
                 .rememberMe().rememberMeParameter("remember-me").tokenRepository(tokenRepository)
@@ -70,9 +71,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PersistentTokenBasedRememberMeServices getPersistentTokenBasedRememberMeServices() {
-        PersistentTokenBasedRememberMeServices tokenBasedservice = new PersistentTokenBasedRememberMeServices(
-                "remember-me", userDetailsService, tokenRepository);
-        return tokenBasedservice;
+        return new PersistentTokenBasedRememberMeServices("remember-me", userDetailsService, tokenRepository);
     }
 
     @Bean

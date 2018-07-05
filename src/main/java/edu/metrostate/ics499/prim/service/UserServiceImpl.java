@@ -1,6 +1,7 @@
 package edu.metrostate.ics499.prim.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import edu.metrostate.ics499.prim.model.User;
 import edu.metrostate.ics499.prim.repository.UserDao;
@@ -21,26 +22,22 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User findById(int id) {
-        User user = dao.findById(id);
-        return user;
+        return dao.findById(id);
     }
 
     @Override
     public User findByUsername(String username) {
-        User user = dao.findByUsername(username);
-        return user;
+        return dao.findByUsername(username);
     }
 
     @Override
     public User findByEmail(String email) {
-        User user = dao.findByEmail(email);
-        return user;
+        return dao.findByEmail(email);
     }
 
     @Override
     public User findBySsoId(String ssoId) {
-        User user = dao.findBySsoId(ssoId);
-        return user;
+        return dao.findBySsoId(ssoId);
     }
 
     @Override
@@ -92,7 +89,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void deleteUserBySsoId(String ssoId) {
+    public void deleteBySsoId(String ssoId) {
         dao.deleteBySsoId(ssoId);
     }
 
@@ -104,18 +101,18 @@ public class UserServiceImpl implements UserService{
     @Override
     public boolean isUsernameUnique(Integer id, String username) {
         User user = findByUsername(username);
-        return ( user == null || ((id != null) && (user.getId() == id)));
+        return ( user == null || ((id != null) && (Objects.equals(user.getId(), id))));
     }
 
     @Override
     public boolean isEmailUnique(Integer id, String email) {
         User user = findByEmail(email);
-        return ( user == null || ((id != null) && (user.getId() == id)));
+        return ( user == null || ((id != null) && (Objects.equals(user.getId(), id))));
     }
 
     @Override
     public boolean isSsoIdUnique(Integer id, String ssoId) {
         User user = findBySsoId(ssoId);
-        return ( user == null || ((id != null) && (user.getId() == id)));
+        return ( user == null || ((id != null) && (Objects.equals(user.getId(), id))));
     }
 }

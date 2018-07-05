@@ -27,7 +27,7 @@ public interface UserService {
 
     void deleteByEmail(String email);
 
-    void deleteUserBySsoId(String ssoId);
+    void deleteBySsoId(String ssoId);
 
     List<User> findAll();
 

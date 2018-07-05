@@ -35,7 +35,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
 
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/views/");
+        viewResolver.setPrefix("/templates");
         viewResolver.setSuffix(".jsp");
         registry.viewResolver(viewResolver);
     }
@@ -70,7 +70,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
 
     /**
      * Required when handling '.' in @PathVariables which otherwise ignore everything after last '.' in
-     * @PathVaidables argument. It's a known bug in Spring [https://jira.spring.io/browse/SPR-6164], still present
+     * @PathVairables argument. It's a known bug in Spring [https://jira.spring.io/browse/SPR-6164], still present
      * in Spring 4.1.7. This is a workaround for this issue.
      */
     @Override
@@ -80,15 +80,15 @@ public class MvcConfiguration implements WebMvcConfigurer {
 
     /**
      * Adds associations between views and controller endpoints
-     * @param registry
+     * @param registry the controller registry we will be adding to.
      */
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/home").setViewName("home");
         registry.addViewController("/").setViewName("home");
-        registry.addViewController("/greetingweb").setViewName("greeting");
-        registry.addViewController("/greetingwebgroovy").setViewName("greetinggroovy");
-        registry.addViewController("/hello").setViewName("hello");
-        registry.addViewController("/login").setViewName("login");
+//        registry.addViewController("/greetingweb").setViewName("greeting");
+//        registry.addViewController("/greetingwebgroovy").setViewName("greetinggroovy");
+//        registry.addViewController("/hello").setViewName("hello");
+//        registry.addViewController("/login").setViewName("login");
     }
 
 }
