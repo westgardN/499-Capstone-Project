@@ -1,8 +1,8 @@
-package edu.metrostate.ics499.prim.controllers;
+package edu.metrostate.ics499.prim.controller;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import edu.metrostate.ics499.prim.models.Greeting;
+import edu.metrostate.ics499.prim.model.Greeting;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
