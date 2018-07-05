@@ -7,6 +7,8 @@ buildscript {
     }
 }
 
+apply plugin: 'idea'
+apply plugin: 'eclipse'
 apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'org.springframework.boot'
@@ -19,12 +21,18 @@ jar {
 bootWar {
     baseName = 'prim'
     version = '0.1.0'
+    mainClassName = 'edu.metrostate.ics499.prim.TomcatApplication'
 }
 
 bootJar {
     baseName = 'prim'
     version =  '0.1.0'
     classifier = 'boot'
+    mainClassName = 'edu.metrostate.ics499.prim.Application'
+}
+
+springBoot {
+    mainClassName = 'edu.metrostate.ics499.prim.Application'
 }
 
 repositories {
@@ -38,8 +46,18 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
     compile("org.springframework.boot:spring-boot-starter-groovy-templates")
-    compile("org.springframework.boot:spring-boot-starter-test")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-devtools")
-    providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+    compile("org.hibernate:hibernate-core:5.2.6.Final")
+    compile("mysql:mysql-connector-java:6.0.5")
+    compile("org.apache.commons:commons-dbcp2:2.1.1")
+    compile("jstl:jstl:1.2")
+    compile("com.fasterxml.jackson.core:jackson-databind")
+    compile("org.springframework.social:spring-social-facebook:2.0.3.RELEASE")
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testCompile("junit:junit")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.springframework.security:spring-security-test")
 }

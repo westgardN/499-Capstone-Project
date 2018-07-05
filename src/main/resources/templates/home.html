@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Spring Security Example</title>
+</head>
+<body>
+
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '198671167641485',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v3.0'
+        });
+
+        FB.AppEvents.logPageView();
+
+    };
+
+    (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<h1>Welcome!</h1>
+
+<p>Click <a th:href="@{/hello}">here</a> to see a greeting.</p>
+
+<p>Get your greeting via a webpage <a href="greetingweb">here</a> (Thymeleaf Template)</p>
+<p>Get your greeting via a webpage <a href="greetingwebgroovy">here</a> (Groovy Template)</p>
+<p>Get your greeting via JSON <a href="greetingjson">here</a></p>
+<hr>
+<p>Check site <a href="actuator/health">health</a></p>
+<p>Check site <a href="actuator/info">info messages</a></p>
+
+</body>
+</html>

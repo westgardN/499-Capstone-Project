@@ -1,4 +1,4 @@
-package edu.metrostate.ics499.prim.models;
+package edu.metrostate.ics499.prim.model;
 
 public class Greeting {
 
