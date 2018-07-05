@@ -1,4 +1,4 @@
-package edu.metrostate.ics499.prim.controllers;
+package edu.metrostate.ics499.prim.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
