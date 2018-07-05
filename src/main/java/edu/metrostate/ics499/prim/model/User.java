@@ -1,7 +1,6 @@
 package edu.metrostate.ics499.prim.model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;

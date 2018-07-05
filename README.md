@@ -14,6 +14,10 @@ If you don't have the source you first need to clone the repository.
 
 * git clone https://bitbucket.org/partyofv/ics499_project_alpha.git
 
+### Setup Prim MySQL Database ###
+
+* Run the setup_prim_db_mysql.sql on your MySQL server to create the prim database and user.
+
 ### Building PRIM ###
 
 On Windows:
@@ -41,6 +45,8 @@ On *nix based systems:
 * gradle bootRun
 
 The above will run PRIM. Once it is running you can open a browswer and navigate to http://localhost:8080 to use PRIM
+
+* Login with username primadmin and a password of abc125
 
 ### Using Eclipse ###
 

@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
  * A converter class used by the framework to map user ids to user profile objects
  */
 @Component
-public class RoleToUserProfileConverter implements Converter<Object, Role>{
+public class RoleIdToRoleTypeConverter implements Converter<Object, Role>{
 
-    static final Logger logger = LoggerFactory.getLogger(RoleToUserProfileConverter.class);
+    static final Logger logger = LoggerFactory.getLogger(RoleIdToRoleTypeConverter.class);
 
     @Autowired
     RoleService roleService;

@@ -1,6 +1,6 @@
 package edu.metrostate.ics499.prim.configuration;
 
-import edu.metrostate.ics499.prim.converter.RoleToUserProfileConverter;
+import edu.metrostate.ics499.prim.converter.RoleIdToRoleTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,7 @@ import org.springframework.web.servlet.view.JstlView;
 public class MvcConfiguration implements WebMvcConfigurer {
 
     @Autowired
-    RoleToUserProfileConverter roleToUserProfileConverter;
+    RoleIdToRoleTypeConverter roleIdToRoleTypeConverter;
 
 
     /**
@@ -54,7 +54,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(roleToUserProfileConverter);
+        registry.addConverter(roleIdToRoleTypeConverter);
     }
 
 
