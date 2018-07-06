@@ -73,13 +73,14 @@ public class AuthTokenRepository extends AbstractDao<String, PersistentLogin>
         Predicate clause = builder.equal(from.get("username"), username);
         crit.select(from).where(clause);
         TypedQuery<PersistentLogin> query = getSession().createQuery(crit);
-        PersistentLogin persistentLogin = query.getSingleResult();
+        try {
 
-        if (persistentLogin != null) {
+            PersistentLogin persistentLogin = query.getSingleResult();
             logger.info("rememberMe was selected");
             delete(persistentLogin);
+        } catch (NoResultException ex){
+            logger.info("No Token found for username : {}", username);
         }
-
     }
 
     @Override
