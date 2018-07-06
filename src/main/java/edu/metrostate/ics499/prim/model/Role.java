@@ -23,7 +23,7 @@ public class Role implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "TYPE", length = 64, unique = true, nullable = false)
+    @Column(name = "type", length = 64, unique = true, nullable = false)
     private String type = RoleType.USER.getRoleType();
 
     public Integer getId() {

@@ -98,13 +98,80 @@ INSERT INTO USER_ROLE (user_id, role_id)
  * Persistent Login table to store the login tokens for Remember Me
  */
 CREATE TABLE PERSISTENT_LOGINS (
-    username VARCHAR(64) NOT NULL,
-    series VARCHAR(64) NOT NULL,
-    token VARCHAR(64) NOT NULL,
-    last_used TIMESTAMP NOT NULL,
-    PRIMARY KEY (series)
-); 
-  
+	username VARCHAR(64) NOT NULL,
+	series VARCHAR(64) NOT NULL,
+	token VARCHAR(64) NOT NULL,
+	last_used TIMESTAMP NOT NULL,
+	PRIMARY KEY (series)
+);
+
+/*
+ * Interaction table to store interactions received from a social network
+ * and manually created ones.
+ */
+ CREATE TABLE INTERACTION (
+   id BIGINT NOT NULL AUTO_INCREMENT,
+   created_time DATETIME NULL,
+   description VARCHAR(512) NULL,
+   from_id VARCHAR(128) NULL,
+   from_name  VARCHAR(128) NULL,
+   message_id VARCHAR(128) NULL,
+   message_link VARCHAR(512) NULL,
+   message TEXT NULL,
+   sentiment INT NULL,
+   social_network VARCHAR(128) NULL,
+   source VARCHAR(128) NULL,
+   flag VARCHAR(128) NULL,
+   PRIMARY KEY (id)
+ );
+
+ /*
+  * Interaction Response stores the response action to an interaction. The
+  * type field determines the type of response and the state field
+  * determines if further action / responses are needed.
+  */
+ CREATE TABLE INTERACTION_RESPONSE (
+   id BIGINT NOT NULL AUTO_INCREMENT,
+   response_time DATETIME NOT NULL,
+   response_to BIGINT NOT NULL,
+   response_by BIGINT NOT NULL,
+   message TEXT NULL,
+   type VARCHAR(32) NULL,
+   state VARCHAR(32) NULL,
+   PRIMARY KEY (id),
+   CONSTRAINT FK_USER_RESPONSE FOREIGN KEY (response_by) REFERENCES USER(id),
+   CONSTRAINT FK_INTERACTION_RESPONSE FOREIGN KEY (response_to) REFERENCES INTERACTION(id)
+ );
+
+ /*
+  * Sentiment Queue stores interactions waiting to have their message
+  * content analyzed. Supports priority queueing.
+  */
+CREATE TABLE SENTIMENT_QUEUE (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  created_time DATETIME NOT NULL,
+  interaction_id BIGINT NOT NULL,
+  priority INT NOT NULL DEFAULT 10,
+  processed TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  CONSTRAINT FK_INTERACTION_QUEUE FOREIGN KEY (interaction_id) REFERENCES INTERACTION(id)
+);
+
+/*
+ * The Social Network Registration stores the registration of the social
+ * accounts that we will be retrieving information from.
+ */
+CREATE TABLE SOCIAL_NETWORK_REGISTRATION (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  created_time DATETIME NOT NULL,
+  social_network VARCHAR(128) NOT NULL,
+  token VARCHAR(128) NOT NULL,
+  refresh_token VARCHAR(128) NULL,
+  expires DATETIME NULL,
+  last_used TIMESTAMP NOT NULL,
+  PRIMARY KEY (id)
+);
+
 /*
  * Setup the database user for prim
  */
