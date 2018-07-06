@@ -70,7 +70,7 @@ public class HibernateConfiguration {
     @Bean
     @Primary
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean em = new          LocalContainerEntityManagerFactoryBean();
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
         em.setPackagesToScan("edu.metrostate.ics499.prim.model");
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
