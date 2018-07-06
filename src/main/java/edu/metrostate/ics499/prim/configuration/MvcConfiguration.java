@@ -19,7 +19,6 @@ import org.springframework.web.servlet.view.JstlView;
  * source for internationalization of messages.
  */
 @Configuration
-@EnableWebMvc
 @ComponentScan(basePackages = "edu.metrostate.ics499.prim")
 public class MvcConfiguration implements WebMvcConfigurer {
 
@@ -87,7 +86,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
         registry.addViewController("/").setViewName("home");
 //        registry.addViewController("/greetingweb").setViewName("greeting");
 //        registry.addViewController("/greetingwebgroovy").setViewName("greetinggroovy");
-//        registry.addViewController("/hello").setViewName("hello");
+        registry.addViewController("/hello").setViewName("hello");
 //        registry.addViewController("/login").setViewName("login");
     }
 

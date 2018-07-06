@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -91,12 +92,15 @@ public class AuthTokenRepository extends AbstractDao<String, PersistentLogin>
         Predicate clause = builder.equal(from.get("series"), seriesId);
         crit.select(from).where(clause);
         TypedQuery<PersistentLogin> query = getSession().createQuery(crit);
-        PersistentLogin persistentLogin = query.getSingleResult();
 
-        if (persistentLogin != null) {
+        try {
+            PersistentLogin persistentLogin = query.getSingleResult();
+
             persistentLogin.setToken(tokenValue);
             persistentLogin.setLastUsed(lastUsed);
             update(persistentLogin);
+        } catch (NoResultException ex) {
+            logger.info("No Token found for seriesId : {}", seriesId);
         }
     }
 
