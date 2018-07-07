@@ -35,7 +35,7 @@ public class SentimentQueueItem implements Serializable, Comparable<SentimentQue
      */
     @ManyToOne
     @JoinColumn(name = "interaction_id", nullable = false)
-    private Interaction responseTo;
+    private Interaction interaction;
 
     /**
      * The priority of this interaction item. Interactions with lower priority numbers are processed before
@@ -68,12 +68,12 @@ public class SentimentQueueItem implements Serializable, Comparable<SentimentQue
         this.createdTime = createdTime;
     }
 
-    public Interaction getResponseTo() {
-        return responseTo;
+    public Interaction getInteraction() {
+        return interaction;
     }
 
-    public void setResponseTo(Interaction responseTo) {
-        this.responseTo = responseTo;
+    public void setInteraction(Interaction interaction) {
+        this.interaction = interaction;
     }
 
     public int getPriority() {
@@ -92,6 +92,7 @@ public class SentimentQueueItem implements Serializable, Comparable<SentimentQue
         this.processed = processed;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,13 +100,13 @@ public class SentimentQueueItem implements Serializable, Comparable<SentimentQue
         SentimentQueueItem that = (SentimentQueueItem) o;
         return getPriority() == that.getPriority() &&
                 Objects.equals(getCreatedTime(), that.getCreatedTime()) &&
-                Objects.equals(getResponseTo(), that.getResponseTo());
+                Objects.equals(getInteraction(), that.getInteraction());
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getCreatedTime(), getResponseTo(), getPriority());
+        return Objects.hash(getCreatedTime(), getInteraction(), getPriority());
     }
 
     @Override
@@ -113,7 +114,7 @@ public class SentimentQueueItem implements Serializable, Comparable<SentimentQue
         final StringBuffer sb = new StringBuffer("SentimentQueueItem{");
         sb.append("id=").append(id);
         sb.append(", createdTime=").append(createdTime);
-        sb.append(", responseTo=").append(responseTo);
+        sb.append(", interaction=").append(interaction);
         sb.append(", priority=").append(priority);
         sb.append(", processed=").append(processed);
         sb.append('}');

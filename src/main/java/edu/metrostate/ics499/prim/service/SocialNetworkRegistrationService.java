@@ -1,14 +1,10 @@
-package edu.metrostate.ics499.prim.repository;
+package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
 
 import java.util.List;
 
-/**
- * The SocialNetworkRegistrationDao interface defines the operations that can be performed for an
- * SocialNetworkRegistration.
- */
-public interface SocialNetworkRegistrationDao {
+public interface SocialNetworkRegistrationService {
 
     /**
      * Returns a persistent SocialNetworkRegistration object identified by the specified id.
@@ -47,6 +43,13 @@ public interface SocialNetworkRegistrationDao {
      * @param socialNetworkRegistration the SocialNetworkRegistration to save.
      */
     void save(SocialNetworkRegistration socialNetworkRegistration);
+
+    /**
+     * Updates the persistent SocialNetworkRegistration based on the specified SocialNetworkRegistration.
+     *
+     * @param socialNetworkRegistration the SocialNetworkRegistration to update.
+     */
+    void update(SocialNetworkRegistration socialNetworkRegistration);
 
     /**
      * Deletes the specified SocialNetworkRegistration from the backing store.

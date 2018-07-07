@@ -80,7 +80,7 @@ public interface InteractionResponseService {
     void save(InteractionResponse interactionResponse);
 
     /**
-     * Updates the persistent InteractionResponse based on the specified Interaction.
+     * Updates the persistent InteractionResponse based on the specified InteractionResponse.
      *
      * @param interactionResponse the InteractionResponse to update.
      */

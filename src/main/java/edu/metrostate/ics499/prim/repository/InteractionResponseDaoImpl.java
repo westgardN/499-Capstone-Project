@@ -16,7 +16,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository("interactionResponseDao")
-public class InteractionResponseDaoImpl  extends AbstractDao<Integer, InteractionResponse> implements InteractionResponseDao {
+public class InteractionResponseDaoImpl extends AbstractDao<Integer, InteractionResponse> implements InteractionResponseDao {
     static final Logger logger = LoggerFactory.getLogger(InteractionResponseDaoImpl.class);
 
     /**
@@ -57,8 +57,6 @@ public class InteractionResponseDaoImpl  extends AbstractDao<Integer, Interactio
      */
     @Override
     public List<InteractionResponse> findByInteraction(Interaction interaction) {
-        InteractionResponse interactionResponse = null;
-
         CriteriaBuilder builder = getCriteriaBuilder();
         CriteriaQuery<InteractionResponse> crit = builder.createQuery(InteractionResponse.class);
         Root<InteractionResponse> from = crit.from(InteractionResponse.class);
@@ -79,8 +77,6 @@ public class InteractionResponseDaoImpl  extends AbstractDao<Integer, Interactio
      */
     @Override
     public List<InteractionResponse> findByUser(User user) {
-        InteractionResponse interactionResponse = null;
-
         CriteriaBuilder builder = getCriteriaBuilder();
         CriteriaQuery<InteractionResponse> crit = builder.createQuery(InteractionResponse.class);
         Root<InteractionResponse> from = crit.from(InteractionResponse.class);
@@ -101,8 +97,6 @@ public class InteractionResponseDaoImpl  extends AbstractDao<Integer, Interactio
      */
     @Override
     public List<InteractionResponse> findByType(String type) {
-        InteractionResponse interactionResponse = null;
-
         CriteriaBuilder builder = getCriteriaBuilder();
         CriteriaQuery<InteractionResponse> crit = builder.createQuery(InteractionResponse.class);
         Root<InteractionResponse> from = crit.from(InteractionResponse.class);
@@ -123,8 +117,6 @@ public class InteractionResponseDaoImpl  extends AbstractDao<Integer, Interactio
      */
     @Override
     public List<InteractionResponse> findByFlag(String flag) {
-        InteractionResponse interactionResponse = null;
-
         CriteriaBuilder builder = getCriteriaBuilder();
         CriteriaQuery<InteractionResponse> crit = builder.createQuery(InteractionResponse.class);
         Root<InteractionResponse> from = crit.from(InteractionResponse.class);

@@ -1,16 +1,11 @@
-package edu.metrostate.ics499.prim.repository;
+package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.Interaction;
 import edu.metrostate.ics499.prim.model.SentimentQueueItem;
 
 import java.util.List;
 
-/**
- * The SentimentQueueItemDao interface defines the operations that can be performed for an
- * SentimentQueueItem.
- */
-public interface SentimentQueueItemDao {
-
+public interface SentimentQueueItemService {
     /**
      * Returns a persistent SentimentQueueItemDao object identified by the specified id.
      * If no SentimentQueueItemDao with that id exists, null is returned.
@@ -77,6 +72,13 @@ public interface SentimentQueueItemDao {
      * @param sentimentQueueItem the SentimentQueueItem to save.
      */
     void save(SentimentQueueItem sentimentQueueItem);
+
+    /**
+     * Updates the persistent SentimentQueueItem based on the specified SentimentQueueItem.
+     *
+     * @param sentimentQueueItem the SentimentQueueItem to update.
+     */
+    void update(SentimentQueueItem sentimentQueueItem);
 
     /**
      * Deletes the specified SentimentQueueItem from the backing store.
