@@ -41,13 +41,6 @@ public class UserController {
     @Autowired
     MessageSource messageSource;
 
-    @Autowired
-    PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices;
-
-    @Autowired
-    AuthenticationTrustResolver authenticationTrustResolver;
-
-
     /**
      * This method will list all existing users.
      */
@@ -131,7 +124,7 @@ public class UserController {
             return "registration";
         }
 
-        /* Disable updating the .
+        /* Disable updating the ssoId for now.
         if(!userService.isSsoIdUnique(user.getId(), user.getSsoId())){
             FieldError ssoError =new FieldError("user","ssoId",messageSource.getMessage("non.unique.ssoId", new String[]{user.getSsoId()}, Locale.getDefault()));
             result.addError(ssoError);
@@ -156,52 +149,6 @@ public class UserController {
         return "redirect:/users/list";
     }
 
-
-    /**
-     * This method will provide UserProfile list to views
-     */
-    @ModelAttribute("roles")
-    public List<Role> initializeRoles() {
-        return roleService.findAll();
-    }
-
-    /**
-     * This method handles Access-Denied redirect.
-     */
-    @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
-    public String accessDeniedPage(ModelMap model) {
-        model.addAttribute("loggedinuser", getPrincipal());
-        return "accessDenied";
-    }
-
-    /**
-     * This method handles login GET requests.
-     * If users is already logged-in and tries to goto login page again, will be redirected to list page.
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String loginPage() {
-        if (isCurrentAuthenticationAnonymous()) {
-            return "login";
-        } else {
-            return "redirect:/";
-        }
-    }
-
-    /**
-     * This method handles logout requests.
-     * Toggle the handlers if you are RememberMe functionality is useless in your app.
-     */
-    @RequestMapping(value="/logout", method = RequestMethod.GET)
-    public String logoutPage (HttpServletRequest request, HttpServletResponse response){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
-            //new SecurityContextLogoutHandler().logout(request, response, auth);
-            persistentTokenBasedRememberMeServices.logout(request, response, auth);
-            SecurityContextHolder.getContext().setAuthentication(null);
-        }
-        return "redirect:/login?logout";
-    }
-
     /**
      * This method returns the principal[user-name] of logged-in user.
      */
@@ -218,10 +165,11 @@ public class UserController {
     }
 
     /**
-     * This method returns true if users is already authenticated [logged-in], else false.
+     * This method will provide Role list to views
      */
-    private boolean isCurrentAuthenticationAnonymous() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authenticationTrustResolver.isAnonymous(authentication);
+    @ModelAttribute("roles")
+    public List<Role> initializeRoles() {
+        return roleService.findAll();
     }
+
 }

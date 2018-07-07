@@ -11,6 +11,9 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 
 /**
  * The WebMvcConfiguration class implements the Spring WebMvcConfigurer. It is used in lieu of
@@ -19,53 +22,29 @@ import org.springframework.web.servlet.view.JstlView;
  * source for internationalization of messages.
  */
 @Configuration
-@EnableWebMvc
 @ComponentScan(basePackages = "edu.metrostate.ics499.prim")
 public class MvcConfiguration implements WebMvcConfigurer {
 
     @Autowired
     RoleIdToRoleTypeConverter roleIdToRoleTypeConverter;
 
-
-    /**
-     * Configure ViewResolvers to deliver preferred views.
-     */
-    @Override
-    public void configureViewResolvers(ViewResolverRegistry registry) {
-
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/templates");
-        viewResolver.setSuffix(".jsp");
-        registry.viewResolver(viewResolver);
-    }
-
-    /**
-     * Configure ResourceHandlers to serve static resources like CSS/ Javascript etc...
-     */
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").addResourceLocations("/static/");
-    }
-
     /**
      * Configure Converter to be used.
-     * In our example, we need a converter to convert string values[Roles] to UserProfiles in newUser.jsp
+     * In our example, we need a converter to convert string values[Roles] to Roles in newUser.html
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(roleIdToRoleTypeConverter);
     }
 
-
     /**
-     * Configure MessageSource to lookup any validation/error message in internationalized property files
+     * Adds associations between views and controller endpoints for the home page.
+     * @param registry the controller registry we will be adding to.
      */
-    @Bean
-    public MessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("messages");
-        return messageSource;
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/home").setViewName("home");
+        registry.addViewController("/").setViewName("home");
+        registry.addViewController("/hello").setViewName("hello");
     }
 
     /**
@@ -78,17 +57,22 @@ public class MvcConfiguration implements WebMvcConfigurer {
         matcher.setUseRegisteredSuffixPatternMatch(true);
     }
 
+    @Bean
+    public SpringTemplateEngine templateEngine(ITemplateResolver templateResolver, SpringSecurityDialect sec) {
+        final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        templateEngine.addDialect(sec); // Enable use of "sec"
+        return templateEngine;
+    }
+
     /**
-     * Adds associations between views and controller endpoints
-     * @param registry the controller registry we will be adding to.
+     * Configure MessageSource to lookup any validation/error message in internationalized property files
      */
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/home").setViewName("home");
-        registry.addViewController("/").setViewName("home");
-//        registry.addViewController("/greetingweb").setViewName("greeting");
-//        registry.addViewController("/greetingwebgroovy").setViewName("greetinggroovy");
-//        registry.addViewController("/hello").setViewName("hello");
-//        registry.addViewController("/login").setViewName("login");
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        return messageSource;
     }
 
 }
