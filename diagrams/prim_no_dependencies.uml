@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>edu.metrostate.ics499.prim</OriginalElement>
+  <nodes>
+    <node x="1262.0" y="1454.0">edu.metrostate.ics499.prim.controller.UserController</node>
+    <node x="1368.0" y="2340.0">edu.metrostate.ics499.prim.converter.RoleIdToRoleTypeConverter</node>
+    <node x="0.0" y="2072.0">edu.metrostate.ics499.prim.service.SchemaVersionService</node>
+    <node x="2047.0" y="2340.0">edu.metrostate.ics499.prim.configuration.ApplicationInitializer</node>
+    <node x="1918.25" y="1136.0">edu.metrostate.ics499.prim.repository.InteractionResponseDaoImpl</node>
+    <node x="1609.0" y="2340.0">edu.metrostate.ics499.prim.TomcatApplication</node>
+    <node x="2305.25" y="1180.0">edu.metrostate.ics499.prim.repository.SocialNetworkRegistrationDaoImpl</node>
+    <node x="1462.6296296296296" y="20.410774410774394">edu.metrostate.ics499.prim.service.InteractionResponseService</node>
+    <node x="827.0" y="2072.0">edu.metrostate.ics499.prim.controller.AuthController</node>
+    <node x="197.0" y="2548.0">edu.metrostate.ics499.prim.configuration.SecurityInitializer</node>
+    <node x="1044.6296296296296" y="20.410774410774394">edu.metrostate.ics499.prim.service.SentimentQueueItemService</node>
+    <node x="264.0" y="2072.0">edu.metrostate.ics499.prim.configuration.WebSecurityConfiguration</node>
+    <node x="565.75" y="915.0">edu.metrostate.ics499.prim.repository.SchemaVersionDao</node>
+    <node x="1462.6296296296296" y="342.41077441077437">edu.metrostate.ics499.prim.service.InteractionResponseServiceImpl</node>
+    <node x="1239.5" y="1136.0">edu.metrostate.ics499.prim.repository.SentimentQueueItemDaoImpl</node>
+    <node x="0.0" y="893.0">edu.metrostate.ics499.prim.repository.RoleDao</node>
+    <node x="619.5" y="1235.0">edu.metrostate.ics499.prim.repository.SchemaVersionDaoImpl</node>
+    <node x="0.0" y="1754.0">edu.metrostate.ics499.prim.service.InteractionServiceImpl</node>
+    <node x="1916.0" y="1454.0">edu.metrostate.ics499.prim.model.InteractionResponse</node>
+    <node x="979.0" y="2340.0">edu.metrostate.ics499.prim.service.PrimUserDetailsService</node>
+    <node x="744.0" y="2340.0">edu.metrostate.ics499.prim.model.Role</node>
+    <node x="2403.25" y="860.0">edu.metrostate.ics499.prim.repository.SocialNetworkRegistrationDao</node>
+    <node x="2151.0" y="1454.0">edu.metrostate.ics499.prim.model.SentimentQueueItem</node>
+    <node x="0.0" y="2548.0">edu.metrostate.ics499.prim.controller.FacebookController</node>
+    <node x="0.0" y="1454.0">edu.metrostate.ics499.prim.service.InteractionService</node>
+    <node x="289.5" y="1147.0">edu.metrostate.ics499.prim.repository.InteractionDaoImpl</node>
+    <node x="1725.75" y="816.0">edu.metrostate.ics499.prim.repository.UserDao</node>
+    <node x="2352.0" y="2340.0">edu.metrostate.ics499.prim.Application</node>
+    <node x="0.0" y="2197.0">edu.metrostate.ics499.prim.service.SchemaVersionServiceImpl</node>
+    <node x="2102.0" y="2072.0">edu.metrostate.ics499.prim.model.SchemaVersion</node>
+    <node x="1668.25" y="1136.0">edu.metrostate.ics499.prim.repository.UserDaoImpl</node>
+    <node x="1406.0" y="2072.0">edu.metrostate.ics499.prim.configuration.HibernateConfiguration</node>
+    <node x="705.6296296296297" y="20.410774410774394">edu.metrostate.ics499.prim.service.UserService</node>
+    <node x="355.0" y="1688.0">edu.metrostate.ics499.prim.service.SocialNetworkRegistrationServiceImpl</node>
+    <node x="1332.75" y="816.0">edu.metrostate.ics499.prim.repository.SentimentQueueItemDao</node>
+    <node x="1044.6296296296296" y="342.41077441077437">edu.metrostate.ics499.prim.service.SentimentQueueItemServiceImpl</node>
+    <node x="2462.0" y="1454.0">edu.metrostate.ics499.prim.model.SocialNetworkRegistration</node>
+    <node x="792.0" y="1454.0">edu.metrostate.ics499.prim.model.User</node>
+    <node x="355.0" y="1454.0">edu.metrostate.ics499.prim.service.SocialNetworkRegistrationService</node>
+    <node x="212.0" y="827.0">edu.metrostate.ics499.prim.repository.InteractionDao</node>
+    <node x="1679.0" y="1600.0">edu.metrostate.ics499.prim.service.RoleServiceImpl</node>
+    <node x="1867.0" y="2072.0">edu.metrostate.ics499.prim.model.PersistentLogin</node>
+    <node x="854.5" y="1202.0">edu.metrostate.ics499.prim.repository.AuthTokenRepository</node>
+    <node x="705.6296296296297" y="408.41077441077437">edu.metrostate.ics499.prim.service.UserServiceImpl</node>
+    <node x="1027.0" y="1454.0">edu.metrostate.ics499.prim.model.Interaction</node>
+    <node x="1679.0" y="1454.0">edu.metrostate.ics499.prim.service.RoleService</node>
+    <node x="541.0" y="2340.0">edu.metrostate.ics499.prim.model.RoleType</node>
+    <node x="2010.0" y="816.0">edu.metrostate.ics499.prim.repository.InteractionResponseDao</node>
+    <node x="929.8125" y="826.0">edu.metrostate.ics499.prim.repository.AbstractDao</node>
+    <node x="48.0" y="1224.5">edu.metrostate.ics499.prim.repository.RoleDaoImpl</node>
+    <node x="0.0" y="2340.0">edu.metrostate.ics499.prim.configuration.MvcConfiguration</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="edu.metrostate.ics499.prim.service.InteractionServiceImpl" target="edu.metrostate.ics499.prim.service.InteractionService">
+      <point x="0.0" y="-136.5" />
+      <point x="0.0" y="125.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.AuthTokenRepository" target="edu.metrostate.ics499.prim.repository.AbstractDao">
+      <point x="0.0" y="-70.5" />
+      <point x="-15.3125" y="115.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.InteractionResponseDaoImpl" target="edu.metrostate.ics499.prim.repository.InteractionResponseDao">
+      <point x="91.75" y="-136.5" />
+      <point x="0.0" y="125.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.SentimentQueueItemDaoImpl" target="edu.metrostate.ics499.prim.repository.SentimentQueueItemDao">
+      <point x="93.25" y="-136.5" />
+      <point x="0.0" y="125.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.InteractionResponseDaoImpl" target="edu.metrostate.ics499.prim.repository.AbstractDao">
+      <point x="-91.75" y="-136.5" />
+      <point x="2010.0" y="1096.0" />
+      <point x="1128.875" y="1096.0" />
+      <point x="76.5625" y="115.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.SentimentQueueItemDaoImpl" target="edu.metrostate.ics499.prim.repository.AbstractDao">
+      <point x="-93.25" y="-136.5" />
+      <point x="1332.75" y="1116.0" />
+      <point x="1067.625" y="1116.0" />
+      <point x="15.3125" y="115.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.SentimentQueueItemServiceImpl" target="edu.metrostate.ics499.prim.service.SentimentQueueItemService">
+      <point x="0.0" y="-147.5" />
+      <point x="0.0" y="136.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.RoleDaoImpl" target="edu.metrostate.ics499.prim.repository.RoleDao">
+      <point x="-48.0" y="-48.0" />
+      <point x="0.0" y="48.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.UserDaoImpl" target="edu.metrostate.ics499.prim.repository.AbstractDao">
+      <point x="-57.5" y="-136.5" />
+      <point x="1725.75" y="1106.0" />
+      <point x="1098.25" y="1106.0" />
+      <point x="45.9375" y="115.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.InteractionResponseServiceImpl" target="edu.metrostate.ics499.prim.service.InteractionResponseService">
+      <point x="0.0" y="-147.5" />
+      <point x="0.0" y="136.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.SocialNetworkRegistrationDaoImpl" target="edu.metrostate.ics499.prim.repository.AbstractDao">
+      <point x="-98.0" y="-92.5" />
+      <point x="2403.25" y="1086.0" />
+      <point x="1159.5" y="1086.0" />
+      <point x="107.1875" y="115.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.SchemaVersionServiceImpl" target="edu.metrostate.ics499.prim.service.SchemaVersionService">
+      <point x="0.0" y="-49.0" />
+      <point x="0.0" y="37.5" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.SocialNetworkRegistrationDaoImpl" target="edu.metrostate.ics499.prim.repository.SocialNetworkRegistrationDao">
+      <point x="98.0" y="-92.5" />
+      <point x="0.0" y="81.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.RoleDaoImpl" target="edu.metrostate.ics499.prim.repository.AbstractDao">
+      <point x="48.0" y="-48.0" />
+      <point x="192.0" y="1096.0" />
+      <point x="945.125" y="1096.0" />
+      <point x="-107.1875" y="115.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.UserDaoImpl" target="edu.metrostate.ics499.prim.repository.UserDao">
+      <point x="57.5" y="-136.5" />
+      <point x="0.0" y="125.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.SchemaVersionDaoImpl" target="edu.metrostate.ics499.prim.repository.SchemaVersionDao">
+      <point x="-53.75" y="-37.5" />
+      <point x="0.0" y="26.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.SchemaVersionDaoImpl" target="edu.metrostate.ics499.prim.repository.AbstractDao">
+      <point x="53.75" y="-37.5" />
+      <point x="780.75" y="1116.0" />
+      <point x="1006.375" y="1116.0" />
+      <point x="-45.9375" y="115.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.UserServiceImpl" target="edu.metrostate.ics499.prim.service.UserService">
+      <point x="0.0" y="-191.5" />
+      <point x="0.0" y="169.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.SocialNetworkRegistrationServiceImpl" target="edu.metrostate.ics499.prim.service.SocialNetworkRegistrationService">
+      <point x="0.0" y="-103.5" />
+      <point x="0.0" y="92.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.RoleServiceImpl" target="edu.metrostate.ics499.prim.service.RoleService">
+      <point x="0.0" y="-59.5" />
+      <point x="0.0" y="48.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.InteractionDaoImpl" target="edu.metrostate.ics499.prim.repository.InteractionDao">
+      <point x="-77.5" y="-125.5" />
+      <point x="0.0" y="114.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.repository.InteractionDaoImpl" target="edu.metrostate.ics499.prim.repository.AbstractDao">
+      <point x="77.5" y="-125.5" />
+      <point x="522.0" y="1106.0" />
+      <point x="975.75" y="1106.0" />
+      <point x="-76.5625" y="115.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.34295612009237875" x="1398.0" y="1289.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Inner Classes</Category>
+    <Category>Properties</Category>
+    <Category>Methods</Category>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

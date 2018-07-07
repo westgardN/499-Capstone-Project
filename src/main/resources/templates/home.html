@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
-    <title>Spring Security Example</title>
+    <link href="/css/bootstrap.css" rel="stylesheet"></link>
+    <link href="/css/app.css" rel="stylesheet"></link>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.css" />
+    <title>Welcome to PRIM</title>
 </head>
 <body>
 
@@ -26,17 +31,29 @@
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 </script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="/js/bootstrap.js"></script>
 
-<h1>Welcome!</h1>
+<div id="mainWrapper">
+    <div class="generic-container">
+        <h1 class="text-center">Welcome to PRIM!</h1>
 
-<p>Click <a th:href="@{/hello}">here</a> to see a greeting.</p>
+        <p>Click <a th:href="@{/hello}">here</a> to see a greeting.</p>
 
-<p>Get your greeting via a webpage <a href="greetingweb">here</a> (Thymeleaf Template)</p>
-<p>Get your greeting via a webpage <a href="greetingwebgroovy">here</a> (Groovy Template)</p>
-<p>Get your greeting via JSON <a href="greetingjson">here</a></p>
-<hr>
-<p>Check site <a href="actuator/health">health</a></p>
-<p>Check site <a href="actuator/info">info messages</a></p>
-
+        <p>Get your greeting via a webpage <a href="greetingweb">here</a> (Thymeleaf Template)</p>
+        <p>Get your greeting via a webpage <a href="greetingwebgroovy">here</a> (Groovy Template)</p>
+        <p>Get your greeting via JSON <a href="greetingjson">here</a></p>
+        <hr>
+        <p>Check site <a href="actuator/health">health</a></p>
+        <p>Check site <a href="actuator/info">info messages</a></p>
+        <div sec:authorize="isAuthenticated()">
+            <p><a th:href="@{/logout}" class="btn btn-block btn-primary btn-default">Logout</a></p>
+        </div>
+        <div sec:authorize="!isAuthenticated()">
+            <p><a th:href="@{/login}" class="btn btn-block btn-primary btn-default">Login</a></p>
+        </div>
+    </div>
+</div>
 </body>
 </html>

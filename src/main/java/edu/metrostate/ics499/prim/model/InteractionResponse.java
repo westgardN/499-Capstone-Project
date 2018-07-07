@@ -2,6 +2,7 @@ package edu.metrostate.ics499.prim.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * This is a JPA Entity class that maps the InteractionResponse object to the Interaction Response table used
@@ -57,4 +58,88 @@ public class InteractionResponse {
      */
     @Column(name = "state")
     private String state;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Date getResponseTime() {
+        return responseTime;
+    }
+
+    public void setResponseTime(Date responseTime) {
+        this.responseTime = responseTime;
+    }
+
+    public Interaction getResponseTo() {
+        return responseTo;
+    }
+
+    public void setResponseTo(Interaction responseTo) {
+        this.responseTo = responseTo;
+    }
+
+    public User getResponseBy() {
+        return responseBy;
+    }
+
+    public void setResponseBy(User responseBy) {
+        this.responseBy = responseBy;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InteractionResponse that = (InteractionResponse) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("InteractionResponse{");
+        sb.append("id=").append(id);
+        sb.append(", responseTime=").append(responseTime);
+        sb.append(", responseTo=").append(responseTo);
+        sb.append(", responseBy=").append(responseBy);
+        sb.append(", message='").append(message).append('\'');
+        sb.append(", type='").append(type).append('\'');
+        sb.append(", state='").append(state).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
