@@ -46,7 +46,7 @@ public interface SocialNetworkRegistrationDao {
      *
      * @param id the id of the SocialNetworkRegistration to delete.
      */
-    void deletebyId(int id);
+    void deleteById(int id);
 
     /**
      * Deletes all SocialNetworkRegistrations from the backing store for the specified Social Network.

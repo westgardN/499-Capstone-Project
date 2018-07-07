@@ -183,7 +183,7 @@ public class InteractionDaoImpl  extends AbstractDao<Integer, Interaction> imple
      * @param id the id of the Interaction to delete.
      */
     @Override
-    public void deletebyId(int id) {
+    public void deleteById(int id) {
         Interaction interaction = findById(id);
 
         if (interaction != null) {

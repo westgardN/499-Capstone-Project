@@ -79,7 +79,7 @@ public interface InteractionResponseDao {
      *
      * @param id the id of the InteractionResponse to delete.
      */
-    void deletebyId(int id);
+    void deleteById(int id);
 
     /**
      * Deletes all InteractionResponses from the backing store for the specified Interaction Id.
