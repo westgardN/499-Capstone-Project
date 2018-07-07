@@ -1,4 +1,4 @@
-package edu.metrostate.ics499.prim.repository;
+package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.Interaction;
 import edu.metrostate.ics499.prim.model.InteractionResponse;
@@ -6,11 +6,7 @@ import edu.metrostate.ics499.prim.model.User;
 
 import java.util.List;
 
-/**
- * The InteractionResponseDao interface defines the operations that can be performed for an
- * InteractionResponse.
- */
-public interface InteractionResponseDao {
+public interface InteractionResponseService {
 
     /**
      * Returns a persistent InteractionResponse object identified by the specified id.
@@ -82,6 +78,13 @@ public interface InteractionResponseDao {
      * @param interactionResponse the InteractionResponse to save.
      */
     void save(InteractionResponse interactionResponse);
+
+    /**
+     * Updates the persistent InteractionResponse based on the specified Interaction.
+     *
+     * @param interactionResponse the InteractionResponse to update.
+     */
+    void update(InteractionResponse interactionResponse);
 
     /**
      * Deletes the spcified InteractionResponse from the backing store.

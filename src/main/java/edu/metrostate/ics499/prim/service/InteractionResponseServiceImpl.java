@@ -1,71 +1,86 @@
-package edu.metrostate.ics499.prim.repository;
+package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.Interaction;
 import edu.metrostate.ics499.prim.model.InteractionResponse;
 import edu.metrostate.ics499.prim.model.User;
+import edu.metrostate.ics499.prim.repository.InteractionResponseDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * The InteractionResponseDao interface defines the operations that can be performed for an
- * InteractionResponse.
- */
-public interface InteractionResponseDao {
+@Service("interactionResponseService")
+@Transactional
+public class InteractionResponseServiceImpl implements InteractionResponseService {
+
+    @Autowired
+    private InteractionResponseDao dao;
 
     /**
      * Returns a persistent InteractionResponse object identified by the specified id.
      * If no InteractionResponse with that id exists, null is returned.
      *
      * @param id The Id of the InteractionResponse to retrieve.
-     *
      * @return a persistent InteractionResponse object identified by the specified id.
      * If no InteractionResponse with that id exists, null is returned.
      */
-    InteractionResponse findById(int id);
+    @Override
+    public InteractionResponse findById(int id) {
+        return dao.findById(id);
+    }
 
     /**
      * Returns a List of persistent InteractionResponses for the specified Interaction. If no InteractionResponses exist,
      * an empty List is returned.
      *
      * @param interaction the Interaction to retrieve a list of InteractionResponses for.
-     *
      * @return a List of persistent InteractionResponses for the specified Interaction. If no InteractionResponses exist,
      * an empty List is returned.
      */
-    List<InteractionResponse> findByInteraction(Interaction interaction);
+    @Override
+    public List<InteractionResponse> findByInteraction(Interaction interaction) {
+        return dao.findByInteraction(interaction);
+    }
 
     /**
      * Returns a List of persistent InteractionResponses for the specified User. If no InteractionResponses exist,
      * an empty List is returned.
      *
      * @param user the User to retrieve a list of InteractionResponses for.
-     *
      * @return a List of persistent InteractionResponses for the specified User. If no InteractionResponses exist,
      * an empty List is returned.
      */
-    List<InteractionResponse> findByUser(User user);
+    @Override
+    public List<InteractionResponse> findByUser(User user) {
+        return dao.findByUser(user);
+    }
 
     /**
      * Returns a List of persistent InteractionResponses for the specified type. If no InteractionResponses exist,
      * an empty List is returned.
      *
      * @param type The type of response to retrieve a list of InteractionResponses for.
-     *
      * @return a List of persistent InteractionResponses for the specified type. If no InteractionResponses exist,
      * an empty List is returned.
      */
-    List<InteractionResponse> findByType(String type);
+    @Override
+    public List<InteractionResponse> findByType(String type) {
+        return dao.findByType(type);
+    }
 
     /**
      * Returns a List of persistent InteractionResponses for the specified state. If no InteractionResponse exist,
      * an empty List is returned.
      *
      * @param flag The flag of the InteractionResponse to retrieve a list of InteractionResponses for.
-     *
      * @return a List of persistent InteractionResponses for the specified flag. If no InteractionResponses exist,
      * an empty List is returned.
      */
-    List<InteractionResponse> findByFlag(String flag);
+    @Override
+    public List<InteractionResponse> findByFlag(String flag) {
+        return dao.findByFlag(flag);
+    }
 
     /**
      * Returns a List of all persistent InteractionsResponses. If no InteractionResponses exist,
@@ -74,33 +89,66 @@ public interface InteractionResponseDao {
      * @return a List of all persistent InteractionsResponses. If no InteractionResponses exist,
      * an empty List is returned.
      */
-    List<InteractionResponse> findAll();
+    @Override
+    public List<InteractionResponse> findAll() {
+        return dao.findAll();
+    }
 
     /**
      * Immediately saves the specified InteractionResponse to the backing store.
      *
      * @param interactionResponse the InteractionResponse to save.
      */
-    void save(InteractionResponse interactionResponse);
+    @Override
+    public void save(InteractionResponse interactionResponse) {
+        dao.save(interactionResponse);
+    }
+
+    /**
+     * Updates the persistent InteractionResponse based on the specified Interaction.
+     *
+     * @param interactionResponse the InteractionResponse to update.
+     */
+    @Override
+    public void update(InteractionResponse interactionResponse) {
+        InteractionResponse entity = dao.findById(interactionResponse.getId());
+        if (entity != null) {
+            entity.setResponseTime(interactionResponse.getResponseTime());
+            entity.setResponseTo(interactionResponse.getResponseTo());
+            entity.setResponseBy(interactionResponse.getResponseBy());
+            entity.setMessage(interactionResponse.getMessage());
+            entity.setType(interactionResponse.getType());
+            entity.setState(interactionResponse.getState());
+        }
+    }
 
     /**
      * Deletes the spcified InteractionResponse from the backing store.
      *
      * @param id the id of the InteractionResponse to delete.
      */
-    void deleteById(int id);
+    @Override
+    public void deleteById(int id) {
+        dao.deleteById(id);
+    }
 
     /**
      * Deletes all InteractionResponses from the backing store for the specified Interaction.
      *
      * @param interaction the Interaction to delete responses for.
      */
-    void deleteByInteraction(Interaction interaction);
+    @Override
+    public void deleteByInteraction(Interaction interaction) {
+        dao.deleteByInteraction(interaction);
+    }
 
     /**
      * Deletes all InteractionResponses from the backing store for the specified User.
      *
      * @param user the User to delete responses for.
      */
-    void deleteByUser(User user);
+    @Override
+    public void deleteByUser(User user) {
+        dao.deleteByUser(user);
+    }
 }
