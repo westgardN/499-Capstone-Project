@@ -21,10 +21,18 @@ public class SocialNetworkRegistration implements Serializable {
     private Integer id;
 
     /**
+     * The date and time this registration was made.
+     */
+    @Column(name = "created_time", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime;
+
+    /**
      * The social network this registration is for.
      */
     @Column(name = "social_network", nullable = false)
-    private String socialNetwork;
+    @Enumerated(EnumType.STRING)
+    private SocialNetwork socialNetwork;
 
     /**
      * The token retrieved from the provisioning process and
@@ -66,11 +74,19 @@ public class SocialNetworkRegistration implements Serializable {
         this.id = id;
     }
 
-    public String getSocialNetwork() {
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public SocialNetwork getSocialNetwork() {
         return socialNetwork;
     }
 
-    public void setSocialNetwork(String socialNetwork) {
+    public void setSocialNetwork(SocialNetwork socialNetwork) {
         this.socialNetwork = socialNetwork;
     }
 

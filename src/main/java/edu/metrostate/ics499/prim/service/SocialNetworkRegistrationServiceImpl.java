@@ -1,11 +1,15 @@
 package edu.metrostate.ics499.prim.service;
 
+import edu.metrostate.ics499.prim.model.SocialNetwork;
 import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
 import edu.metrostate.ics499.prim.repository.SocialNetworkRegistrationDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
+import java.util.Date;
 import java.util.List;
 
 @Service("socialNetworkRegistrationService")
@@ -37,8 +41,22 @@ public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegist
      * If no SocialNetworkRegistrations exist, an empty List is returned.
      */
     @Override
-    public List<SocialNetworkRegistration> findBySocialNetwork(String socialNetwork) {
+    public List<SocialNetworkRegistration> findBySocialNetwork(SocialNetwork socialNetwork) {
         return dao.findBySocialNetwork(socialNetwork);
+    }
+
+    /**
+     * Returns a persistent SocialNetworkRegistration object identified by the specified id.
+     * If no SocialNetworkRegistration with that token exists, null is returned.
+     *
+     * @param token the access token to retrieve
+     *
+     * @return a persistent SocialNetworkRegistration object identified by the specified id.
+     * If no SocialNetworkRegistration with that token exists, null is returned.
+     */
+    @Override
+    public SocialNetworkRegistration findByToken(String token) {
+        return dao.findByToken(token);
     }
 
     /**
@@ -73,11 +91,40 @@ public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegist
         SocialNetworkRegistration entity = dao.findById(socialNetworkRegistration.getId());
 
         if (entity != null) {
+            entity.setCreatedTime(socialNetworkRegistration.getCreatedTime());
             entity.setSocialNetwork(socialNetworkRegistration.getSocialNetwork());
             entity.setExpires(socialNetworkRegistration.getExpires());
             entity.setLastUsed(socialNetworkRegistration.getLastUsed());
             entity.setRefreshToken(socialNetworkRegistration.getRefreshToken());
             entity.setToken(socialNetworkRegistration.getToken());
+        }
+    }
+
+    /**
+     * Registers a social network in the database based on the provided OAuth Grant.
+     *
+     * @param socialNetwork the social network to register.
+     * @param accessGrant   the OAuth Grant received from registration.
+     * @return returns true if registration was successful; false otherwise.
+     */
+    @Override
+    public boolean register(SocialNetwork socialNetwork, AccessGrant accessGrant) {
+        Date now = new Date();
+
+        SocialNetworkRegistration socialNetworkRegistration = new SocialNetworkRegistration();
+        socialNetworkRegistration.setCreatedTime(now);
+        socialNetworkRegistration.setSocialNetwork(socialNetwork);
+        socialNetworkRegistration.setToken(accessGrant.getAccessToken());
+        socialNetworkRegistration.setRefreshToken(accessGrant.getRefreshToken());
+        socialNetworkRegistration.setExpires(new Date(accessGrant.getExpireTime()));
+        socialNetworkRegistration.setLastUsed(now);
+
+        try {
+            save(socialNetworkRegistration);
+
+            return true;
+        } catch (EntityExistsException ex) {
+            return false;
         }
     }
 
@@ -97,7 +144,7 @@ public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegist
      * @param socialNetwork the Social Network to delete registrations for.
      */
     @Override
-    public void deleteBySocialNetwork(String socialNetwork) {
+    public void deleteBySocialNetwork(SocialNetwork socialNetwork) {
         dao.deleteBySocialNetwork(socialNetwork);
     }
 }

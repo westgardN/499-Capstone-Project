@@ -1,5 +1,6 @@
 package edu.metrostate.ics499.prim.repository;
 
+import edu.metrostate.ics499.prim.model.SocialNetwork;
 import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
 
 import java.util.List;
@@ -30,7 +31,18 @@ public interface SocialNetworkRegistrationDao {
      * @return a List of persistent SocialNetworkRegistrations for the specified Social Network.
      * If no SocialNetworkRegistrations exist, an empty List is returned.
      */
-    List<SocialNetworkRegistration> findBySocialNetwork(String socialNetwork);
+    List<SocialNetworkRegistration> findBySocialNetwork(SocialNetwork socialNetwork);
+
+    /**
+     * Returns a persistent SocialNetworkRegistration object identified by the specified id.
+     * If no SocialNetworkRegistration with that token exists, null is returned.
+     *
+     * @param token the access token to retrieve
+     *
+     * @return a persistent SocialNetworkRegistration object identified by the specified id.
+     * If no SocialNetworkRegistration with that token exists, null is returned.
+     */
+    SocialNetworkRegistration findByToken(String token);
 
     /**
      * Returns a List of all persistent SocialNetworkRegistrations. If no SocialNetworkRegistrations exist,
@@ -60,6 +72,6 @@ public interface SocialNetworkRegistrationDao {
      *
      * @param socialNetwork the Social Network to delete registrations for.
      */
-    void deleteBySocialNetwork(String socialNetwork);
+    void deleteBySocialNetwork(SocialNetwork socialNetwork);
 
 }

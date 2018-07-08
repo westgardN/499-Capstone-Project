@@ -25,12 +25,12 @@ public class PrimUserDetailsService implements UserDetailsService {
     @Autowired
     private UserService userService;
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String ssoId)
             throws UsernameNotFoundException {
         User user = userService.findBySsoId(ssoId);
         logger.info("User : {}", user);
-        if(user==null){
+        if (user == null) {
             logger.info("User not found");
             throw new UsernameNotFoundException("Username not found");
         }
@@ -39,10 +39,10 @@ public class PrimUserDetailsService implements UserDetailsService {
     }
 
 
-    private List<GrantedAuthority> getGrantedAuthorities(User user){
+    private List<GrantedAuthority> getGrantedAuthorities(User user) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-        for(Role role : user.getRoles()){
+        for (Role role : user.getRoles()) {
             logger.info("Role : {}", role);
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getType()));
         }

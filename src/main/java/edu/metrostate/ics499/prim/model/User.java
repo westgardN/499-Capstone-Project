@@ -23,43 +23,44 @@ public class User implements Serializable {
     private Integer id;
 
     @NotEmpty
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(name = "username", length = 64, unique = true, nullable = false)
     private String username;
 
     @NotEmpty
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", length = 100, nullable = false)
     private String password;
 
     @NotEmpty
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "first_name", length = 30, nullable = false)
     private String firstName;
 
     @NotEmpty
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "last_name", length = 30, nullable = false)
     private String lastName;
 
     @NotEmpty
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", length = 64, unique = true, nullable = false)
     private String email;
 
     @NotEmpty
-    @Column(name = "sso_id", unique = true, nullable = false)
+    @Column(name = "sso_id", length = 64, unique = true, nullable = false)
     private String ssoId;
 
-    @Column(name = "status", nullable = false)
-    private int status;
+    @Column(name = "status", length = 32, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserStatus status = UserStatus.ACTIVE;
 
     @Column(name = "failed_logins", nullable = false)
-    private int failedLogins;
+    private Integer failedLogins = 0;
 
     @Column(name = "last_visited_on", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastVisitedOn;
 
-    @Column(name = "last_visited_from", nullable = true)
+    @Column(name = "last_visited_from", length = 32, nullable = true)
     private String lastVisitedFrom;
 
-    @Column(name = "user_key", nullable = true)
+    @Column(name = "user_key", length = 100, nullable = true)
     private String userKey;
 
     @Column(name = "activated_on", nullable = true)
@@ -129,19 +130,19 @@ public class User implements Serializable {
         this.ssoId = ssoId;
     }
 
-    public int getStatus() {
+    public UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 
-    public int getFailedLogins() {
+    public Integer getFailedLogins() {
         return failedLogins;
     }
 
-    public void setFailedLogins(int failedLogins) {
+    public void setFailedLogins(Integer failedLogins) {
         this.failedLogins = failedLogins;
     }
 

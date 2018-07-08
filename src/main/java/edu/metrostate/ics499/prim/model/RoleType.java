@@ -7,8 +7,17 @@ import java.io.Serializable;
  * If more roles are added, this enum will need to be updated.
  */
 public enum RoleType implements Serializable{
+    /**
+     * A team member.
+     */
     USER("USER"),
+    /**
+     * A database administrator.
+     */
     DBA("DBA"),
+    /**
+     * An administrator that has complete control of PRIM.
+     */
     ADMIN("ADMIN");
 
     String roleType;
@@ -17,6 +26,11 @@ public enum RoleType implements Serializable{
         this.roleType = roleType;
     }
 
+    /**
+     * Returns the RoleType as a String.
+     *
+     * @return the RoleType as a String.
+     */
     public String getRoleType(){
         return roleType;
     }

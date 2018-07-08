@@ -1,5 +1,7 @@
 package edu.metrostate.ics499.prim.controller;
 
+import edu.metrostate.ics499.prim.service.FacebookService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -9,11 +11,32 @@ import org.springframework.social.facebook.api.PagedList;
 import org.springframework.social.facebook.api.Post;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
-//@Controller
+import java.util.List;
+
+@RestController
+@RequestMapping("/facebook")
 public class FacebookController {
+
+    @Autowired
+    FacebookService facebookService;
+
+    @GetMapping("/createFacebookAuthorizationUrl")
+    public String createFacebookAuthorizationUrl() {
+        return facebookService.buildAuthorizationUrl();
+    }
+
+    @GetMapping("/register")
+    public void register(@RequestParam("code") String code) {
+        facebookService.registerFacebook(code);
+    }
+
+    @GetMapping("/feed")
+    public List<Post> feed() {
+        return facebookService.getAllPostTypeItems();
+    }
+
 //    private Facebook facebook;
 //    private ConnectionRepository connectionRepository;
 //

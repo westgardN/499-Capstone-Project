@@ -3,12 +3,7 @@ package edu.metrostate.ics499.prim.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * This is a JPA Entity class that maps the Role object to the Role table used
@@ -24,7 +19,8 @@ public class Role implements Serializable {
     private Integer id;
 
     @Column(name = "type", length = 64, unique = true, nullable = false)
-    private String type = RoleType.USER.getRoleType();
+    @Enumerated(EnumType.STRING)
+    private RoleType type = RoleType.USER;
 
     public Integer getId() {
         return id;
@@ -34,11 +30,11 @@ public class Role implements Serializable {
         this.id = id;
     }
 
-    public String getType() {
+    public RoleType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(RoleType type) {
         this.type = type;
     }
 
