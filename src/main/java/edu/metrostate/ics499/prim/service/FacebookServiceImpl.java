@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Service("facebookService")
 public class FacebookServiceImpl implements FacebookService {
@@ -87,19 +88,38 @@ public class FacebookServiceImpl implements FacebookService {
     @Override
     @Transactional
     public void registerFacebook(String code) {
-        SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationService.findByToken(code);
+        List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService.findNonExpiredBySocialNetwork(SocialNetwork.FACEBOOK);
 
         FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
         AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, facebookAuthUri, null);
 
-        if (socialNetworkRegistration == null) {
+        if (socialNetworkRegistrationList.isEmpty()) {
             socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
         } else {
             Date now = new Date();
+            boolean found = false;
 
-            socialNetworkRegistration.setRefreshToken(accessGrant.getRefreshToken());
-            socialNetworkRegistration.setExpires(new Date(accessGrant.getExpireTime()));
-            socialNetworkRegistration.setLastUsed(now);
+            String[] fields = {"id", "name"};
+            for (int i = 0; i < socialNetworkRegistrationList.size(); i++) {
+                SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
+
+                Facebook fbCurrent = new FacebookTemplate(socialNetworkRegistration.getToken());
+                Facebook fbNew = new FacebookTemplate(accessGrant.getAccessToken());
+                String idCurrent = fbCurrent.fetchObject("me", String.class, fields);
+                String idNew = fbNew.fetchObject("me", String.class, fields);
+
+                if (Objects.equals(idCurrent, idNew) == true) {
+                    found = true;
+                    socialNetworkRegistration.setRefreshToken(accessGrant.getRefreshToken());
+                    socialNetworkRegistration.setExpires(new Date(accessGrant.getExpireTime()));
+                    socialNetworkRegistration.setLastUsed(now);
+                    break;
+                }
+            }
+
+            if (!found) {
+                socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
+            }
         }
     }
 
@@ -139,6 +159,22 @@ public class FacebookServiceImpl implements FacebookService {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Returns true if a non-expired Facebook registration exists
+     *
+     * @return true if a non-expired Facebook registration exists
+     */
+    @Override
+    public boolean isRegistered() {
+        boolean result = false;
+
+        if (socialNetworkRegistrationService.isRegistered(SocialNetwork.FACEBOOK) == true) {
+            result = true;
+        }
+
+        return result;
     }
 
     /**

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -23,13 +25,23 @@ public class FacebookController {
     FacebookService facebookService;
 
     @GetMapping("/createFacebookAuthorizationUrl")
-    public String createFacebookAuthorizationUrl() {
+    public String createFacebookAuthorizationUrl() throws IOException {
         return facebookService.buildAuthorizationUrl();
     }
 
     @GetMapping("/register")
-    public void register(@RequestParam("code") String code) {
+    public void register(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
         facebookService.registerFacebook(code);
+
+        response.sendRedirect("/facebook/feed");
+    }
+
+    @GetMapping("/registerByServer")
+    public void registerByServer(HttpServletResponse response) throws IOException {
+        if (!facebookService.isRegistered()) {
+        }
+
+        response.sendRedirect(facebookService.buildAuthorizationUrl());
     }
 
     @GetMapping("/feed")
@@ -37,30 +49,4 @@ public class FacebookController {
         return facebookService.getAllPostTypeItems();
     }
 
-//    private Facebook facebook;
-//    private ConnectionRepository connectionRepository;
-//
-//    public FacebookController(Facebook facebook, ConnectionRepository connectionRepository) {
-//        this.facebook = facebook;
-//        this.connectionRepository = connectionRepository;
-//    }
-//
-//    @RequestMapping(value = "/facebook", method = RequestMethod.GET)
-//    public String helloFacebook(Model model) {
-//        if (connectionRepository.findPrimaryConnection(Facebook.class) == null) {
-//            return "redirect:/connect/facebook";
-//        }
-//
-//        model.addAttribute("facebookProfile", facebook.userOperations().getUserProfile());
-//        PagedList<Post> feed = facebook.feedOperations().getFeed();
-//        model.addAttribute("feed", feed);
-//        return "facebook";
-//    }
-//
-//    @Bean
-//    @Scope(value="request", proxyMode=ScopedProxyMode.INTERFACES)
-//    public Facebook facebook() {
-//        return connectionRepository.getPrimaryConnection(Facebook.class).getApi();
-//    }
-//
 }

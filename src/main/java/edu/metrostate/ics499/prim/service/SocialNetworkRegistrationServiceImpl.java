@@ -46,6 +46,30 @@ public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegist
     }
 
     /**
+     * Returns a List of persistent SocialNetworkRegistrations for the specified Social Network.
+     * The registrations are have not expired. If no SocialNetworkRegistrations exist, an empty List is returned.
+     *
+     * @param socialNetwork The Social Network to retrieve a list of non-expired SocialNetworkRegistrations for.
+     * @return a List of persistent SocialNetworkRegistrations for the specified Social Network.
+     * The registrations are have not expired. If no SocialNetworkRegistrations exist, an empty List is returned.
+     */
+    @Override
+    public List<SocialNetworkRegistration> findNonExpiredBySocialNetwork(SocialNetwork socialNetwork) {
+        return dao.findNonExpiredBySocialNetwork(socialNetwork);
+    }
+
+    /**
+     * Returns true if at least one non-expired registration exists; otherwise false is returned.
+     *
+     * @param socialNetwork The social network to check for registrations.
+     * @return true if at least one non-expired registration exists; otherwise false is returned.
+     */
+    @Override
+    public boolean isRegistered(SocialNetwork socialNetwork) {
+        return dao.isRegistered(socialNetwork);
+    }
+
+    /**
      * Returns a persistent SocialNetworkRegistration object identified by the specified id.
      * If no SocialNetworkRegistration with that token exists, null is returned.
      *

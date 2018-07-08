@@ -12,6 +12,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository("socialNetworkRegistrationDao")
@@ -64,6 +66,50 @@ public class SocialNetworkRegistrationDaoImpl extends AbstractDao<Integer, Socia
         TypedQuery<SocialNetworkRegistration> query = getSession().createQuery(crit);
 
         return query.getResultList();
+    }
+
+    /**
+     * Returns a List of persistent SocialNetworkRegistrations for the specified Social Network.
+     * The registrations are have not expired. If no SocialNetworkRegistrations exist, an empty List is returned.
+     *
+     * @param socialNetwork The Social Network to retrieve a list of non-expired SocialNetworkRegistrations for.
+     * @return a List of persistent SocialNetworkRegistrations for the specified Social Network.
+     * The registrations are have not expired. If no SocialNetworkRegistrations exist, an empty List is returned.
+     */
+    @Override
+    public List<SocialNetworkRegistration> findNonExpiredBySocialNetwork(SocialNetwork socialNetwork) {
+        CriteriaBuilder builder = getCriteriaBuilder();
+        CriteriaQuery<SocialNetworkRegistration> crit = builder.createQuery(SocialNetworkRegistration.class);
+        Root<SocialNetworkRegistration> from = crit.from(SocialNetworkRegistration.class);
+        List<Predicate> predicates = new ArrayList<Predicate>();
+        predicates.add(builder.greaterThanOrEqualTo(from.get("expires"), new Date()));
+        predicates.add(builder.equal(from.get("socialNetwork"), socialNetwork));
+        Predicate clause = builder.and((predicates.toArray(new Predicate[predicates.size()])));
+        crit.select(from).where(clause);
+        TypedQuery<SocialNetworkRegistration> query = getSession().createQuery(crit);
+
+        return query.getResultList();
+    }
+
+    /**
+     * Returns true if at least one non-expired registration exists; otherwise false is returned.
+     *
+     * @param socialNetwork The social network to check for registrations.
+     * @return true if at least one non-expired registration exists; otherwise false is returned.
+     */
+    @Override
+    public boolean isRegistered(SocialNetwork socialNetwork) {
+        CriteriaBuilder builder = getCriteriaBuilder();
+        CriteriaQuery<Long> crit = builder.createQuery(Long.class);
+        Root<SocialNetworkRegistration> from = crit.from(SocialNetworkRegistration.class);
+        List<Predicate> predicates = new ArrayList<Predicate>();
+        predicates.add(builder.greaterThanOrEqualTo(from.get("expires"), new Date()));
+        predicates.add(builder.equal(from.get("socialNetwork"), socialNetwork));
+        Predicate clause = builder.and((predicates.toArray(new Predicate[predicates.size()])));
+        crit.select(builder.count(from)).where(clause);
+        TypedQuery<Long> query = getSession().createQuery(crit);
+
+        return query.getSingleResult() > 0;
     }
 
     /**

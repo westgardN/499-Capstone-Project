@@ -31,6 +31,13 @@ public interface FacebookService {
     void refreshToken(SocialNetworkRegistration socialNetworkRegistration);
 
     /**
+     * Returns true if a non-expired Facebook registration exists
+     *
+     * @return true if a non-expired Facebook registration exists
+     */
+    boolean isRegistered();
+
+    /**
      * Returns the authorized Facebook object.
      *
      * @return the authorized Facebook object.
