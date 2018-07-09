@@ -173,6 +173,22 @@ CREATE TABLE SOCIAL_NETWORK_REGISTRATION (
 );
 
 /*
+ * The Data Refresh Request stores information about a data retrieval request.
+ * The request may be user or system initiated and may be to retrieve social
+ * media data or score the sentiment or any future type of request.
+ * The purpose is to prevent multiple retrieval requests for the same data.
+ */
+CREATE TABLE DATA_REFRESH_REQUEST (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  created_time DATETIME NOT NULL,
+  requested_by VARCHAR(128) NOT NULL,
+  start_time DATETIME NULL,
+  finish_time DATETIME NULL,
+  type VARCHAR(128),
+  PRIMARY KEY (id)
+);
+
+/*
  * Setup the database user for prim
  */
 DELIMITER //
