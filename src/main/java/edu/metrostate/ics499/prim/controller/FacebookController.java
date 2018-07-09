@@ -38,9 +38,6 @@ public class FacebookController {
 
     @GetMapping("/registerByServer")
     public void registerByServer(HttpServletResponse response) throws IOException {
-        if (!facebookService.isRegistered()) {
-        }
-
         response.sendRedirect(facebookService.buildAuthorizationUrl());
     }
 

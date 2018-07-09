@@ -70,6 +70,23 @@ public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegist
     }
 
     /**
+     * Returns true if the registration has expired.
+     *
+     * @param socialNetworkRegistration the registraiton to check.
+     * @return true if the registration has expired.
+     */
+    @Override
+    public boolean isExpired(SocialNetworkRegistration socialNetworkRegistration) {
+        boolean expired = false;
+
+        if (socialNetworkRegistration.getExpires().after(new Date())) {
+            expired = true;
+        }
+
+        return expired;
+    }
+
+    /**
      * Returns a persistent SocialNetworkRegistration object identified by the specified id.
      * If no SocialNetworkRegistration with that token exists, null is returned.
      *

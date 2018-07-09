@@ -108,4 +108,12 @@ public interface SocialNetworkRegistrationService {
      */
     void deleteBySocialNetwork(SocialNetwork socialNetwork);
 
+    /**
+     * Returns true if the registration has expired.
+     *
+     * @param socialNetworkRegistration the registraiton to check.
+     *
+     * @return true if the registration has expired.
+     */
+    boolean isExpired(SocialNetworkRegistration socialNetworkRegistration);
 }

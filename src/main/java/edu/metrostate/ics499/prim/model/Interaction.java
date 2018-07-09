@@ -84,7 +84,8 @@ public class Interaction implements Serializable {
      * The social network this interaction was retrieved from.
      */
     @Column(name = "social_network")
-    private String socialNetwork;
+    @Enumerated(EnumType.STRING)
+    private SocialNetwork socialNetwork;
 
     /**
      * The source this interaction was created from. The source will equal the
@@ -172,11 +173,11 @@ public class Interaction implements Serializable {
         this.sentiment = sentiment;
     }
 
-    public String getSocialNetwork() {
+    public SocialNetwork getSocialNetwork() {
         return socialNetwork;
     }
 
-    public void setSocialNetwork(String socialNetwork) {
+    public void setSocialNetwork(SocialNetwork socialNetwork) {
         this.socialNetwork = socialNetwork;
     }
 

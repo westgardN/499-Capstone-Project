@@ -110,6 +110,7 @@ public class FacebookServiceImpl implements FacebookService {
 
                 if (Objects.equals(idCurrent, idNew) == true) {
                     found = true;
+                    socialNetworkRegistration.setToken(accessGrant.getAccessToken());
                     socialNetworkRegistration.setRefreshToken(accessGrant.getRefreshToken());
                     socialNetworkRegistration.setExpires(new Date(accessGrant.getExpireTime()));
                     socialNetworkRegistration.setLastUsed(now);
@@ -210,19 +211,20 @@ public class FacebookServiceImpl implements FacebookService {
                 .findBySocialNetwork(SocialNetwork.FACEBOOK);
 
         Facebook facebook = null;
-        List<Post> posts = new LinkedList<Post>();
+        List<Post> posts = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
             socialNetworkRegistration.setLastUsed(new Date());
-            refreshToken(socialNetworkRegistration);
+
+            if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
+                refreshToken(socialNetworkRegistration);
+            }
 
             facebook = new FacebookTemplate(socialNetworkRegistration.getToken());
 
             posts.addAll(facebook.feedOperations().getFeed());
             posts.addAll(facebook.feedOperations().getPosts());
             posts.addAll(facebook.feedOperations().getTagged());
-
-            break;
         }
 
         return posts;
