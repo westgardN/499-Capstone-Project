@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:social="http://spring.io/springsocial"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>PRIM Main Nav Bar</title>
+</head>
+<body>
+<div class="container">
+
+    <div id="navigation" th:fragment="navigation">
+        <!-- Static navbar -->
+        <nav class="navbar navbar-expand-md navbar-dark bg-primary navbar-fixed-top">
+            <a class="navbar-brand" th:href="@{/}">
+                <img th:src="@{/imgs/logo.png}" width="32" height="32" class="d-inline-block align-top" alt="">
+                PRIM
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li th:class="${viewName} eq 'home' ? 'nav-item active' : 'nav-item'">
+                        <a class="nav-link" th:href="@{/home}">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li th:class="${#strings.contains(viewName, 'interaction')} == true ? 'nav-item dropdown active' : 'nav-item dropdown'" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle" href="#" id="interactionNavbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Interactions
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="interactionNavbarDropdownMenuLink">
+                            <a th:class="${#strings.contains(viewName, 'interaction/open')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">View Open</a>
+                            <a th:class="${#strings.contains(viewName, 'interaction/followup')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">View Follow-up</a>
+                        </div>
+                    </li>
+                    <li th:class="${#strings.contains(viewName, 'social')} == true ? 'nav-item dropdown active' : 'nav-item dropdown'" sec:authorize="isAuthenticated() && hasAnyRole('USER', 'ADMIN')">
+                        <a class="nav-link dropdown-toggle" href="#" id="socialNavbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Social Networks
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="socialNavbarDropdownMenuLink">
+                            <a th:class="${#strings.contains(viewName, 'social/refresh')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">Refresh Data</a>
+                            <a th:class="${#strings.contains(viewName, 'social/register')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#" sec:authorize="isAuthenticated() && hasRole('ADMIN')">Register Account</a>
+                            <a th:class="${#strings.contains(viewName, 'social/list')} == true ? 'dropdown-item active' : 'dropdown-item'"class="dropdown-item" href="#" sec:authorize="isAuthenticated() && hasRole('ADMIN')">List Accounts</a>
+                        </div>
+                    </li>
+                    <li th:class="${#strings.contains(viewName, 'user')} == true ? 'nav-item dropdown active' : 'nav-item dropdown'" sec:authorize="isAuthenticated() && hasRole('ADMIN')">
+                        <a class="nav-link dropdown-toggle" href="#" id="userNavbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            User Management
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="userNavbarDropdownMenuLink">
+                            <a th:class="${#strings.contains(viewName, 'user/new')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">New User</a>
+                            <a th:class="${#strings.contains(viewName, 'users/list')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">List Users</a>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li th:class="${#strings.contains(viewName, 'login')} == true ? 'nav-item active' : 'nav-item'" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" th:href="@{/login}">Sign In</a>
+                    </li>
+                    <li th:class="${#strings.contains(viewName, 'member')} == true ? 'nav-item dropdown active' : 'nav-item dropdown'" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle" href="#" id="memberNavbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span sec:authentication="name">Profile</span>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="memberNavbarDropdownMenuLink">
+                            <a class="dropdown-item" href="javascript:document.logoutForm.submit();">
+                                Sign out
+                            </a>
+                            <a th:class="${#strings.contains(viewName, 'profile')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/user/profile}">
+                                Profile
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <form method="POST" th:action="@{/logout}" name="logoutForm"></form>
+            </div>
+        </nav>
+    </div>
+    <div id="content" layout:fragment="content">
+        Content goes here
+    </div>
+
+</div> <!-- /container -->
+
+</body>
+</html>

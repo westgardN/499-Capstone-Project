@@ -35,8 +35,6 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
 
         boolean admin = false;
 
-        logger.info("AT onAuthenticationSuccess(...) function!");
-
         // Retrieve the persistent User that is logged in.
         User user = userService.findBySsoId(authentication.getName());
 

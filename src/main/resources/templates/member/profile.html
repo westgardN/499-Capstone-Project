@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="/fragments/header :: commonHeader(~{::title})">
+    <title>PRIM Profile</title>
+</head>
+<body>
+
+<div th:replace="/fragments/navigation :: navigation" />
+<div class="container-fluid">
+    <h1 class="text-center">Welcome to PRIM!</h1>
+
+    <p>Click <a th:href="@{/hello}">here</a> to see a greeting.</p>
+
+    <p>Get your greeting via a webpage <a href="greetingweb">here</a> (Thymeleaf Template)</p>
+    <p>Get your greeting via a webpage <a href="greetingwebgroovy">here</a> (Groovy Template)</p>
+    <p>Get your greeting via JSON <a href="greetingjson">here</a></p>
+    <hr>
+    <p>Check site <a href="actuator/health">health</a></p>
+    <p>Check site <a href="actuator/info">info messages</a></p>
+    <div sec:authorize="isAuthenticated()">
+        <p><a th:href="@{/logout}" class="btn btn-block btn-primary btn-default">Logout</a></p>
+    </div>
+    <div sec:authorize="!isAuthenticated()">
+        <p><a th:href="@{/login}" class="btn btn-block btn-primary btn-default">Login</a></p>
+    </div>
+    <footer th:replace="/fragments/footer :: footer" />
+</div>
+<div th:replace="/fragments/scripts :: commonScripts(~{::script})" />
+
+</body>
+</html>

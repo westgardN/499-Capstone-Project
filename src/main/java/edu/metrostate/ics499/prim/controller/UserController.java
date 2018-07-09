@@ -3,8 +3,6 @@ package edu.metrostate.ics499.prim.controller;
 import java.util.List;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import edu.metrostate.ics499.prim.model.Role;
@@ -13,11 +11,8 @@ import edu.metrostate.ics499.prim.service.RoleService;
 import edu.metrostate.ics499.prim.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.security.authentication.AuthenticationTrustResolver;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -139,6 +134,45 @@ public class UserController {
         return "registrationsuccess";
     }
 
+    /**
+     * This method will allow the currently logged in user to view their settings.
+     */
+    @RequestMapping(value = { "/user/profile" }, method = RequestMethod.GET)
+    public String viewProfile(ModelMap model) {
+        User user = userService.findBySsoId(getPrincipal());
+
+        model.addAttribute("user", user);
+        model.addAttribute("edit", true);
+        model.addAttribute("loggedinuser", getPrincipal());
+        return "member/profile";
+    }
+
+    /**
+     * This method updates the currently logged in user's profile.
+     */
+    @RequestMapping(value = { "/user/profile" }, method = RequestMethod.POST)
+    public String updateProfile(@Valid User user, BindingResult result,
+                                ModelMap model) {
+
+        if (result.hasErrors()) {
+            return "member/profile";
+        }
+
+        /* Disable updating the ssoId for now.
+        if(!userService.isSsoIdUnique(user.getId(), user.getSsoId())){
+            FieldError ssoError =new FieldError("user","ssoId",messageSource.getMessage("non.unique.ssoId", new String[]{user.getSsoId()}, Locale.getDefault()));
+            result.addError(ssoError);
+            return "registration";
+        }*/
+
+
+        userService.update(user);
+
+        model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " updated successfully");
+        model.addAttribute("loggedinuser", getPrincipal());
+
+        return "profile";
+    }
 
     /**
      * This method will delete an user by it's SSOID value.
