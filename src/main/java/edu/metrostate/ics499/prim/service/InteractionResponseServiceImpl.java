@@ -118,7 +118,6 @@ public class InteractionResponseServiceImpl implements InteractionResponseServic
             entity.setResponseBy(interactionResponse.getResponseBy());
             entity.setMessage(interactionResponse.getMessage());
             entity.setType(interactionResponse.getType());
-            entity.setState(interactionResponse.getState());
         }
     }
 

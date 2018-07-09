@@ -65,11 +65,11 @@
                             <span sec:authentication="name">Profile</span>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="memberNavbarDropdownMenuLink">
-                            <a class="dropdown-item" href="javascript:document.logoutForm.submit();">
-                                Sign out
-                            </a>
                             <a th:class="${#strings.contains(viewName, 'profile')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/user/profile}">
                                 Profile
+                            </a>
+                            <a class="dropdown-item" href="javascript:document.logoutForm.submit();">
+                                Sign out
                             </a>
                         </div>
                     </li>

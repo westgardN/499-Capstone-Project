@@ -133,6 +133,7 @@ public class InteractionServiceImpl implements InteractionService {
             entity.setSentiment(interaction.getSentiment());
             entity.setSocialNetwork(interaction.getSocialNetwork());
             entity.setSource(interaction.getSource());
+            entity.setState(interaction.getState());
         }
     }
 

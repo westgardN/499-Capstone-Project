@@ -18,6 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
+/**
+ * The AuthenticationSuccessHandlerImpl class is used by Spring after a user has successfully authenticated
+ * with the system.
+ */
 @Component
 public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler {
     @Autowired
@@ -50,15 +54,6 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         user.setLastVisitedFrom(request.getRemoteAddr());
         user.setFailedLogins(0);
 
-        for (GrantedAuthority auth : authentication.getAuthorities()) {
-            if ("ROLE_ADMIN".equals(auth.getAuthority())){
-                admin = true;
-            }
-        }
-
-        if(admin){
-            response.sendRedirect("/");
-        }else{
-            response.sendRedirect("/");
-        }
+        // Redirect to the home endpoint.
+        response.sendRedirect("/");
     }}

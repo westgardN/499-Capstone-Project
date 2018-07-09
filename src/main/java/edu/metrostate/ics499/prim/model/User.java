@@ -22,51 +22,90 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    /**
+     * The unique username for this user. It is used for storing cookies but not authentication.
+     */
     @NotEmpty
     @Column(name = "username", length = 64, unique = true, nullable = false)
     private String username;
 
+    /**
+     * The password for this user.
+     */
     @NotEmpty
     @Column(name = "password", length = 100, nullable = false)
     private String password;
 
+    /**
+     * The user's first name. Must be provided.
+     */
     @NotEmpty
     @Column(name = "first_name", length = 30, nullable = false)
     private String firstName;
 
+    /**
+     * The user's last name. Must be provided.
+     */
     @NotEmpty
     @Column(name = "last_name", length = 30, nullable = false)
     private String lastName;
 
+    /**
+     * The unique e-mail address for this user. Must be provided.
+     */
     @NotEmpty
     @Column(name = "email", length = 64, unique = true, nullable = false)
     private String email;
 
+    /**
+     * The unique Single Sign-on user id for this user. This is used for authorization and must be provided.
+     */
     @NotEmpty
     @Column(name = "sso_id", length = 64, unique = true, nullable = false)
     private String ssoId;
 
+    /**
+     * The status of this user. Only active users can login.
+     */
     @Column(name = "status", length = 32, nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
 
+    /**
+     * The number of consecutive failed logins since the last successful login.
+     */
     @Column(name = "failed_logins", nullable = false)
     private Integer failedLogins = 0;
 
+    /**
+     * The date and time the user last attempted to login.
+     */
     @Column(name = "last_visited_on", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastVisitedOn;
 
-    @Column(name = "last_visited_from", length = 32, nullable = true)
+    /**
+     * The IPv6 Address that was last captured when the user last tried to login.
+     */
+    @Column(name = "last_visited_from", length = 100, nullable = true)
     private String lastVisitedFrom;
 
+    /**
+     * Used to verify the user when recovering / resetting the account.
+     */
     @Column(name = "user_key", length = 100, nullable = true)
     private String userKey;
 
+    /**
+     * The date and time the user account was activated.
+     */
     @Column(name = "activated_on", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date activatedOn;
 
+    /**
+     * The roles the user has assigned to them.
+     */
     @NotEmpty
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "USER_ROLE",

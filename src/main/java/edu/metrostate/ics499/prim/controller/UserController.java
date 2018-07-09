@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+/**
+ * This controller handles all User based requests such as adding, editing, and deleting users.
+ */
 @Controller
 @SessionAttributes("roles")
 public class UserController {
@@ -171,7 +174,7 @@ public class UserController {
         model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " updated successfully");
         model.addAttribute("loggedinuser", getPrincipal());
 
-        return "profile";
+        return "member/profile";
     }
 
     /**

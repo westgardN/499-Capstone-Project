@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * This controller is responsible for handling login, logout, and accessDenied requests and responses.
+ */
 @Controller
 public class AuthController {
 

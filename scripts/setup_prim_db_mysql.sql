@@ -42,7 +42,7 @@ CREATE TABLE USER(
    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
    failed_logins INT NOT NULL DEFAULT 0,
    last_visited_on DATETIME NULL,
-   last_visited_from VARCHAR(32) NULL,
+   last_visited_from VARCHAR(100) NULL,
    user_key VARCHAR(100) NULL,
    activated_on DATETIME NULL,
    PRIMARY KEY (id),
@@ -121,6 +121,7 @@ CREATE TABLE PERSISTENT_LOGINS (
    sentiment INT NULL,
    social_network VARCHAR(128) NULL,
    source VARCHAR(128) NULL,
+   state VARCHAR(128) NOT NULL DEFAULT 'OPEN',
    flag VARCHAR(128) NULL,
    PRIMARY KEY (id)
  );
@@ -136,8 +137,7 @@ CREATE TABLE PERSISTENT_LOGINS (
    response_to BIGINT NOT NULL,
    response_by BIGINT NOT NULL,
    message TEXT NULL,
-   type VARCHAR(32) NULL,
-   state VARCHAR(32) NULL,
+   type VARCHAR(128) NOT NULL,
    PRIMARY KEY (id),
    CONSTRAINT FK_USER_RESPONSE FOREIGN KEY (response_by) REFERENCES USER(id),
    CONSTRAINT FK_INTERACTION_RESPONSE FOREIGN KEY (response_to) REFERENCES INTERACTION(id)
