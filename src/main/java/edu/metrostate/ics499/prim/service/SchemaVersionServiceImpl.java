@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The SchemaVersionServiceImpl implements the SchemaVersionService
+ * interface for easily working with the SchemaVersion.
+ */
 @Service("schemaVersionService")
 @Transactional
 public class SchemaVersionServiceImpl implements SchemaVersionService {

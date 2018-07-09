@@ -6,6 +6,10 @@ import org.springframework.social.facebook.api.Post;
 
 import java.util.List;
 
+/**
+ * The FacebookService provides an interface for registering with Facebook and
+ * retrieving data from Facebook.
+ */
 public interface FacebookService {
 
     /**

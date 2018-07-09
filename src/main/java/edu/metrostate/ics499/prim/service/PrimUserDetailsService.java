@@ -17,6 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.metrostate.ics499.prim.model.User;
 import edu.metrostate.ics499.prim.model.Role;
 
+/**
+ * The PrimUserDetailsService implements Spring's UserDetailsService interface for providing user services
+ * to the authorization layer.
+ */
 @Service("primUserDetailsService")
 public class PrimUserDetailsService implements UserDetailsService {
 
@@ -25,6 +29,14 @@ public class PrimUserDetailsService implements UserDetailsService {
     @Autowired
     private UserService userService;
 
+    /**
+     * Called by Spring to load a user for authentication. Returns an instance of Spring's UserDetails class.
+     *
+     * @param ssoId the unigue single sign-on id that identifies the user we are looking for.
+     *
+     * @return an instance of Spring's UserDetails class.
+     * @throws UsernameNotFoundException thrown if the provided ssoId does not identify a valid user.
+     */
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String ssoId)
             throws UsernameNotFoundException {

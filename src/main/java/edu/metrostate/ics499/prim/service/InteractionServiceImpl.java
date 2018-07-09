@@ -8,6 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * The InteractionServiceImpl implements the InteractionService
+ * interface for easily working with Interactions.
+ */
 @Service("interactionService")
 @Transactional
 public class InteractionServiceImpl implements InteractionService {

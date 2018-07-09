@@ -10,6 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * The InteractionResponseServiceImpl implements the InteractionResponseService
+ * interface for easily working with InteractionResponses.
+ *
+ */
 @Service("interactionResponseService")
 @Transactional
 public class InteractionResponseServiceImpl implements InteractionResponseService {

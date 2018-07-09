@@ -6,6 +6,10 @@ import edu.metrostate.ics499.prim.model.User;
 
 import java.util.List;
 
+/**
+ * The InteractionResponseService provides an interface for easily working with InteractionResponses.
+ *
+ */
 public interface InteractionResponseService {
 
     /**

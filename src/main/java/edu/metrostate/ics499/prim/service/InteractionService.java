@@ -4,6 +4,9 @@ import edu.metrostate.ics499.prim.model.Interaction;
 
 import java.util.List;
 
+/**
+ * The InteractionService provides an interface for easily working with Interactions.
+ */
 public interface InteractionService {
 
     /**

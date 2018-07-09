@@ -6,6 +6,9 @@ import org.springframework.social.oauth2.AccessGrant;
 
 import java.util.List;
 
+/**
+ * The SocialNetworkRegistrationService provides an interface for easily working with SocialNetworkRegistrations.
+ */
 public interface SocialNetworkRegistrationService {
 
     /**

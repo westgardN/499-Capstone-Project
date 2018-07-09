@@ -12,6 +12,10 @@ import javax.persistence.EntityExistsException;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * The SocialNetworkRegistrationServiceImpl implements the SocialNetworkRegistrationService
+ * interface for easily working with the SocialNetworkRegistrations.
+ */
 @Service("socialNetworkRegistrationService")
 @Transactional
 public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegistrationService {

@@ -27,13 +27,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The FacebookServiceImpl is a Spring Social based implementation of the FacebookService interface.
+ */
 @Service("facebookService")
 public class FacebookServiceImpl implements FacebookService {
     private static final String CLIENT_ID = "client_id";
     private static final String CLIENT_SECRET = "client_secret";
     private static final String FB_EXCHANGE_TOKEN = "fb_exchange_token";
     private static final String GRANT_TYPE = "grant_type";
-    private static final String SCHEME = "https";
 
     @Value("${spring.social.facebook.appId}")
     String facebookAppId;
@@ -151,11 +153,11 @@ public class FacebookServiceImpl implements FacebookService {
 
         if (exchange.getStatusCode().is2xxSuccessful() == true) {
             try {
-                FacebookRefreshTokenResposne facebookRefreshTokenResposne = new ObjectMapper().readValue(exchange.getBody(), FacebookRefreshTokenResposne.class);
+                FacebookRefreshTokenResponse facebookRefreshTokenResponse = new ObjectMapper().readValue(exchange.getBody(), FacebookRefreshTokenResponse.class);
 
                 // Update the expiration.
                 Instant timestamp = new Date().toInstant();
-                socialNetworkRegistration.setExpires(Date.from(timestamp.plusSeconds(facebookRefreshTokenResposne.getExpires_in())));
+                socialNetworkRegistration.setExpires(Date.from(timestamp.plusSeconds(facebookRefreshTokenResponse.getExpires_in())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -235,7 +237,7 @@ public class FacebookServiceImpl implements FacebookService {
      *
      * Used by Jackson API to convert the JSON response to an instance of this type.
      */
-    static private class FacebookRefreshTokenResposne implements Serializable {
+    static private class FacebookRefreshTokenResponse implements Serializable {
         /**
          * The access token that was refreshed.
          */
@@ -251,11 +253,11 @@ public class FacebookServiceImpl implements FacebookService {
          */
         private Long expires_in;
 
-        public FacebookRefreshTokenResposne() {
+        public FacebookRefreshTokenResponse() {
             this(null, null, 0L);
         }
 
-        public FacebookRefreshTokenResposne(String access_token, String token_type, Long expires_in) {
+        public FacebookRefreshTokenResponse(String access_token, String token_type, Long expires_in) {
             this.access_token = access_token;
             this.token_type = token_type;
             this.expires_in = expires_in;
