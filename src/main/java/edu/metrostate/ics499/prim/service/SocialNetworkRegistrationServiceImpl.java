@@ -162,7 +162,6 @@ public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegist
         socialNetworkRegistration.setToken(accessGrant.getAccessToken());
         socialNetworkRegistration.setRefreshToken(accessGrant.getRefreshToken());
         socialNetworkRegistration.setExpires(new Date(accessGrant.getExpireTime()));
-        socialNetworkRegistration.setLastUsed(now);
 
         try {
             save(socialNetworkRegistration);

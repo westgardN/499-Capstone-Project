@@ -121,7 +121,7 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("edit", true);
         model.addAttribute("loggedinuser", getPrincipal());
-        return "registration";
+        return "/user/registration";
     }
 
     /**
@@ -148,7 +148,7 @@ public class UserController {
 
         model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " updated successfully");
         model.addAttribute("loggedinuser", getPrincipal());
-        return "registrationsuccess";
+        return "/user/registrationsuccess";
     }
 
     /**
@@ -197,7 +197,7 @@ public class UserController {
     @RequestMapping(value = { "/user/delete/{ssoId}" }, method = RequestMethod.POST)
     public String deleteUser(@PathVariable String ssoId) {
         userService.deleteBySsoId(ssoId);
-        return "redirect:/users/list";
+        return "redirect:/user/list";
     }
 
     /**

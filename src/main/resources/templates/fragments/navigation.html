@@ -32,7 +32,7 @@
                             Interactions
                         </a>
                         <div class="dropdown-menu" aria-labelledby="interactionNavbarDropdownMenuLink">
-                            <a th:class="${#strings.contains(viewName, 'interaction/open')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">View Open</a>
+                            <a th:class="${#strings.contains(viewName, 'interaction/interactionList')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/interaction/list}">View Open</a>
                             <a th:class="${#strings.contains(viewName, 'interaction/followup')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">View Follow-up</a>
                         </div>
                     </li>

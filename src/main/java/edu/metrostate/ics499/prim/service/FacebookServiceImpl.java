@@ -1,7 +1,7 @@
 package edu.metrostate.ics499.prim.service;
 
-import edu.metrostate.ics499.prim.model.SocialNetwork;
-import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
+import edu.metrostate.ics499.prim.model.*;
+import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.Post;
+import org.springframework.social.facebook.api.Reference;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
@@ -22,10 +23,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * The FacebookServiceImpl is a Spring Social based implementation of the FacebookService interface.
@@ -36,6 +34,7 @@ public class FacebookServiceImpl implements FacebookService {
     private static final String CLIENT_SECRET = "client_secret";
     private static final String FB_EXCHANGE_TOKEN = "fb_exchange_token";
     private static final String GRANT_TYPE = "grant_type";
+    private static final String PRIM_NAMESPACE = "primnamespace";
 
     @Value("${spring.social.facebook.appId}")
     String facebookAppId;
@@ -105,8 +104,8 @@ public class FacebookServiceImpl implements FacebookService {
             for (int i = 0; i < socialNetworkRegistrationList.size(); i++) {
                 SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
-                Facebook fbCurrent = new FacebookTemplate(socialNetworkRegistration.getToken());
-                Facebook fbNew = new FacebookTemplate(accessGrant.getAccessToken());
+                Facebook fbCurrent = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+                Facebook fbNew = new FacebookTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
                 String idCurrent = fbCurrent.fetchObject("me", String.class, fields);
                 String idNew = fbNew.fetchObject("me", String.class, fields);
 
@@ -194,11 +193,53 @@ public class FacebookServiceImpl implements FacebookService {
         Facebook facebook = null;
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
-            facebook = new FacebookTemplate(socialNetworkRegistration.getToken());
+            facebook = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
             break;
         }
 
         return facebook;
+    }
+
+    /**
+     * Returns a list of all non-expired Facebook instances.
+     */
+    @Override
+    public List<Facebook> getAllNonExpiredFacebooks() {
+        List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
+                .findBySocialNetwork(SocialNetwork.FACEBOOK);
+
+        Facebook facebook = null;
+        List<Facebook> facebooks = new LinkedList<>();
+
+        for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
+            if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
+                refreshToken(socialNetworkRegistration);
+                socialNetworkRegistrationService.update(socialNetworkRegistration);
+            }
+
+            if (!socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
+                facebooks.add(new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE));
+            }
+        }
+
+        return facebooks;
+    }
+
+    /**
+     * Returns a list of all supported post types from the specified accounts
+     *
+     * @param facebook the Facebook account to retrieve the data from.
+     * @return a list of all supported post types from the specified account.
+     */
+    @Override
+    public List<Post> getAllPostTypeItems(Facebook facebook) {
+        List<Post> posts = new LinkedList<>();
+
+        posts.addAll(facebook.feedOperations().getFeed());
+        //posts.addAll(facebook.feedOperations().getPosts());
+        posts.addAll(facebook.feedOperations().getTagged());
+
+        return posts;
     }
 
     /**
@@ -216,20 +257,68 @@ public class FacebookServiceImpl implements FacebookService {
         List<Post> posts = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
-            socialNetworkRegistration.setLastUsed(new Date());
-
             if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
                 refreshToken(socialNetworkRegistration);
             }
 
-            facebook = new FacebookTemplate(socialNetworkRegistration.getToken());
+            facebook = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
 
-            posts.addAll(facebook.feedOperations().getFeed());
-            posts.addAll(facebook.feedOperations().getPosts());
-            posts.addAll(facebook.feedOperations().getTagged());
+            posts.addAll(getAllPostTypeItems(facebook));
+            socialNetworkRegistration.setLastUsed(new Date());
         }
 
         return posts;
+    }
+
+    /**
+     * Returns a List of Interactions or an empty list if there is no data.
+     *
+     * @return a List of Interactions or an empty list if there is no data.
+     */
+    @Override
+    public List<Interaction> getInteractions() {
+        List<Interaction> interactions = new ArrayList<>();
+
+        // Get the Facebook Feed data.
+        for (Post post : getAllPostTypeItems()) {
+            Interaction interaction = new Interaction();
+
+            Date createdTime = post.getCreatedTime();
+            interaction.setCreatedTime(createdTime != null ? createdTime : new Date());
+
+            interaction.setDescription(post.getDescription());
+            interaction.setFlag(InteractionFlag.NEW);
+
+            final Reference from = post.getFrom();
+
+            if (from != null) {
+                interaction.setFromId(post.getFrom().getId());
+                interaction.setFromName(post.getFrom().getName());
+            }
+
+            interaction.setMessageId(post.getId());
+            interaction.setMessage(post.getMessage());
+            interaction.setMessageLink(post.getLink());
+            interaction.setSocialNetwork(SocialNetwork.FACEBOOK);
+            interaction.setState(InteractionState.OPEN);
+            interaction.setType(getType(post));
+
+            interactions.add(interaction);
+        }
+
+        return interactions;
+    }
+
+    private InteractionType getType(Post post) {
+        Post.PostType postType = post.getType();
+
+        InteractionType interactionType = null;
+
+        if (postType != null) {
+            interactionType = InteractionType.valueOf(postType.name());
+        }
+
+        return interactionType;
     }
 
     /**

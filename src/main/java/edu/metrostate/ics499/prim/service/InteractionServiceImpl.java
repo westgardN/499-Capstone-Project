@@ -3,6 +3,7 @@ package edu.metrostate.ics499.prim.service;
 import edu.metrostate.ics499.prim.model.Interaction;
 import edu.metrostate.ics499.prim.model.InteractionType;
 import edu.metrostate.ics499.prim.model.SocialNetwork;
+import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import edu.metrostate.ics499.prim.repository.InteractionDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class InteractionServiceImpl implements InteractionService {
 
     @Autowired
     private InteractionDao dao;
+
+    @Autowired
+    private InteractionProviderService interactionProviderService;
 
     /**
      * Returns a persistent Interaction object identified by the specified id.
@@ -152,5 +156,28 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public void deleteById(int id) {
         dao.deleteById(id);
+    }
+
+    /**
+     * Adds the list of Interactions.
+     *
+     * @param interactions
+     */
+    @Override
+    public void addInteractions(List<Interaction> interactions) {
+        for (Interaction interaction : interactions) {
+            save(interaction);
+        }
+    }
+
+    /**
+     * Retrieves data from the available data providers and adds them as Interactions to PRIM.
+     */
+    @Override
+    public void addInteractionsFromDataProviders() {
+
+        for (InteractionProvider interactionProvider : interactionProviderService.getAllProviders()) {
+            addInteractions(interactionProvider.getInteractions());
+        }
     }
 }

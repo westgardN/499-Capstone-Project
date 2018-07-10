@@ -6,17 +6,21 @@ package edu.metrostate.ics499.prim.model;
  */
 public enum InteractionType {
     /**
-     * The Interaction is a POST item. Mainly used by Facebook.
+     * The Interaction is a LINK item. Mainly used by Facebook.
      */
-    POST("POST"),
+    LINK("LINK"),
     /**
      * The Interaction is a PHOTO item. Mainly used by Facebook.
      */
     PHOTO("PHOTO"),
     /**
-     * The Interaction is a TAGGED item. Mainly used by Facebook.
+     * The Interaction is a PHOTO item. Mainly used by Facebook.
      */
-    TAGGED("TAGGED"),
+    VIDEO("VIDEO"),
+    /**
+     * The Interaction is a STATUS item. Mainly used by Facebook.
+     */
+    STATUS("STATUS"),
     /**
      * The Interaction is a TWEET. Mainly used by Twitter.
      */
@@ -25,10 +29,6 @@ public enum InteractionType {
      * The Interaction is a MENTION. Mainly used by Twitter.
      */
     MENTION("MENTION"),
-    /**
-     * The Interaction is an IMAGE. Mainly used by Twitter.
-     */
-    IMAGE("IMAGE"),
     /**
      * The Interaction is of an UNKNOWN type.
      */

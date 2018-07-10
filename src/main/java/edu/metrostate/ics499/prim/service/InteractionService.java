@@ -101,4 +101,14 @@ public interface InteractionService {
      */
     void deleteById(int id);
 
+    /**
+     * Adds the list of Interactions.
+     */
+    void addInteractions(List<Interaction> interactions);
+
+    /**
+     * Retrieves data from the available data providers and adds them as Interactions to PRIM.
+     */
+    void addInteractionsFromDataProviders();
+
 }

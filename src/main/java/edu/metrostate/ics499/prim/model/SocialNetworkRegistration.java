@@ -62,7 +62,7 @@ public class SocialNetworkRegistration implements Serializable {
      * The last time the token was used. Used to keep track of when the last
      * time data was retreived from the social network.
      */
-    @Column(name = "last_used", nullable = false)
+    @Column(name = "last_used", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsed;
 
