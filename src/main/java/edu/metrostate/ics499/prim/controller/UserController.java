@@ -1,14 +1,19 @@
 package edu.metrostate.ics499.prim.controller;
 
 import java.util.List;
-import java.util.Locale;
 
 import javax.validation.Valid;
 
+import edu.metrostate.ics499.prim.datatransfer.UserDataTransfer;
+import edu.metrostate.ics499.prim.exception.EmailExistsException;
+import edu.metrostate.ics499.prim.exception.SsoIdExistsException;
+import edu.metrostate.ics499.prim.exception.UsernameExistsException;
 import edu.metrostate.ics499.prim.model.Role;
 import edu.metrostate.ics499.prim.model.User;
 import edu.metrostate.ics499.prim.service.RoleService;
 import edu.metrostate.ics499.prim.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,12 +21,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * This controller handles all User based requests such as adding, editing, and deleting users.
@@ -29,6 +35,9 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @Controller
 @SessionAttributes("roles")
 public class UserController {
+
+    static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
 
     @Autowired
     UserService userService;
@@ -42,59 +51,64 @@ public class UserController {
     /**
      * This method will list all existing users.
      */
-    @RequestMapping(value = { "/users", "/users/list" }, method = RequestMethod.GET)
-    public String listUsers(ModelMap model) {
+    @RequestMapping(value = { "/user", "/user/list" }, method = RequestMethod.GET)
+    public ModelAndView listUsers(ModelMap model) {
 
         List<User> users = userService.findAll();
-        model.addAttribute("users", users);
-        model.addAttribute("loggedinuser", getPrincipal());
-        return "userslist";
+        return new ModelAndView("/user/userList", "users", users);
     }
 
     /**
      * This method will provide the medium to add a new user.
      */
-    @RequestMapping(value = { "/users/new" }, method = RequestMethod.GET)
-    public String newUser(ModelMap model) {
-        User user = new User();
+    @RequestMapping(value = { "/user/new" }, method = RequestMethod.GET)
+    public String showNewUserRegistrationForm(ModelMap model) {
+        UserDataTransfer user = new UserDataTransfer();
         model.addAttribute("user", user);
         model.addAttribute("edit", false);
         model.addAttribute("loggedinuser", getPrincipal());
-        return "registration";
+        return "user/registration";
     }
 
     /**
      * This method will be called on form submission, handling POST request for
      * saving user in database. It also validates the user input
      */
-    @RequestMapping(value = { "/users/new" }, method = RequestMethod.POST)
-    public String saveUser(@Valid User user, BindingResult result,
-                           ModelMap model) {
+    @RequestMapping(value = { "/user/new" }, method = RequestMethod.POST)
+    public ModelAndView registerNewUser(@ModelAttribute("user") @Valid UserDataTransfer userDataTransfer,
+                                        BindingResult result,
+                                        WebRequest request) {
+        logger.info("Registering a new user account: {}", userDataTransfer);
+        String resultView = "user/registration";
 
-        if (result.hasErrors()) {
-            return "registration";
+        User user = new User();
+
+        if (!result.hasErrors()) {
+            user = createUserAccount(userDataTransfer, result);
         }
 
-        /*
-         * Preferred way to achieve uniqueness of field [sso] should be implementing custom @Unique annotation
-         * and applying it on field [sso] of Model class [User].
-         *
-         * Below mentioned peace of code [if block] is to demonstrate that you can fill custom errors outside the validation
-         * framework as well while still using internationalized messages.
-         *
-         */
-        if(!userService.isSsoIdUnique(user.getId(), user.getSsoId())){
-            FieldError ssoError =new FieldError("user","ssoId",messageSource.getMessage("non.unique.ssoId", new String[]{user.getSsoId()}, Locale.getDefault()));
-            result.addError(ssoError);
-            return "registration";
+        if (user == null || result.hasErrors()) {
+            return new ModelAndView(resultView, "user", userDataTransfer);
+        } else {
+            resultView = "/user/registrationSuccess";
+            return new ModelAndView(resultView, "user", userDataTransfer);
+        }
+    }
+
+    private User createUserAccount(UserDataTransfer userDataTransfer, BindingResult result) {
+        User user = null;
+
+        try {
+            user = userService.registerNewUser(userDataTransfer);
+        } catch (EmailExistsException e) {
+            result.rejectValue("email", "message.regEmailError");
+        } catch (SsoIdExistsException e) {
+            result.rejectValue("ssoId", "message.regSsoIdError");
+        } catch (UsernameExistsException e) {
+            result.rejectValue("username", "message.regUsernameError");
         }
 
-        userService.save(user);
-
-        model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " registered successfully");
-        model.addAttribute("loggedinuser", getPrincipal());
-        //return "success";
-        return "registrationsuccess";
+        return user;
     }
 
 

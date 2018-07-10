@@ -56,7 +56,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/user/profile", "/user/changePassword", "/interaction/*")
                 .access("hasRole('USER') or hasRole('ADMIN') or hasRole('DBA')")
-                .antMatchers("/users/list", "/user/new/*", "/user/delete/*", "/social/*")
+                .antMatchers("/user/list", "/user/new/**", "/user/delete/*", "/social/*", "/facebook/*", "/twitter/*", "/linkedin/*")
                 .access("hasRole('ADMIN')")
                 .antMatchers("/user/edit/*")
                 .access("hasRole('ADMIN') or hasRole('DBA')")

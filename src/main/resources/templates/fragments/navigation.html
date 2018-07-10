@@ -41,9 +41,9 @@
                             Social Networks
                         </a>
                         <div class="dropdown-menu" aria-labelledby="socialNavbarDropdownMenuLink">
-                            <a th:class="${#strings.contains(viewName, 'social/refresh')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">Refresh Data</a>
-                            <a th:class="${#strings.contains(viewName, 'social/register')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#" sec:authorize="isAuthenticated() && hasRole('ADMIN')">Register Account</a>
-                            <a th:class="${#strings.contains(viewName, 'social/list')} == true ? 'dropdown-item active' : 'dropdown-item'"class="dropdown-item" href="#" sec:authorize="isAuthenticated() && hasRole('ADMIN')">List Accounts</a>
+                            <a th:class="${#strings.contains(viewName, 'social/socialRefresh')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/social/refresh}">Refresh Data</a>
+                            <a th:class="${#strings.contains(viewName, 'social/socialRegister')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/social/register}" sec:authorize="isAuthenticated() && hasRole('ADMIN')">Register Account</a>
+                            <a th:class="${#strings.contains(viewName, 'social/socialList')} == true ? 'dropdown-item active' : 'dropdown-item'"class="dropdown-item" th:href="@{/social/list}" sec:authorize="isAuthenticated() && hasRole('ADMIN')">List Accounts</a>
                         </div>
                     </li>
                     <li th:class="${#strings.contains(viewName, 'user')} == true ? 'nav-item dropdown active' : 'nav-item dropdown'" sec:authorize="isAuthenticated() && hasRole('ADMIN')">
@@ -51,8 +51,8 @@
                             User Management
                         </a>
                         <div class="dropdown-menu" aria-labelledby="userNavbarDropdownMenuLink">
-                            <a th:class="${#strings.contains(viewName, 'user/new')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">New User</a>
-                            <a th:class="${#strings.contains(viewName, 'users/list')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">List Users</a>
+                            <a th:class="${#strings.contains(viewName, 'registration')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/user/new}">New User</a>
+                            <a th:class="${#strings.contains(viewName, 'userList')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/user/list}">List Users</a>
                         </div>
                     </li>
                 </ul>

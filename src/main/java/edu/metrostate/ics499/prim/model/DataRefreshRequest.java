@@ -3,6 +3,7 @@ package edu.metrostate.ics499.prim.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * This is a JPA Entity class that maps the DataRefreshRequest object to the DataRefreshRequest table used
@@ -102,5 +103,33 @@ public class DataRefreshRequest implements Serializable {
 
     public void setType(DataRefreshRequestType type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataRefreshRequest that = (DataRefreshRequest) o;
+        return Objects.equals(getCreatedTime(), that.getCreatedTime()) &&
+                Objects.equals(getRequestedBy(), that.getRequestedBy());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getCreatedTime(), getRequestedBy());
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("DataRefreshRequest{");
+        sb.append("id=").append(id);
+        sb.append(", createdTime=").append(createdTime);
+        sb.append(", requestedBy='").append(requestedBy).append('\'');
+        sb.append(", startTime=").append(startTime);
+        sb.append(", finishTime=").append(finishTime);
+        sb.append(", type=").append(type);
+        sb.append('}');
+        return sb.toString();
     }
 }

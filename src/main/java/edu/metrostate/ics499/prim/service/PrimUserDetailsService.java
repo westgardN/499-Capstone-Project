@@ -40,14 +40,35 @@ public class PrimUserDetailsService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String ssoId)
             throws UsernameNotFoundException {
+
         User user = userService.findBySsoId(ssoId);
+
         logger.info("User : {}", user);
+
         if (user == null) {
             logger.info("User not found");
-            throw new UsernameNotFoundException("Username not found");
+            throw new UsernameNotFoundException("No user found with SSO ID: " + ssoId);
         }
-        return new org.springframework.security.core.userdetails.User(user.getSsoId(), user.getPassword(),
-                true, true, true, true, getGrantedAuthorities(user));
+
+        /*
+         * TODO: Need to actually finish implementing the rules that
+         * dictate when a user gets disabled, expired, has to change
+         * their password, and becomes locked.
+         */
+
+        boolean enabled = user.getEnabled();
+        boolean notExpired = true;
+        boolean notPasswordExpired = true;
+        boolean notLocked = true;
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getSsoId(),
+                user.getPassword(),
+                enabled,
+                notExpired,
+                notPasswordExpired,
+                notLocked,
+                getGrantedAuthorities(user));
     }
 
 

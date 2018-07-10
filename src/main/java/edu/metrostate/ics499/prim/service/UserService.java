@@ -2,6 +2,10 @@ package edu.metrostate.ics499.prim.service;
 
 import java.util.List;
 
+import edu.metrostate.ics499.prim.datatransfer.UserDataTransfer;
+import edu.metrostate.ics499.prim.exception.EmailExistsException;
+import edu.metrostate.ics499.prim.exception.SsoIdExistsException;
+import edu.metrostate.ics499.prim.exception.UsernameExistsException;
 import edu.metrostate.ics499.prim.model.User;
 
 /**
@@ -89,6 +93,28 @@ public interface UserService {
      * @return a List of all users. If no users are found, an empty list is returned.
      */
     List<User> findAll();
+
+    /**
+     * Registers a new user in to the PRIM system. Returns the newly registered User.
+     * Throws an exception if the username, ssoId, or email address are not unique.
+     *
+     * @param userDataTransfer the UserDataTransfer to register the new user from.
+     *
+     * @return the newly registered User.
+     * @throws EmailExistsException indicates that the e-mail address is not unique.
+     * @throws UsernameExistsException indicates that the username is not unique.
+     * @throws SsoIdExistsException indicates that the ssoId is not unique.
+     */
+    User registerNewUser(UserDataTransfer userDataTransfer) throws EmailExistsException, UsernameExistsException, SsoIdExistsException;
+
+    /**
+     *
+     * @param user
+     * @param password
+     */
+    void changePassword(User user, String password);
+
+    boolean isCurrentPasswordValid(User user, String password);
 
     /**
      * Returns true if the specified username is in fact unique. That is, if the username

@@ -1,9 +1,15 @@
 package edu.metrostate.ics499.prim.service;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+import edu.metrostate.ics499.prim.datatransfer.UserDataTransfer;
+import edu.metrostate.ics499.prim.exception.EmailExistsException;
+import edu.metrostate.ics499.prim.exception.SsoIdExistsException;
+import edu.metrostate.ics499.prim.exception.UsernameExistsException;
+import edu.metrostate.ics499.prim.model.Role;
+import edu.metrostate.ics499.prim.model.RoleType;
 import edu.metrostate.ics499.prim.model.User;
+import edu.metrostate.ics499.prim.model.UserStatus;
 import edu.metrostate.ics499.prim.repository.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +29,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleService roleService;
 
     /**
      * Finds and returns a User based on the primary key. Returns null if no user is found.
@@ -75,7 +84,6 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public void save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         dao.save(user);
     }
 
@@ -157,6 +165,60 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<User> findAll() {
         return dao.findAll();
+    }
+
+    /**
+     * Registers a new user in to the PRIM system. Returns the newly registered User.
+     *
+     * @param userDataTransfer the UserDataTransfer to register the new user from.
+     * @return the newly registered User.
+     * @throws EmailExistsException    indicates that the e-mail address is not unique.
+     * @throws UsernameExistsException indicates that the username is not unique.
+     * @throws SsoIdExistsException    indicates that the ssoId is not unique.
+     */
+    @Override
+    public User registerNewUser(final UserDataTransfer userDataTransfer) throws EmailExistsException, UsernameExistsException, SsoIdExistsException {
+
+        if (!isUsernameUnique(null, userDataTransfer.getUsername())) {
+            throw new UsernameExistsException("An account already exists with username: " + userDataTransfer.getUsername());
+        }
+        if (!isSsoIdUnique(null, userDataTransfer.getSsoId())) {
+            throw new SsoIdExistsException("An account already exists with ssoId: " + userDataTransfer.getSsoId());
+        }
+        if (!isEmailUnique(null, userDataTransfer.getEmail())) {
+            throw new EmailExistsException("An account already exists with email: " + userDataTransfer.getEmail());
+        }
+
+        final User user = new User();
+
+        user.setUsername(userDataTransfer.getUsername());
+        user.setSsoId(userDataTransfer.getSsoId());
+        user.setEmail(userDataTransfer.getEmail());
+        user.setPassword(passwordEncoder.encode(userDataTransfer.getPassword()));
+        user.setFirstName(userDataTransfer.getFirstName());
+        user.setLastName(userDataTransfer.getLastName());
+        user.setRoles(roleService.getRoleSet(RoleType.USER));
+        user.setStatus(UserStatus.ACTIVE);
+        user.setEnabled(true);
+        user.setActivatedOn(new Date());
+
+        save(user);
+
+        return user;
+    }
+
+    /**
+     * @param user
+     * @param password
+     */
+    @Override
+    public void changePassword(User user, String password) {
+
+    }
+
+    @Override
+    public boolean isCurrentPasswordValid(User user, String password) {
+        return false;
     }
 
     /**

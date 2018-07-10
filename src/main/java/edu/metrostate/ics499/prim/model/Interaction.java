@@ -88,11 +88,13 @@ public class Interaction implements Serializable {
     private SocialNetwork socialNetwork;
 
     /**
-     * The source this interaction was created from. The source will equal the
-     * social network value unless it was added manually.
+     * The type of this interaction. Types are of InteractionType. Some of the types are
+     * Post, Photo, Tagged, Tweet, Mention, and Image. Mainly used for determining which interactions
+     * to process for sentiment and for use in the view with displaying the interaction.
      */
-    @Column(name = "source", length = 128, nullable = true)
-    private String source;
+    @Column(name = "type", length = 128, nullable = true)
+    @Enumerated(EnumType.STRING)
+    private InteractionType type;
 
     /**
      * The state this interaction is currently in. The state indicates if this interaction is open, closed,
@@ -194,12 +196,12 @@ public class Interaction implements Serializable {
         this.socialNetwork = socialNetwork;
     }
 
-    public String getSource() {
-        return source;
+    public InteractionType getType() {
+        return type;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setType(InteractionType type) {
+        this.type = type;
     }
 
     public InteractionState getState() {
@@ -245,7 +247,7 @@ public class Interaction implements Serializable {
         sb.append(", message='").append(message).append('\'');
         sb.append(", sentiment=").append(sentiment);
         sb.append(", socialNetwork='").append(socialNetwork).append('\'');
-        sb.append(", source='").append(source).append('\'');
+        sb.append(", type='").append(type).append('\'');
         sb.append(", state='").append(state).append('\'');
         sb.append(", flag='").append(flag).append('\'');
         sb.append('}');

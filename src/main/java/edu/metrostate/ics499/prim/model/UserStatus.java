@@ -14,6 +14,10 @@ public enum UserStatus {
      */
     ACTIVE("ACTIVE"),
     /**
+     * The user account is enabled and can login.
+     */
+    ENABLED("ENABLED"),
+    /**
      * The admin has disabled the user's account and the user cannot login.
      */
     DISABLED("DISABLED"),
@@ -24,7 +28,11 @@ public enum UserStatus {
     /**
      * The account has expired and the user needs to reset their password before they can login.
      */
-    EXPIRED("EXPIRED");
+    ACCOUNT_EXPIRED("ACCOUNT_EXPIRED"),
+    /**
+     * The password has expired and the user needs to change their password before they can login.
+     */
+    PASSWORD_EXPIRED("PASSWORD_EXPIRED");
 
     String userStatus;
 

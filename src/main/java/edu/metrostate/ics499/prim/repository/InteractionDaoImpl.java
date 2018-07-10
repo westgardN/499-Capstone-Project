@@ -1,7 +1,8 @@
 package edu.metrostate.ics499.prim.repository;
 
 import edu.metrostate.ics499.prim.model.Interaction;
-import org.hibernate.Hibernate;
+import edu.metrostate.ics499.prim.model.InteractionType;
+import edu.metrostate.ics499.prim.model.SocialNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository("interactionDao")
-public class InteractionDaoImpl  extends AbstractDao<Integer, Interaction> implements InteractionDao {
+public class InteractionDaoImpl extends AbstractDao<Integer, Interaction> implements InteractionDao {
     static final Logger logger = LoggerFactory.getLogger(InteractionDaoImpl.class);
 
     /**
@@ -56,7 +57,7 @@ public class InteractionDaoImpl  extends AbstractDao<Integer, Interaction> imple
      * an empty List is returned.
      */
     @Override
-    public List<Interaction> findBySocialNetwork(String socialNetwork) {
+    public List<Interaction> findBySocialNetwork(SocialNetwork socialNetwork) {
         CriteriaBuilder builder = getCriteriaBuilder();
         CriteriaQuery<Interaction> crit = builder.createQuery(Interaction.class);
         Root<Interaction> from = crit.from(Interaction.class);
@@ -68,19 +69,19 @@ public class InteractionDaoImpl  extends AbstractDao<Integer, Interaction> imple
     }
 
     /**
-     * Returns a List of persistent Interactions for the specified source. If no Interactions exist,
+     * Returns a List of persistent Interactions for the specified type. If no Interactions exist,
      * an empty List is returned.
      *
-     * @param source the source to find Interactions for.
-     * @return a List of persistent Interactions for the specified source. If no Interactions exist,
+     * @param interactionType the type to find Interactions for.
+     * @return a List of persistent Interactions for the specified type. If no Interactions exist,
      * an empty List is returned.
      */
     @Override
-    public List<Interaction> findBySource(String source) {
+    public List<Interaction> findByType(InteractionType interactionType) {
         CriteriaBuilder builder = getCriteriaBuilder();
         CriteriaQuery<Interaction> crit = builder.createQuery(Interaction.class);
         Root<Interaction> from = crit.from(Interaction.class);
-        Predicate clause = builder.equal(from.get("source"), source);
+        Predicate clause = builder.equal(from.get("source"), interactionType);
         crit.select(from).where(clause);
         TypedQuery<Interaction> query = getSession().createQuery(crit);
 

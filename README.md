@@ -10,7 +10,7 @@ How to build and run PRIM
 
 ### How do I get set up? ###
 
-If you don't have the source you first need to clone the repository.
+If you don't have the type you first need to clone the repository.
 
 * git clone https://bitbucket.org/partyofv/ics499_project_alpha.git
 

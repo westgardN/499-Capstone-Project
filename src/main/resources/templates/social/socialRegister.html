@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="/fragments/header :: commonHeader(~{::title})">
+    <title>PRIM Registered Social Network Accounts</title>
+</head>
+<body>
+
+<div th:replace="/fragments/navigation :: navigation" />
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <h2 class="text-center" th:text="#{label.socialList.title}">Register A Social Network Account</h2>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <p>Register a social network account by clicking the button that represents the service you wish to
+                connect with. You will be redirected to that network's site to authorize PRIM to use the account.</p>
+            <p>If you are already logged in to the social network with an account and wish to use a different account
+                with PRIM, please make sure to logout of that provider's site prior to registering with PRIM</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="btn-group" role="group" aria-label="Register Social Network Buttons">
+                <a class="btn btn-secondary" th:href="@{/facebook/registerByServer}">
+                    <img th:width="32" th:height="32" th:src="@{/imgs/social/facebook/f_logo.jpg}" alt="Connect Facebook">
+                </a>
+                <a class="btn btn-secondary" th:href="@{/twitter/registerByServer}">
+                    <img th:width="32" th:height="32" th:src="@{/imgs/social/twitter/t_logo-a.png}" alt="Connect Twitter">
+                </a>
+                <a class="btn btn-secondary" th:href="@{/linkedin/registerByServer}">
+                    <img th:width="32" th:height="32" th:src="@{/imgs/social/linkedin/connect_with_linkedin-logo-150x150.jpg}" alt="Connect LinkedIn">
+                </a>
+            </div>
+            <hr>
+        </div>
+    </div>
+    <footer th:replace="/fragments/footer :: footer" />
+</div>
+<div th:replace="/fragments/scripts :: commonScripts(~{::script})" />
+
+</body>
+</html>
