@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="/fragments/header :: commonHeader(~{::title})">
+    <title>PRIM New User Registration</title>
+</head>
+<body>
+
+<div th:replace="/fragments/navigation :: navigation" />
+<div class="container-fluid">
+    <form class="form-horizontal" role="form" th:action="@{/user/new}" th:object="${user}" method="POST" enctype="utf8">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <h2 class="text-center" th:text="#{label.regForm.title}">PRIM New User Registration</h2>
+                <hr>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="form-group has-danger">
+                    <label class="sr-only" for="firstName" th:text="#{label.user.firstName}">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required th:field="*{firstName}"/>
+                    <span class="text-danger align-middle">
+                        <p th:each="error: ${#fields.errors('firstName')}" th:text="${error}">
+                            <i class="fa fa-exclamation-triangle"></i> Validation error
+                        </p>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="form-group has-danger">
+                    <label class="sr-only" for="lastName" th:text="#{label.user.lastName}">First Name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required th:field="*{lastName}"/>
+                    <span class="text-danger align-middle">
+                        <p th:each="error: ${#fields.errors('lastName')}" th:text="${error}">
+                            <i class="fa fa-exclamation-triangle"></i> Validation error
+                        </p>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="form-group has-danger">
+                    <label class="sr-only" for="username" th:text="#{label.user.username}">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required th:field="*{username}"/>
+                    <span class="text-danger align-middle">
+                        <p th:each="error: ${#fields.errors('username')}" th:text="${error}">
+                            <i class="fa fa-exclamation-triangle"></i> Validation error
+                        </p>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="form-group has-danger">
+                    <label class="sr-only" for="ssoId" th:text="#{label.user.ssoId}">SSO ID</label>
+                    <input type="text" class="form-control" id="ssoId" name="ssoId" placeholder="SSO Id" required th:field="*{ssoId}"/>
+                    <span class="text-danger align-middle">
+                        <p th:each="error: ${#fields.errors('ssoId')}" th:text="${error}">
+                            <i class="fa fa-exclamation-triangle"></i> Validation error
+                        </p>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="form-group has-danger">
+                    <label class="sr-only" for="email" th:text="#{label.user.email}">Email Address</label>
+                    <input type="text" class="form-control" id="email" name="email" placeholder="Email Address" required th:field="*{email}"/>
+                    <span class="text-danger align-middle">
+                        <p th:each="error: ${#fields.errors('email')}" th:text="${error}">
+                            <i class="fa fa-exclamation-triangle"></i> Validation error
+                        </p>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="form-group has-danger">
+                    <label class="sr-only" for="password" th:text="#{label.user.password}">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required th:field="*{password}"/>
+                    <span class="text-danger align-middle">
+                        <p th:each="error: ${#fields.errors('password')}" th:text="${error}">
+                            <i class="fa fa-exclamation-triangle"></i> Validation error
+                        </p>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="form-group has-danger">
+                    <label class="sr-only" for="confirmPassword" th:text="#{label.user.confirmPassword}">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required th:field="*{confirmPassword}"/>
+                    <span class="text-danger align-middle">
+                        <p th:each="error: ${#fields.errors('confirmPassword')}" th:text="${error}">
+                            <i class="fa fa-exclamation-triangle"></i> Validation error
+                        </p>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="${_csrf.parameterName}"  value="${_csrf.token}" />
+        <div class="row" style="padding-top: 1rem">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-success" th:text="#{label.form.submit}">Submit</button>
+                <!--<a class="btn btn-link" href="/password/reset">Forgot Your Password?</a>-->
+                <hr>
+            </div>
+        </div>
+    </form>
+    <footer th:replace="/fragments/footer :: footer" />
+</div>
+<div th:replace="/fragments/scripts :: commonScripts(~{::script})" />
+
+</body>
+</html>

@@ -20,7 +20,7 @@ public class RoleIdToRoleTypeConverter implements Converter<Object, Role>{
     RoleService roleService;
 
     /**
-     * Gets UserProfile by Id
+     * Gets Role by Id
      * @see org.springframework.core.convert.converter.Converter#convert(java.lang.Object)
      */
     public Role convert(Object element) {

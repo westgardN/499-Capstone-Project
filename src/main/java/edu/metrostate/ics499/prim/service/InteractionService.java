@@ -1,9 +1,14 @@
 package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.Interaction;
+import edu.metrostate.ics499.prim.model.InteractionType;
+import edu.metrostate.ics499.prim.model.SocialNetwork;
 
 import java.util.List;
 
+/**
+ * The InteractionService provides an interface for easily working with Interactions.
+ */
 public interface InteractionService {
 
     /**
@@ -25,17 +30,17 @@ public interface InteractionService {
      * @return a List of persistent Interactions for the specified Social Network. If no Interactions exist,
      * an empty List is returned.
      */
-    List<Interaction> findBySocialNetwork(String socialNetwork);
+    List<Interaction> findBySocialNetwork(SocialNetwork socialNetwork);
 
     /**
-     * Returns a List of persistent Interactions for the specified source. If no Interactions exist,
+     * Returns a List of persistent Interactions for the specified type. If no Interactions exist,
      * an empty List is returned.
      *
      * @param source the source to find Interactions for.
-     * @return a List of persistent Interactions for the specified source. If no Interactions exist,
+     * @return a List of persistent Interactions for the specified type. If no Interactions exist,
      * an empty List is returned.
      */
-    List<Interaction> findBySource(String source);
+    List<Interaction> findByType(InteractionType source);
 
     /**
      * Returns a List of persistent Interactions for the specified flag. If no Interactions exist,
@@ -95,5 +100,15 @@ public interface InteractionService {
      * @param id the id of the Interaction to delete.
      */
     void deleteById(int id);
+
+    /**
+     * Adds the list of Interactions.
+     */
+    void addInteractions(List<Interaction> interactions);
+
+    /**
+     * Retrieves data from the available data providers and adds them as Interactions to PRIM.
+     */
+    void addInteractionsFromDataProviders();
 
 }

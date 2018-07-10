@@ -1,8 +1,6 @@
 package edu.metrostate.ics499.prim.repository;
 
-import edu.metrostate.ics499.prim.model.Interaction;
-import edu.metrostate.ics499.prim.model.InteractionResponse;
-import edu.metrostate.ics499.prim.model.User;
+import edu.metrostate.ics499.prim.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -91,16 +89,16 @@ public class InteractionResponseDaoImpl extends AbstractDao<Integer, Interaction
      * Returns a List of persistent InteractionResponses for the specified type. If no InteractionResponses exist,
      * an empty List is returned.
      *
-     * @param type The type of response to retrieve a list of InteractionResponses for.
+     * @param interactionResponseType The type of response to retrieve a list of InteractionResponses for.
      * @return a List of persistent InteractionResponses for the specified type. If no InteractionResponses exist,
      * an empty List is returned.
      */
     @Override
-    public List<InteractionResponse> findByType(String type) {
+    public List<InteractionResponse> findByType(InteractionResponseType interactionResponseType) {
         CriteriaBuilder builder = getCriteriaBuilder();
         CriteriaQuery<InteractionResponse> crit = builder.createQuery(InteractionResponse.class);
         Root<InteractionResponse> from = crit.from(InteractionResponse.class);
-        Predicate clause = builder.equal(from.get("type"), type);
+        Predicate clause = builder.equal(from.get("type"), interactionResponseType);
         crit.select(from).where(clause);
         TypedQuery<InteractionResponse> query = getSession().createQuery(crit);
 

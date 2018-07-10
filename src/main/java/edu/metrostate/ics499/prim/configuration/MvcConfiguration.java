@@ -1,6 +1,8 @@
 package edu.metrostate.ics499.prim.configuration;
 
 import edu.metrostate.ics499.prim.converter.RoleIdToRoleTypeConverter;
+import edu.metrostate.ics499.prim.interceptor.SetViewActionInterceptor;
+import nz.net.ultraq.thymeleaf.LayoutDialect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +46,6 @@ public class MvcConfiguration implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/home").setViewName("home");
         registry.addViewController("/").setViewName("home");
-        registry.addViewController("/hello").setViewName("hello");
     }
 
     /**
@@ -62,6 +63,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
         final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.addDialect(sec); // Enable use of "sec"
+        templateEngine.addDialect(layoutDialect());
         return templateEngine;
     }
 
@@ -75,4 +77,14 @@ public class MvcConfiguration implements WebMvcConfigurer {
         return messageSource;
     }
 
+    @Bean
+    LayoutDialect layoutDialect() {
+        return new LayoutDialect();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry reg)
+    {
+        reg.addInterceptor(new SetViewActionInterceptor());
+    }
 }
