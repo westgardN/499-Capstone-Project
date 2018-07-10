@@ -39,10 +39,12 @@ CREATE TABLE USER(
    last_name  VARCHAR(30) NOT NULL,
    email VARCHAR(64) NOT NULL,
    sso_id VARCHAR(64) NOT NULL,
-   status INT NOT NULL DEFAULT 1,
+   status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
+   enabled TINYINT(1) NOT NULL DEFAULT 0,
    failed_logins INT NOT NULL DEFAULT 0,
    last_visited_on DATETIME NULL,
-   last_visited_from VARCHAR(32) NULL,
+   last_visited_from VARCHAR(100) NULL,
+   last_password_changed_on DATETIME NULL,
    user_key VARCHAR(100) NULL,
    activated_on DATETIME NULL,
    PRIMARY KEY (id),
@@ -80,11 +82,13 @@ INSERT INTO ROLE (type)
 VALUES ('USER'), ('ADMIN'), ('DBA');
 
 /*
- * Add the initial admin account so that additional users can be added.
+ * Add the initial admin and user accounts so that additional users can be added.
  * password is encrypted form of 'abc125'
  */
-INSERT INTO USER (username, password, first_name, last_name, email, sso_id)
-VALUES ('primadmin', '$2a$10$4eqIF5s/ewJwHK1p8lqlFOEm2QIA0S8g6./Lok.pQxqcxaBZYChRm', 'PRIM', 'Administrator', 'partyofv5@gmail.com', 'primadmin');
+INSERT INTO USER (username, password, first_name, last_name, email, sso_id, status, enabled)
+VALUES ('primadmin', '$2a$10$4eqIF5s/ewJwHK1p8lqlFOEm2QIA0S8g6./Lok.pQxqcxaBZYChRm', 'PRIM', 'Administrator', 'partyofv5@gmail.com', 'primadmin', 'ACTIVE', 1),
+('primuser', '$2a$10$4eqIF5s/ewJwHK1p8lqlFOEm2QIA0S8g6./Lok.pQxqcxaBZYChRm', 'PRIM', 'Administrator', 'partyofv5user@gmail.com', 'primuser', 'ACTIVE', 1)
+;
 
 /*
  * Now add the admin account to the USER_ROLE table as an ADMIN
@@ -92,8 +96,16 @@ VALUES ('primadmin', '$2a$10$4eqIF5s/ewJwHK1p8lqlFOEm2QIA0S8g6./Lok.pQxqcxaBZYCh
 INSERT INTO USER_ROLE (user_id, role_id)
   SELECT u.id, r.id
   FROM USER u, ROLE r
-  WHERE u.sso_id = 'primadmin' AND r.type = 'ADMIN';
+  WHERE u.sso_id = 'primadmin' AND r.type IN ('USER', 'ADMIN');
   
+/*
+ * Now add the user account to the USER_ROLE table as an USER
+ */
+INSERT INTO USER_ROLE (user_id, role_id)
+  SELECT u.id, r.id
+  FROM USER u, ROLE r
+  WHERE u.sso_id = 'primuser' AND r.type IN ('USER');
+
 /*
  * Persistent Login table to store the login tokens for Remember Me
  */
@@ -120,7 +132,8 @@ CREATE TABLE PERSISTENT_LOGINS (
    message TEXT NULL,
    sentiment INT NULL,
    social_network VARCHAR(128) NULL,
-   source VARCHAR(128) NULL,
+   type VARCHAR(128) NULL,
+   state VARCHAR(128) NOT NULL DEFAULT 'OPEN',
    flag VARCHAR(128) NULL,
    PRIMARY KEY (id)
  );
@@ -136,8 +149,7 @@ CREATE TABLE PERSISTENT_LOGINS (
    response_to BIGINT NOT NULL,
    response_by BIGINT NOT NULL,
    message TEXT NULL,
-   type VARCHAR(32) NULL,
-   state VARCHAR(32) NULL,
+   type VARCHAR(128) NOT NULL,
    PRIMARY KEY (id),
    CONSTRAINT FK_USER_RESPONSE FOREIGN KEY (response_by) REFERENCES USER(id),
    CONSTRAINT FK_INTERACTION_RESPONSE FOREIGN KEY (response_to) REFERENCES INTERACTION(id)
@@ -165,10 +177,26 @@ CREATE TABLE SOCIAL_NETWORK_REGISTRATION (
   id BIGINT NOT NULL AUTO_INCREMENT,
   created_time DATETIME NOT NULL,
   social_network VARCHAR(128) NOT NULL,
-  token VARCHAR(128) NOT NULL,
-  refresh_token VARCHAR(128) NULL,
+  token VARCHAR(512) NOT NULL,
+  refresh_token VARCHAR(512) NULL,
   expires DATETIME NULL,
-  last_used TIMESTAMP NOT NULL,
+  last_used TIMESTAMP NULL,
+  PRIMARY KEY (id)
+);
+
+/*
+ * The Data Refresh Request stores information about a data retrieval request.
+ * The request may be user or system initiated and may be to retrieve social
+ * media data or score the sentiment or any future type of request.
+ * The purpose is to prevent multiple retrieval requests for the same data.
+ */
+CREATE TABLE DATA_REFRESH_REQUEST (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  created_time DATETIME NOT NULL,
+  requested_by VARCHAR(128) NOT NULL,
+  start_time DATETIME NULL,
+  finish_time DATETIME NULL,
+  type VARCHAR(128),
   PRIMARY KEY (id)
 );
 

@@ -44,20 +44,15 @@ public class InteractionResponse {
      * The message of the response; which may be null or empty
      * if the response is flag for follow-up
      */
-    @Column(name = "message")
+    @Column(name = "message", nullable = true)
     private String message;
 
     /**
      * The type of response.
      */
-    @Column(name = "type")
-    private String type;
-
-    /**
-     * The state of the response.
-     */
-    @Column(name = "state")
-    private String state;
+    @Column(name = "type", length = 128, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private InteractionResponseType type;
 
     public Integer getId() {
         return id;
@@ -99,20 +94,12 @@ public class InteractionResponse {
         this.message = message;
     }
 
-    public String getType() {
+    public InteractionResponseType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(InteractionResponseType type) {
         this.type = type;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
     }
 
     @Override
@@ -138,7 +125,6 @@ public class InteractionResponse {
         sb.append(", responseBy=").append(responseBy);
         sb.append(", message='").append(message).append('\'');
         sb.append(", type='").append(type).append('\'');
-        sb.append(", state='").append(state).append('\'');
         sb.append('}');
         return sb.toString();
     }

@@ -1,6 +1,9 @@
 package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.Interaction;
+import edu.metrostate.ics499.prim.model.InteractionType;
+import edu.metrostate.ics499.prim.model.SocialNetwork;
+import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import edu.metrostate.ics499.prim.repository.InteractionDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,12 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * The InteractionServiceImpl implements the InteractionService
+ * interface for easily working with Interactions.
+ */
 @Service("interactionService")
 @Transactional
 public class InteractionServiceImpl implements InteractionService {
 
     @Autowired
     private InteractionDao dao;
+
+    @Autowired
+    private InteractionProviderService interactionProviderService;
 
     /**
      * Returns a persistent Interaction object identified by the specified id.
@@ -37,21 +47,21 @@ public class InteractionServiceImpl implements InteractionService {
      * an empty List is returned.
      */
     @Override
-    public List<Interaction> findBySocialNetwork(String socialNetwork) {
+    public List<Interaction> findBySocialNetwork(SocialNetwork socialNetwork) {
         return dao.findBySocialNetwork(socialNetwork);
     }
 
     /**
-     * Returns a List of persistent Interactions for the specified source. If no Interactions exist,
+     * Returns a List of persistent Interactions for the specified type. If no Interactions exist,
      * an empty List is returned.
      *
-     * @param source the source to find Interactions for.
-     * @return a List of persistent Interactions for the specified source. If no Interactions exist,
+     * @param type the type to find Interactions for.
+     * @return a List of persistent Interactions for the specified type. If no Interactions exist,
      * an empty List is returned.
      */
     @Override
-    public List<Interaction> findBySource(String source) {
-        return dao.findBySource(source);
+    public List<Interaction> findByType(InteractionType type) {
+        return dao.findByType(type);
     }
 
     /**
@@ -132,7 +142,8 @@ public class InteractionServiceImpl implements InteractionService {
             entity.setMessageLink(interaction.getMessageLink());
             entity.setSentiment(interaction.getSentiment());
             entity.setSocialNetwork(interaction.getSocialNetwork());
-            entity.setSource(interaction.getSource());
+            entity.setType(interaction.getType());
+            entity.setState(interaction.getState());
         }
     }
 
@@ -145,5 +156,28 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public void deleteById(int id) {
         dao.deleteById(id);
+    }
+
+    /**
+     * Adds the list of Interactions.
+     *
+     * @param interactions
+     */
+    @Override
+    public void addInteractions(List<Interaction> interactions) {
+        for (Interaction interaction : interactions) {
+            save(interaction);
+        }
+    }
+
+    /**
+     * Retrieves data from the available data providers and adds them as Interactions to PRIM.
+     */
+    @Override
+    public void addInteractionsFromDataProviders() {
+
+        for (InteractionProvider interactionProvider : interactionProviderService.getAllProviders()) {
+            addInteractions(interactionProvider.getInteractions());
+        }
     }
 }

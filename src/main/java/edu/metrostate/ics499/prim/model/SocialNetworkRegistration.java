@@ -21,16 +21,24 @@ public class SocialNetworkRegistration implements Serializable {
     private Integer id;
 
     /**
+     * The date and time this registration was made.
+     */
+    @Column(name = "created_time", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime;
+
+    /**
      * The social network this registration is for.
      */
-    @Column(name = "social_network", nullable = false)
-    private String socialNetwork;
+    @Column(name = "social_network", length = 128, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SocialNetwork socialNetwork;
 
     /**
      * The token retrieved from the provisioning process and
      * used to retrieve information from the social network.
      */
-    @Column(name = "token", unique = true, nullable = false)
+    @Column(name = "token", length = 512, nullable = false)
     private String token;
 
     /**
@@ -38,7 +46,7 @@ public class SocialNetworkRegistration implements Serializable {
      * used to renew the token for the social network. May be null
      * if the social network doesn't support refresh tokens.
      */
-    @Column(name = "refresh_token", unique = true, nullable = true)
+    @Column(name = "refresh_token", length = 512, nullable = true)
     private String refreshToken;
 
     /**
@@ -54,7 +62,7 @@ public class SocialNetworkRegistration implements Serializable {
      * The last time the token was used. Used to keep track of when the last
      * time data was retreived from the social network.
      */
-    @Column(name = "last_used", nullable = false)
+    @Column(name = "last_used", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUsed;
 
@@ -66,11 +74,19 @@ public class SocialNetworkRegistration implements Serializable {
         this.id = id;
     }
 
-    public String getSocialNetwork() {
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public SocialNetwork getSocialNetwork() {
         return socialNetwork;
     }
 
-    public void setSocialNetwork(String socialNetwork) {
+    public void setSocialNetwork(SocialNetwork socialNetwork) {
         this.socialNetwork = socialNetwork;
     }
 

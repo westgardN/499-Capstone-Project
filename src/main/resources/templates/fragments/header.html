@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <head th:fragment="commonHeader(title)">
+        <title th:replace="${title}">PRIM</title>
+
+        <!-- Common styles and scripts to all pages -->
+        <link th:href="@{/css/bootstrap.css}" rel="stylesheet"></link>
+        <!--<link th:href="@{/css/app.css}" rel="stylesheet"></link>-->
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.css" />
+
+        <!-- PRIM logo -->
+        <link rel="icon" type="image/png" th:href="@{/imgs/favicon.png}">
+    </head>
+    <body>
+    </body>
+</html>

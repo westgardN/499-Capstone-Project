@@ -20,6 +20,12 @@ import javax.persistence.criteria.Root;
 public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
     static final Logger logger = LoggerFactory.getLogger(UserDaoImpl.class);
 
+    /**
+     * Finds and returns a User based on the primary key. Returns null if no user is found.
+     *
+     * @param id the id of the User to retrieve.
+     * @return a User based on the primary key. Returns null if no user is found.
+     */
     @Override
     public User findById(int id) {
         User user = null;
@@ -42,6 +48,12 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
         return user;
     }
 
+    /**
+     * Finds and returns a User based on the username. Returns null if no user is found.
+     *
+     * @param username the username of the user.
+     * @return a User based on the username. Returns null if no user is found.
+     */
     @Override
     public User findByUsername(String username) {
         User user = null;
@@ -64,6 +76,12 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
         return user;
     }
 
+    /**
+     * Finds and returns a User based on the email. Returns null if no user is found.
+     *
+     * @param email the email of the user.
+     * @return a User based on the email. Returns null if no user is found.
+     */
     @Override
     public User findByEmail(String email) {
         User user = null;
@@ -86,6 +104,12 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
         return user;
     }
 
+    /**
+     * Finds and returns a User based on the SSO Id. Returns null if no user is found.
+     *
+     * @param ssoId the ssoId of the user.
+     * @return a User based on the SSO Id. Returns null if no user is found.
+     */
     @Override
     public User findBySsoId(String ssoId) {
         User user = null;
@@ -108,11 +132,21 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
         return user;
     }
 
+    /**
+     * Immediately saves the specified User to the backing store.
+     *
+     * @param user the User to save.
+     */
     @Override
     public void save(User user) {
         persist(user);
     }
 
+    /**
+     * Deletes a User from the backing store based on the Primary Key.
+     *
+     * @param id the id of the user.
+     */
     @Override
     public void deleteById(int id) {
         User user = findById(id);
@@ -122,6 +156,11 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
         }
     }
 
+    /**
+     * Deletes a User from the backing store based on the username.
+     *
+     * @param username the username of the user.
+     */
     @Override
     public void deleteByUsername(String username) {
         User user = findByUsername(username);
@@ -131,6 +170,11 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
         }
     }
 
+    /**
+     * Deletes a User from the backing store based on the email.
+     *
+     * @param email the email of the user.
+     */
     @Override
     public void deleteByEmail(String email) {
         User user = findByEmail(email);
@@ -140,6 +184,11 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
         }
     }
 
+    /**
+     * Deletes a User from the backing store based on the SSO Id.
+     *
+     * @param ssoId the SSO Id of the user.
+     */
     @Override
     public void deleteBySsoId(String ssoId) {
         User user = findBySsoId(ssoId);
@@ -149,6 +198,11 @@ public class UserDaoImpl extends AbstractDao<Integer, User> implements UserDao {
         }
     }
 
+    /**
+     * Returns a List of all users. If no users are found, an empty list is returned.
+     *
+     * @return a List of all users. If no users are found, an empty list is returned.
+     */
     @Override
     public List<User> findAll() {
         CriteriaBuilder builder = getCriteriaBuilder();

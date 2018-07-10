@@ -9,6 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * The SentimentQueueItemServiceImpl implements the SentimentQueueItemService
+ * interface for easily working with the SentimentQueueItems.
+ */
 @Service("sentimentQueueItemService")
 @Transactional
 public class SentimentQueueItemServiceImpl implements SentimentQueueItemService {

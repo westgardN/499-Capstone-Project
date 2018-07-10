@@ -2,6 +2,9 @@ package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.SchemaVersion;
 
+/**
+ * The SchemaVersionService provides an interface for easily working with the SchemaVersion.
+ */
 public interface SchemaVersionService {
 
     /**

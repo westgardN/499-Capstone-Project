@@ -5,6 +5,9 @@ import edu.metrostate.ics499.prim.model.SentimentQueueItem;
 
 import java.util.List;
 
+/**
+ * The SentimentQueueItemService provides an interface for easily working with SentimentQueueItems.
+ */
 public interface SentimentQueueItemService {
     /**
      * Returns a persistent SentimentQueueItemDao object identified by the specified id.

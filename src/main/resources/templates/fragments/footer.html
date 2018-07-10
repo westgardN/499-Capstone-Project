@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>PRIM Footer Fragment</title>
+</head>
+<body>
+<footer th:fragment="commonFooter" id="footer">
+    <div class="container text-center">
+        <p class="text" id="legalStuff">
+            Copyright &copy; <div th:text="${#dates.format(#dates.createNow(), 'yyyy')}" th:remove="tag"/> Party of V
+            <br>
+            Please read our privacy policy <a th:href="@{/privacypolicy.html}">here</a>
+            and read our terms of use <a th:href="@{/termsofuse.html}">here</a>
+        </p>
+    </div>
+</footer>
+</body>
+</html>
