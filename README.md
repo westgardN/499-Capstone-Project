@@ -16,7 +16,8 @@ If you don't have the type you first need to clone the repository.
 
 ### Setup Prim MySQL Database ###
 
-* Run the setup_prim_db_mysql.sql on your MySQL server to create the prim database and user.
+* Run the setup_prim_db_mysql.sql, located in the scripts folder in the root of the project, on your MySQL server to create the prim database and user.
+* If your MySQL server is not on the same machine that you will be running PRIM, then please update the application.properties file, located under src/main/resources, with the connection information to your MySQL server.
 
 ### Building PRIM ###
 
