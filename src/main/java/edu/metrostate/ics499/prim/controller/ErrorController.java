@@ -19,8 +19,11 @@ public class ErrorController {
 
     @ExceptionHandler(Throwable.class)
     public String exception(final Throwable throwable, final Model model) {
-        logger.error("Exception during execution of SpringSecurity application", throwable);
+        logger.error("Exception during execution of PRIM application", throwable);
         String errorMessage = (throwable != null ? throwable.getMessage() : "Unknown error");
+        // Add the view name to the model as our interceoptor is not called when handling
+        // exceptions.
+        model.addAttribute("viewName", "error");
         model.addAttribute("errorMessage", errorMessage);
         return "error";
     }
