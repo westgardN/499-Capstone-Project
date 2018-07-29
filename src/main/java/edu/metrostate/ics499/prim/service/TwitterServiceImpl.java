@@ -1,6 +1,5 @@
 package edu.metrostate.ics499.prim.service;
 
-import com.google.common.base.Strings;
 import edu.metrostate.ics499.prim.model.*;
 import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.facebook.api.Post;
-import org.springframework.social.facebook.api.Reference;
-import org.springframework.social.facebook.api.impl.FacebookTemplate;
-import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
@@ -26,77 +20,82 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.*;
 
+import org.springframework.social.twitter.api.Tweet;
+import org.springframework.social.twitter.api.Twitter;
+import org.springframework.social.twitter.api.impl.TwitterTemplate;
+import org.springframework.social.twitter.connect.TwitterConnectionFactory;
+
 /**
- * The FacebookServiceImpl is a Spring Social based implementation of the FacebookService interface.
+ * The TwitterServiceImpl is a Spring Social based implementation of the TwitterService interface.
  */
-@Service("facebookService")
-public class FacebookServiceImpl implements FacebookService {
+@Service("twitterService")
+public class TwitterServiceImpl implements TwitterService {
     private static final String CLIENT_ID = "client_id";
     private static final String CLIENT_SECRET = "client_secret";
     private static final String FB_EXCHANGE_TOKEN = "fb_exchange_token";
     private static final String GRANT_TYPE = "grant_type";
     private static final String PRIM_NAMESPACE = "primnamespace";
 
-    @Value("${spring.social.facebook.appId}")
-    String facebookAppId;
+    @Value("${spring.social.twitter.appId}")
+    String twitterAppId;
 
-    @Value("${spring.social.facebook.appSecret}")
-    String facebookSecret;
+    @Value("${spring.social.twitter.appSecret}")
+    String twitterSecret;
 
-    @Value("${spring.social.facebook.authUri}")
-    String facebookAuthUri;
+    @Value("${spring.social.twitter.authUri}")
+    String twitterAuthUri;
 
-    @Value("${spring.social.facebook.refreshTokenPath}")
-    String facebookRefreshTokenPath;
+    @Value("${spring.social.twitter.refreshTokenPath}")
+    String twitterRefreshTokenPath;
 
-    @Value("${spring.social.facebook.scheme}")
-    String facebookScheme;
+    @Value("${spring.social.twitter.scheme}")
+    String twitterScheme;
 
-    @Value("${spring.social.facebook.host}")
-    String facebookHost;
+    @Value("${spring.social.twitter.host}")
+    String twitterHost;
 
-    @Value("${spring.social.facebook.grantType}")
-    String facebookGrantType;
+    @Value("${spring.social.twitter.grantType}")
+    String twitterGrantType;
 
-    @Value("${spring.social.facebook.permissions}")
-    String facebookPermissions;
+    @Value("${spring.social.twitter.permissions}")
+    String twitterPermissions;
 
     @Autowired
     SocialNetworkRegistrationService socialNetworkRegistrationService;
 
     /**
-     * Builds the Facebook Authorization URL for use with OAth2.
+     * Builds the Twitter Authorization URL for use with OAth2.
      * This URL is returned to the application so that the user can authorize access to our app.
-     * This method should be called prior to calling registerFacebook
+     * This method should be called prior to calling registerTwitter
      *
      * @return The authorization URL to pass to the client.
      */
     @Override
     public String buildAuthorizationUrl() {
-        FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
+        TwitterConnectionFactory connectionFactory = new TwitterConnectionFactory(twitterAppId, twitterSecret);
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
-        params.setRedirectUri(facebookAuthUri);
-        params.setScope(facebookPermissions);
+        params.setRedirectUri(twitterAuthUri);
+        params.setScope(twitterPermissions);
 
         return oauthOperations.buildAuthorizeUrl(params);
     }
 
     /**
-     *  Registers Facebook using the specified verification code.
+     *  Registers Twitter using the specified verification code.
      *
      * @param code the verification code received from the client request.
      */
     @Override
     @Transactional
-    public void registerFacebook(String code) {
-        List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService.findNonExpiredBySocialNetwork(SocialNetwork.FACEBOOK);
+    public void registerTwitter(String code) {
+        List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService.findNonExpiredBySocialNetwork(SocialNetwork.TWITTER);
 
-        FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, facebookAuthUri, null);
+        TwitterConnectionFactory connectionFactory = new TwitterConnectionFactory(twitterAppId, twitterSecret);
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, twitterAuthUri, null);
 
         if (socialNetworkRegistrationList.isEmpty()) {
-            socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
+            socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant);
         } else {
             Date now = new Date();
             boolean found = false;
@@ -105,8 +104,8 @@ public class FacebookServiceImpl implements FacebookService {
             for (int i = 0; i < socialNetworkRegistrationList.size(); i++) {
                 SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
-                Facebook fbCurrent = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
-                Facebook fbNew = new FacebookTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
+                Twitter fbCurrent = new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+                Twitter fbNew = new TwitterTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
                 String idCurrent = fbCurrent.fetchObject("me", String.class, fields);
                 String idNew = fbNew.fetchObject("me", String.class, fields);
 
@@ -121,7 +120,7 @@ public class FacebookServiceImpl implements FacebookService {
             }
 
             if (!found) {
-                socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
+                socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant);
             }
         }
     }
@@ -135,29 +134,29 @@ public class FacebookServiceImpl implements FacebookService {
     @Override
     public void refreshToken(SocialNetworkRegistration socialNetworkRegistration) {
         UriComponents uri = UriComponentsBuilder
-                .fromPath(facebookRefreshTokenPath)
-                .scheme(facebookScheme)
-                .host(facebookHost)
-                .queryParam(CLIENT_ID, facebookAppId)
-                .queryParam(CLIENT_SECRET, facebookSecret)
-                .queryParam(GRANT_TYPE, facebookGrantType)
+                .fromPath(twitterRefreshTokenPath)
+                .scheme(twitterScheme)
+                .host(twitterHost)
+                .queryParam(CLIENT_ID, twitterAppId)
+                .queryParam(CLIENT_SECRET, twitterSecret)
+                .queryParam(GRANT_TYPE, twitterGrantType)
                 .queryParam(FB_EXCHANGE_TOKEN, socialNetworkRegistration.getToken())
                 .build();
 
         String url = uri.toString();
 
-        Facebook facebook = new FacebookTemplate(socialNetworkRegistration.getToken());
+        Twitter twitter = new TwitterTemplate(socialNetworkRegistration.getToken());
 
-        ResponseEntity<String> exchange = facebook.restOperations()
+        ResponseEntity<String> exchange = twitter.restOperations()
                 .exchange(url, HttpMethod.GET, HttpEntity.EMPTY, String.class);
 
         if (exchange.getStatusCode().is2xxSuccessful() == true) {
             try {
-                FacebookRefreshTokenResponse facebookRefreshTokenResponse = new ObjectMapper().readValue(exchange.getBody(), FacebookRefreshTokenResponse.class);
+                TwitterRefreshTokenResponse twitterRefreshTokenResponse = new ObjectMapper().readValue(exchange.getBody(), TwitterRefreshTokenResponse.class);
 
                 // Update the expiration.
                 Instant timestamp = new Date().toInstant();
-                socialNetworkRegistration.setExpires(Date.from(timestamp.plusSeconds(facebookRefreshTokenResponse.getExpires_in())));
+                socialNetworkRegistration.setExpires(Date.from(timestamp.plusSeconds(twitterRefreshTokenResponse.getExpires_in())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -165,15 +164,15 @@ public class FacebookServiceImpl implements FacebookService {
     }
 
     /**
-     * Returns true if a non-expired Facebook registration exists
+     * Returns true if a non-expired Twitter registration exists
      *
-     * @return true if a non-expired Facebook registration exists
+     * @return true if a non-expired Twitter registration exists
      */
     @Override
     public boolean isRegistered() {
         boolean result = false;
 
-        if (socialNetworkRegistrationService.isRegistered(SocialNetwork.FACEBOOK) == true) {
+        if (socialNetworkRegistrationService.isRegistered(SocialNetwork.TWITTER) == true) {
             result = true;
         }
 
@@ -181,36 +180,36 @@ public class FacebookServiceImpl implements FacebookService {
     }
 
     /**
-     * Returns the authorized Facebook object.
+     * Returns the authorized Twitter object.
      *
-     * @return the authorized Facebook object.
+     * @return the authorized Twitter object.
      */
     @Transactional
     @Override
-    public Facebook getFaceBook() {
+    public Twitter getTwitter() {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
-                .findBySocialNetwork(SocialNetwork.FACEBOOK);
+                .findBySocialNetwork(SocialNetwork.TWITTER);
 
-        Facebook facebook = null;
+        Twitter twitter = null;
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
-            facebook = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+            twitter = new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
             break;
         }
 
-        return facebook;
+        return twitter;
     }
 
     /**
-     * Returns a list of all non-expired Facebook instances.
+     * Returns a list of all non-expired Twitter instances.
      */
     @Override
-    public List<Facebook> getAllNonExpiredFacebooks() {
+    public List<Twitter> getAllNonExpiredTwitters() {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
-                .findBySocialNetwork(SocialNetwork.FACEBOOK);
+                .findBySocialNetwork(SocialNetwork.TWITTER);
 
-        Facebook facebook = null;
-        List<Facebook> facebooks = new LinkedList<>();
+        Twitter twitter = null;
+        List<Twitter> twitters = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
             if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
@@ -219,40 +218,27 @@ public class FacebookServiceImpl implements FacebookService {
             }
 
             if (!socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
-                facebooks.add(new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE));
+                twitters.add(new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE));
             }
         }
 
-        return facebooks;
+        return twitters;
     }
 
     /**
      * Returns a list of all supported post types from the specified accounts
      *
-     * @param facebook the Facebook account to retrieve the data from.
+     * @param twitter the Twitter account to retrieve the data from.
      * @return a list of all supported post types from the specified account.
      */
     @Override
-    public List<Post> getAllPostTypeItems(Facebook facebook) {
-        List<Post> posts = new LinkedList<>();
+    public List<Tweet> getAllTweetTypeItems(Twitter twitter) {
+        List<Tweet> posts = new LinkedList<>();
 
-        for (Post post : facebook.feedOperations().getFeed()) {
-            addPost(posts, post);
-        }
-
-        for (Post post : facebook.feedOperations().getTagged()) {
-            addPost(posts, post);
-        }
+        posts.addAll(twitter.feedOperations().getFeed());
+        posts.addAll(twitter.feedOperations().getTagged());
 
         return posts;
-    }
-
-    private void addPost(List<Post> posts, Post post) {
-        InteractionType type = getType(post);
-        if (!Strings.isNullOrEmpty(post.getMessage())
-                && (type == InteractionType.LINK || type == InteractionType.STATUS)) {
-            posts.add(post);
-        }
     }
 
     /**
@@ -262,21 +248,21 @@ public class FacebookServiceImpl implements FacebookService {
      */
     @Transactional
     @Override
-    public List<Post> getAllPostTypeItems() {
+    public List<Tweet> getAllTweetTypeItems() {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
-                .findBySocialNetwork(SocialNetwork.FACEBOOK);
+                .findBySocialNetwork(SocialNetwork.TWITTER);
 
-        Facebook facebook = null;
-        List<Post> posts = new LinkedList<>();
+        Twitter twitter = null;
+        List<Tweet> posts = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
             if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
                 refreshToken(socialNetworkRegistration);
             }
 
-            facebook = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+            twitter = new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
 
-            posts.addAll(getAllPostTypeItems(facebook));
+            posts.addAll(getAllTweetTypeItems(twitter));
             socialNetworkRegistration.setLastUsed(new Date());
         }
 
@@ -292,29 +278,29 @@ public class FacebookServiceImpl implements FacebookService {
     public List<Interaction> getInteractions() {
         List<Interaction> interactions = new ArrayList<>();
 
-        // Get the Facebook Feed data.
-        for (Post post : getAllPostTypeItems()) {
+        // Get the Twitter Feed data.
+        for (Tweet tweet : getAllTweetTypeItems()) {
             Interaction interaction = new Interaction();
 
-            Date createdTime = post.getCreatedTime();
+            Date createdTime = tweet.getCreatedTime();
             interaction.setCreatedTime(createdTime != null ? createdTime : new Date());
 
-            interaction.setDescription(post.getDescription());
+            interaction.setDescription(tweet.getDescription());
             interaction.setFlag(InteractionFlag.NEW);
 
-            final Reference from = post.getFrom();
+            final Reference from = tweet.getFrom();
 
             if (from != null) {
-                interaction.setFromId(post.getFrom().getId());
-                interaction.setFromName(post.getFrom().getName());
+                interaction.setFromId(tweet.getFrom().getId());
+                interaction.setFromName(tweet.getFrom().getName());
             }
 
-            interaction.setMessageId(post.getId());
-            interaction.setMessage(post.getMessage());
-            interaction.setMessageLink(post.getLink());
-            interaction.setSocialNetwork(SocialNetwork.FACEBOOK);
+            interaction.setMessageId(tweet.getId());
+            interaction.setMessage(tweet.getMessage());
+            interaction.setMessageLink(tweet.getLink());
+            interaction.setSocialNetwork(SocialNetwork.TWITTER);
             interaction.setState(InteractionState.OPEN);
-            interaction.setType(getType(post));
+            interaction.setType(getType(tweet));
 
             interactions.add(interaction);
         }
@@ -322,10 +308,10 @@ public class FacebookServiceImpl implements FacebookService {
         return interactions;
     }
 
-    private InteractionType getType(Post post) {
-        Post.PostType postType = post.getType();
+    private InteractionType getType(Tweet tweet) {
+        Post.PostType postType = tweet.getType();
 
-        InteractionType interactionType = InteractionType.UNKNOWN;
+        InteractionType interactionType = null;
 
         if (postType != null) {
             interactionType = InteractionType.valueOf(postType.name());
@@ -339,7 +325,7 @@ public class FacebookServiceImpl implements FacebookService {
      *
      * Used by Jackson API to convert the JSON response to an instance of this type.
      */
-    static private class FacebookRefreshTokenResponse implements Serializable {
+    static private class TwitterRefreshTokenResponse implements Serializable {
         /**
          * The access token that was refreshed.
          */
@@ -355,11 +341,11 @@ public class FacebookServiceImpl implements FacebookService {
          */
         private Long expires_in;
 
-        public FacebookRefreshTokenResponse() {
+        public TwitterRefreshTokenResponse() {
             this(null, null, 0L);
         }
 
-        public FacebookRefreshTokenResponse(String access_token, String token_type, Long expires_in) {
+        public TwitterRefreshTokenResponse(String access_token, String token_type, Long expires_in) {
             this.access_token = access_token;
             this.token_type = token_type;
             this.expires_in = expires_in;
@@ -389,4 +375,5 @@ public class FacebookServiceImpl implements FacebookService {
             this.expires_in = expires_in;
         }
     }
+
 }

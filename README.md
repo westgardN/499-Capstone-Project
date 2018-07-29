@@ -73,4 +73,4 @@ Visual Studio Code works great and I am sure there are others that work as well.
 
 ### Notes on Checking in Changes ###
 
-Under no circustances should any IDE project files being checked in to the git repository. Just don't do it.
+Under no circumstances should any IDE project files being checked in to the git repository. Just don't do it.

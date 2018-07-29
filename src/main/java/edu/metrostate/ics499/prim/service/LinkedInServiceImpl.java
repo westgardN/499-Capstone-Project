@@ -1,6 +1,5 @@
 package edu.metrostate.ics499.prim.service;
 
-import com.google.common.base.Strings;
 import edu.metrostate.ics499.prim.model.*;
 import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.facebook.api.Post;
-import org.springframework.social.facebook.api.Reference;
-import org.springframework.social.facebook.api.impl.FacebookTemplate;
-import org.springframework.social.facebook.connect.FacebookConnectionFactory;
+import org.springframework.social.linkedIn.api.LinkedIn;
+import org.springframework.social.linkedIn.api.Post;
+import org.springframework.social.linkedIn.api.Reference;
+import org.springframework.social.linkedIn.api.impl.LinkedInTemplate;
+import org.springframework.social.linkedIn.connect.LinkedInConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
@@ -27,76 +26,76 @@ import java.time.Instant;
 import java.util.*;
 
 /**
- * The FacebookServiceImpl is a Spring Social based implementation of the FacebookService interface.
+ * The LinkedInServiceImpl is a Spring Social based implementation of the LinkedInService interface.
  */
-@Service("facebookService")
-public class FacebookServiceImpl implements FacebookService {
+@Service("linkedInService")
+public class LinkedInServiceImpl implements LinkedInService {
     private static final String CLIENT_ID = "client_id";
     private static final String CLIENT_SECRET = "client_secret";
     private static final String FB_EXCHANGE_TOKEN = "fb_exchange_token";
     private static final String GRANT_TYPE = "grant_type";
     private static final String PRIM_NAMESPACE = "primnamespace";
 
-    @Value("${spring.social.facebook.appId}")
-    String facebookAppId;
+    @Value("${spring.social.linkedIn.appId}")
+    String linkedInAppId;
 
-    @Value("${spring.social.facebook.appSecret}")
-    String facebookSecret;
+    @Value("${spring.social.linkedIn.appSecret}")
+    String linkedInSecret;
 
-    @Value("${spring.social.facebook.authUri}")
-    String facebookAuthUri;
+    @Value("${spring.social.linkedIn.authUri}")
+    String linkedInAuthUri;
 
-    @Value("${spring.social.facebook.refreshTokenPath}")
-    String facebookRefreshTokenPath;
+    @Value("${spring.social.linkedIn.refreshTokenPath}")
+    String linkedInRefreshTokenPath;
 
-    @Value("${spring.social.facebook.scheme}")
-    String facebookScheme;
+    @Value("${spring.social.linkedIn.scheme}")
+    String linkedInScheme;
 
-    @Value("${spring.social.facebook.host}")
-    String facebookHost;
+    @Value("${spring.social.linkedIn.host}")
+    String linkedInHost;
 
-    @Value("${spring.social.facebook.grantType}")
-    String facebookGrantType;
+    @Value("${spring.social.linkedIn.grantType}")
+    String linkedInGrantType;
 
-    @Value("${spring.social.facebook.permissions}")
-    String facebookPermissions;
+    @Value("${spring.social.linkedIn.permissions}")
+    String linkedInPermissions;
 
     @Autowired
     SocialNetworkRegistrationService socialNetworkRegistrationService;
 
     /**
-     * Builds the Facebook Authorization URL for use with OAth2.
+     * Builds the LinkedIn Authorization URL for use with OAth2.
      * This URL is returned to the application so that the user can authorize access to our app.
-     * This method should be called prior to calling registerFacebook
+     * This method should be called prior to calling registerLinkedIn
      *
      * @return The authorization URL to pass to the client.
      */
     @Override
     public String buildAuthorizationUrl() {
-        FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
+        LinkedInConnectionFactory connectionFactory = new LinkedInConnectionFactory(linkedInAppId, linkedInSecret);
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
-        params.setRedirectUri(facebookAuthUri);
-        params.setScope(facebookPermissions);
+        params.setRedirectUri(linkedInAuthUri);
+        params.setScope(linkedInPermissions);
 
         return oauthOperations.buildAuthorizeUrl(params);
     }
 
     /**
-     *  Registers Facebook using the specified verification code.
+     *  Registers LinkedIn using the specified verification code.
      *
      * @param code the verification code received from the client request.
      */
     @Override
     @Transactional
-    public void registerFacebook(String code) {
-        List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService.findNonExpiredBySocialNetwork(SocialNetwork.FACEBOOK);
+    public void registerLinkedIn(String code) {
+        List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService.findNonExpiredBySocialNetwork(SocialNetwork.LINKEDIN);
 
-        FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, facebookAuthUri, null);
+        LinkedInConnectionFactory connectionFactory = new LinkedInConnectionFactory(linkedInAppId, linkedInSecret);
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, linkedInAuthUri, null);
 
         if (socialNetworkRegistrationList.isEmpty()) {
-            socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
+            socialNetworkRegistrationService.register(SocialNetwork.LINKEDIN, accessGrant);
         } else {
             Date now = new Date();
             boolean found = false;
@@ -105,8 +104,8 @@ public class FacebookServiceImpl implements FacebookService {
             for (int i = 0; i < socialNetworkRegistrationList.size(); i++) {
                 SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
-                Facebook fbCurrent = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
-                Facebook fbNew = new FacebookTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
+                LinkedIn fbCurrent = new LinkedInTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+                LinkedIn fbNew = new LinkedInTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
                 String idCurrent = fbCurrent.fetchObject("me", String.class, fields);
                 String idNew = fbNew.fetchObject("me", String.class, fields);
 
@@ -121,7 +120,7 @@ public class FacebookServiceImpl implements FacebookService {
             }
 
             if (!found) {
-                socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
+                socialNetworkRegistrationService.register(SocialNetwork.LINKEDIN, accessGrant);
             }
         }
     }
@@ -135,29 +134,29 @@ public class FacebookServiceImpl implements FacebookService {
     @Override
     public void refreshToken(SocialNetworkRegistration socialNetworkRegistration) {
         UriComponents uri = UriComponentsBuilder
-                .fromPath(facebookRefreshTokenPath)
-                .scheme(facebookScheme)
-                .host(facebookHost)
-                .queryParam(CLIENT_ID, facebookAppId)
-                .queryParam(CLIENT_SECRET, facebookSecret)
-                .queryParam(GRANT_TYPE, facebookGrantType)
+                .fromPath(linkedInRefreshTokenPath)
+                .scheme(linkedInScheme)
+                .host(linkedInHost)
+                .queryParam(CLIENT_ID, linkedInAppId)
+                .queryParam(CLIENT_SECRET, linkedInSecret)
+                .queryParam(GRANT_TYPE, linkedInGrantType)
                 .queryParam(FB_EXCHANGE_TOKEN, socialNetworkRegistration.getToken())
                 .build();
 
         String url = uri.toString();
 
-        Facebook facebook = new FacebookTemplate(socialNetworkRegistration.getToken());
+        LinkedIn linkedIn = new LinkedInTemplate(socialNetworkRegistration.getToken());
 
-        ResponseEntity<String> exchange = facebook.restOperations()
+        ResponseEntity<String> exchange = linkedIn.restOperations()
                 .exchange(url, HttpMethod.GET, HttpEntity.EMPTY, String.class);
 
         if (exchange.getStatusCode().is2xxSuccessful() == true) {
             try {
-                FacebookRefreshTokenResponse facebookRefreshTokenResponse = new ObjectMapper().readValue(exchange.getBody(), FacebookRefreshTokenResponse.class);
+                LinkedInRefreshTokenResponse linkedInRefreshTokenResponse = new ObjectMapper().readValue(exchange.getBody(), LinkedInRefreshTokenResponse.class);
 
                 // Update the expiration.
                 Instant timestamp = new Date().toInstant();
-                socialNetworkRegistration.setExpires(Date.from(timestamp.plusSeconds(facebookRefreshTokenResponse.getExpires_in())));
+                socialNetworkRegistration.setExpires(Date.from(timestamp.plusSeconds(linkedInRefreshTokenResponse.getExpires_in())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -165,15 +164,15 @@ public class FacebookServiceImpl implements FacebookService {
     }
 
     /**
-     * Returns true if a non-expired Facebook registration exists
+     * Returns true if a non-expired LinkedIn registration exists
      *
-     * @return true if a non-expired Facebook registration exists
+     * @return true if a non-expired LinkedIn registration exists
      */
     @Override
     public boolean isRegistered() {
         boolean result = false;
 
-        if (socialNetworkRegistrationService.isRegistered(SocialNetwork.FACEBOOK) == true) {
+        if (socialNetworkRegistrationService.isRegistered(SocialNetwork.LINKEDIN) == true) {
             result = true;
         }
 
@@ -181,36 +180,36 @@ public class FacebookServiceImpl implements FacebookService {
     }
 
     /**
-     * Returns the authorized Facebook object.
+     * Returns the authorized LinkedIn object.
      *
-     * @return the authorized Facebook object.
+     * @return the authorized LinkedIn object.
      */
     @Transactional
     @Override
-    public Facebook getFaceBook() {
+    public LinkedIn getFaceBook() {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
-                .findBySocialNetwork(SocialNetwork.FACEBOOK);
+                .findBySocialNetwork(SocialNetwork.LINKEDIN);
 
-        Facebook facebook = null;
+        LinkedIn linkedIn = null;
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
-            facebook = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+            linkedIn = new LinkedInTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
             break;
         }
 
-        return facebook;
+        return linkedIn;
     }
 
     /**
-     * Returns a list of all non-expired Facebook instances.
+     * Returns a list of all non-expired LinkedIn instances.
      */
     @Override
-    public List<Facebook> getAllNonExpiredFacebooks() {
+    public List<LinkedIn> getAllNonExpiredLinkedIns() {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
-                .findBySocialNetwork(SocialNetwork.FACEBOOK);
+                .findBySocialNetwork(SocialNetwork.LINKEDIN);
 
-        Facebook facebook = null;
-        List<Facebook> facebooks = new LinkedList<>();
+        LinkedIn linkedIn = null;
+        List<LinkedIn> linkedIns = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
             if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
@@ -219,40 +218,28 @@ public class FacebookServiceImpl implements FacebookService {
             }
 
             if (!socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
-                facebooks.add(new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE));
+                linkedIns.add(new LinkedInTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE));
             }
         }
 
-        return facebooks;
+        return linkedIns;
     }
 
     /**
      * Returns a list of all supported post types from the specified accounts
      *
-     * @param facebook the Facebook account to retrieve the data from.
+     * @param linkedIn the LinkedIn account to retrieve the data from.
      * @return a list of all supported post types from the specified account.
      */
     @Override
-    public List<Post> getAllPostTypeItems(Facebook facebook) {
+    public List<Post> getAllPostTypeItems(LinkedIn linkedIn) {
         List<Post> posts = new LinkedList<>();
 
-        for (Post post : facebook.feedOperations().getFeed()) {
-            addPost(posts, post);
-        }
-
-        for (Post post : facebook.feedOperations().getTagged()) {
-            addPost(posts, post);
-        }
+        posts.addAll(linkedIn.feedOperations().getFeed());
+        //posts.addAll(linkedIn.feedOperations().getPosts());
+        posts.addAll(linkedIn.feedOperations().getTagged());
 
         return posts;
-    }
-
-    private void addPost(List<Post> posts, Post post) {
-        InteractionType type = getType(post);
-        if (!Strings.isNullOrEmpty(post.getMessage())
-                && (type == InteractionType.LINK || type == InteractionType.STATUS)) {
-            posts.add(post);
-        }
     }
 
     /**
@@ -264,9 +251,9 @@ public class FacebookServiceImpl implements FacebookService {
     @Override
     public List<Post> getAllPostTypeItems() {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
-                .findBySocialNetwork(SocialNetwork.FACEBOOK);
+                .findBySocialNetwork(SocialNetwork.LINKEDIN);
 
-        Facebook facebook = null;
+        LinkedIn linkedIn = null;
         List<Post> posts = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
@@ -274,9 +261,9 @@ public class FacebookServiceImpl implements FacebookService {
                 refreshToken(socialNetworkRegistration);
             }
 
-            facebook = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+            linkedIn = new LinkedInTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
 
-            posts.addAll(getAllPostTypeItems(facebook));
+            posts.addAll(getAllTweetTypeItems(linkedIn));
             socialNetworkRegistration.setLastUsed(new Date());
         }
 
@@ -292,7 +279,7 @@ public class FacebookServiceImpl implements FacebookService {
     public List<Interaction> getInteractions() {
         List<Interaction> interactions = new ArrayList<>();
 
-        // Get the Facebook Feed data.
+        // Get the LinkedIn Feed data.
         for (Post post : getAllPostTypeItems()) {
             Interaction interaction = new Interaction();
 
@@ -312,7 +299,7 @@ public class FacebookServiceImpl implements FacebookService {
             interaction.setMessageId(post.getId());
             interaction.setMessage(post.getMessage());
             interaction.setMessageLink(post.getLink());
-            interaction.setSocialNetwork(SocialNetwork.FACEBOOK);
+            interaction.setSocialNetwork(SocialNetwork.LINKEDIN);
             interaction.setState(InteractionState.OPEN);
             interaction.setType(getType(post));
 
@@ -325,7 +312,7 @@ public class FacebookServiceImpl implements FacebookService {
     private InteractionType getType(Post post) {
         Post.PostType postType = post.getType();
 
-        InteractionType interactionType = InteractionType.UNKNOWN;
+        InteractionType interactionType = null;
 
         if (postType != null) {
             interactionType = InteractionType.valueOf(postType.name());
@@ -339,7 +326,7 @@ public class FacebookServiceImpl implements FacebookService {
      *
      * Used by Jackson API to convert the JSON response to an instance of this type.
      */
-    static private class FacebookRefreshTokenResponse implements Serializable {
+    static private class LinkedInRefreshTokenResponse implements Serializable {
         /**
          * The access token that was refreshed.
          */
@@ -355,11 +342,11 @@ public class FacebookServiceImpl implements FacebookService {
          */
         private Long expires_in;
 
-        public FacebookRefreshTokenResponse() {
+        public LinkedInRefreshTokenResponse() {
             this(null, null, 0L);
         }
 
-        public FacebookRefreshTokenResponse(String access_token, String token_type, Long expires_in) {
+        public LinkedInRefreshTokenResponse(String access_token, String token_type, Long expires_in) {
             this.access_token = access_token;
             this.token_type = token_type;
             this.expires_in = expires_in;
