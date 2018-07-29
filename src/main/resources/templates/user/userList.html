@@ -34,6 +34,10 @@
             <td th:text="${user.email}"></td>
             <td th:text="${user.username}"></td>
             <td th:text="${user.ssoId}"></td>
+            <td>
+v                <a th:href="@{/user/edit/user.ssoId}">Edit</a>
+                <a th:href="@{/user/delete/user.ssoId}">Delete</a>
+            </td>
         </tr>
         </tbody>
     </table>
