@@ -1,6 +1,7 @@
 package edu.metrostate.ics499.prim.component;
 
 import edu.metrostate.ics499.prim.model.User;
+import edu.metrostate.ics499.prim.model.UserStatus;
 import edu.metrostate.ics499.prim.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +55,13 @@ public class AuthFailureListener implements ApplicationListener<AuthenticationFa
         if (user == null) {
             logger.info("Username not found");
         } else {
-            // Update the current user's last logged in time, ip address, and reset failed logins to 0
+            
             user.setLastVisitedOn(new Date());
             user.setFailedLogins(user.getFailedLogins() + 1);
+            if (user.getFailedLogins() >= 5) {
+            	user.setStatus(UserStatus.LOCKED);
+            }
+            userService.update(user);
             logger.info("User : {}", user);
         }
     }
