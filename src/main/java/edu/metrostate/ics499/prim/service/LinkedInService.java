@@ -1,8 +1,8 @@
 package edu.metrostate.ics499.prim.service;
 import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
-import org.springframework.social.facebook.api.Post;
+import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import org.springframework.social.linkedin.api.LinkedIn;
-
+import org.springframework.social.linkedin.api.Post;
 import java.util.List;
 
 /**
@@ -10,7 +10,7 @@ import java.util.List;
  * @author Paty
  *
  */
-public interface LinkedInService {
+public interface LinkedInService extends InteractionProvider {
 
 	    /**
 	     * Builds the LinkedIn Authorization URL for use with OAth2.
@@ -47,7 +47,6 @@ public interface LinkedInService {
 	     * @return the authorized LinkedIn object.
 	     */
 	    LinkedIn getLinkedIn();
-	    
 
 	    /**
 	     * Returns a list of all supported post types from the specified accounts

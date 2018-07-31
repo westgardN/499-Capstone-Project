@@ -69,9 +69,9 @@ public class TwitterController {
     }
 
     /**
-     * Returns a list of all Twitter Post objects for all Twitter accounts registered with PRIM.
+     * Returns a list of all Tweet objects for all Twitter accounts registered with PRIM.
      *
-     * @return a list of all Twitter Post objects for all Twitter accounts registered with PRIM.
+     * @return a list of all Tweet objects for all Twitter accounts registered with PRIM.
      */
     @GetMapping("/feed")
     public List<Tweet> feed() {
