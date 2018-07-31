@@ -1,8 +1,8 @@
 package edu.metrostate.ics499.prim.service;
 import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
-import edu.metrostate.ics499.prim.provider.InteractionProvider;
-import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.Post;
+import org.springframework.social.linkedin.api.LinkedIn;
+
 import java.util.List;
 
 /**

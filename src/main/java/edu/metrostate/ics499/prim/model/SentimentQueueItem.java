@@ -52,6 +52,10 @@ public class SentimentQueueItem implements Serializable, Comparable<SentimentQue
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean processed;
 
+    public SentimentQueueItem(Interaction interaction) {
+
+    }
+
     public Integer getId() {
         return id;
     }
@@ -91,7 +95,6 @@ public class SentimentQueueItem implements Serializable, Comparable<SentimentQue
     public void setProcessed(boolean processed) {
         this.processed = processed;
     }
-
 
     @Override
     public boolean equals(Object o) {
