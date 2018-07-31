@@ -35,28 +35,28 @@ public class LinkedInServiceImpl implements LinkedInService {
     private static final String GRANT_TYPE = "grant_type";
     private static final String PRIM_NAMESPACE = "primnamespace";
 
-    @Value("${spring.social.linkedIn.appId}")
+//    @Value("${spring.social.linkedIn.appId}")
     String linkedInAppId;
 
-    @Value("${spring.social.linkedIn.appSecret}")
+//    @Value("${spring.social.linkedIn.appSecret}")
     String linkedInSecret;
 
-    @Value("${spring.social.linkedIn.authUri}")
+//    @Value("${spring.social.linkedIn.authUri}")
     String linkedInAuthUri;
 
-    @Value("${spring.social.linkedIn.refreshTokenPath}")
+//    @Value("${spring.social.linkedIn.refreshTokenPath}")
     String linkedInRefreshTokenPath;
 
-    @Value("${spring.social.linkedIn.scheme}")
+//    @Value("${spring.social.linkedIn.scheme}")
     String linkedInScheme;
 
-    @Value("${spring.social.linkedIn.host}")
+//    @Value("${spring.social.linkedIn.host}")
     String linkedInHost;
 
-    @Value("${spring.social.linkedIn.grantType}")
+//    @Value("${spring.social.linkedIn.grantType}")
     String linkedInGrantType;
 
-    @Value("${spring.social.linkedIn.permissions}")
+//    @Value("${spring.social.linkedIn.permissions}")
     String linkedInPermissions;
 
     @Autowired

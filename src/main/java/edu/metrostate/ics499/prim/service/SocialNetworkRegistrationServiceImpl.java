@@ -4,11 +4,14 @@ import edu.metrostate.ics499.prim.model.SocialNetwork;
 import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
 import edu.metrostate.ics499.prim.repository.SocialNetworkRegistrationDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -142,6 +145,34 @@ public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegist
             entity.setLastUsed(socialNetworkRegistration.getLastUsed());
             entity.setRefreshToken(socialNetworkRegistration.getRefreshToken());
             entity.setToken(socialNetworkRegistration.getToken());
+        }
+    }
+
+    /**
+     * Registers a social network in the database based on the provided OAuth Grant.
+     *
+     * @param socialNetwork the social network to register.
+     * @param accessGrant   the OAuth Token received from registration.
+     * @return returns true if registration was successful; false otherwise.
+     */
+    @Override
+    public boolean register(SocialNetwork socialNetwork, OAuthToken accessGrant) {
+        Date now = new Date();
+
+        SocialNetworkRegistration socialNetworkRegistration = new SocialNetworkRegistration();
+        socialNetworkRegistration.setCreatedTime(now);
+        socialNetworkRegistration.setSocialNetwork(socialNetwork);
+        // Set an artificial expiration date of 1 year.
+        socialNetworkRegistration.setExpires(Date.from(now.toInstant().plus(Duration.ofDays(365))));
+        socialNetworkRegistration.setToken(accessGrant.getValue());
+        socialNetworkRegistration.setRefreshToken(accessGrant.getSecret()); // Store the secret here ;-)
+
+        try {
+            save(socialNetworkRegistration);
+
+            return true;
+        } catch (EntityExistsException ex) {
+            return false;
         }
     }
 
