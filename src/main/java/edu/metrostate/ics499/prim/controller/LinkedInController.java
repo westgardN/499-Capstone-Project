@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.social.linkedIn.api.LinkedIn;
-import org.springframework.social.linkedIn.api.PagedList;
-import org.springframework.social.linkedIn.api.Post;
+
+import org.springframework.social.linkedin.api.LinkedIn;
+import org.springframework.social.linkedin.api.Post;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

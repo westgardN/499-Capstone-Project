@@ -99,14 +99,14 @@ public class LinkedInServiceImpl implements LinkedInService {
             Date now = new Date();
             boolean found = false;
 
-            String[] fields = {"id", "name"};
             for (int i = 0; i < socialNetworkRegistrationList.size(); i++) {
                 SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
-                LinkedIn fbCurrent = new LinkedInTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
-                LinkedIn fbNew = new LinkedInTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
-                String idCurrent = fbCurrent.fetchObject("me", String.class, fields);
-                String idNew = fbNew.fetchObject("me", String.class, fields);
+                LinkedIn liCurrent = new LinkedInTemplate(socialNetworkRegistration.getToken());
+                LinkedIn liNew = new LinkedInTemplate(accessGrant.getAccessToken());
+                
+                String idCurrent = liCurrent.profileOperations().getProfileId();
+                String idNew = liNew.profileOperations().getProfileId();
 
                 if (Objects.equals(idCurrent, idNew) == true) {
                     found = true;
@@ -185,14 +185,14 @@ public class LinkedInServiceImpl implements LinkedInService {
      */
     @Transactional
     @Override
-    public LinkedIn getFaceBook() {
+    public LinkedIn getLinkedIn() {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
                 .findBySocialNetwork(SocialNetwork.LINKEDIN);
 
         LinkedIn linkedIn = null;
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
-            linkedIn = new LinkedInTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+            linkedIn = new LinkedInTemplate(socialNetworkRegistration.getToken());
             break;
         }
 
@@ -217,7 +217,7 @@ public class LinkedInServiceImpl implements LinkedInService {
             }
 
             if (!socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
-                linkedIns.add(new LinkedInTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE));
+                linkedIns.add(new LinkedInTemplate(socialNetworkRegistration.getToken()));
             }
         }
 
@@ -234,9 +234,9 @@ public class LinkedInServiceImpl implements LinkedInService {
     public List<Post> getAllPostTypeItems(LinkedIn linkedIn) {
         List<Post> posts = new LinkedList<>();
 
-        posts.addAll(linkedIn.feedOperations().getFeed());
-        //posts.addAll(linkedIn.feedOperations().getPosts());
-        posts.addAll(linkedIn.feedOperations().getTagged());
+//        posts.addAll(linkedIn.feedOperations().getFeed());
+//        //posts.addAll(linkedIn.feedOperations().getPosts());
+//        posts.addAll(linkedIn.feedOperations().getTagged());
 
         return posts;
     }
@@ -260,9 +260,9 @@ public class LinkedInServiceImpl implements LinkedInService {
                 refreshToken(socialNetworkRegistration);
             }
 
-            linkedIn = new LinkedInTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+            linkedIn = new LinkedInTemplate(socialNetworkRegistration.getToken());
 
-            posts.addAll(getAllTweetTypeItems(linkedIn));
+            posts.addAll(getAllPostTypeItems(linkedIn));
             socialNetworkRegistration.setLastUsed(new Date());
         }
 
@@ -281,28 +281,28 @@ public class LinkedInServiceImpl implements LinkedInService {
         // Get the LinkedIn Feed data.
         for (Post post : getAllPostTypeItems()) {
             Interaction interaction = new Interaction();
-
-            Date createdTime = post.getCreatedTime();
-            interaction.setCreatedTime(createdTime != null ? createdTime : new Date());
-
-            interaction.setDescription(post.getDescription());
-            interaction.setFlag(InteractionFlag.NEW);
-
-            final Reference from = post.getFrom();
-
-            if (from != null) {
-                interaction.setFromId(post.getFrom().getId());
-                interaction.setFromName(post.getFrom().getName());
-            }
-
-            interaction.setMessageId(post.getId());
-            interaction.setMessage(post.getMessage());
-            interaction.setMessageLink(post.getLink());
-            interaction.setSocialNetwork(SocialNetwork.LINKEDIN);
-            interaction.setState(InteractionState.OPEN);
-            interaction.setType(getType(post));
-
-            interactions.add(interaction);
+//
+//            Date createdTime = post.getCreatedTime();
+//            interaction.setCreatedTime(createdTime != null ? createdTime : new Date());
+//
+//            interaction.setDescription(post.getDescription());
+//            interaction.setFlag(InteractionFlag.NEW);
+//
+//            final Reference from = post.getFrom();
+//
+//            if (from != null) {
+//                interaction.setFromId(post.getFrom().getId());
+//                interaction.setFromName(post.getFrom().getName());
+//            }
+//
+//            interaction.setMessageId(post.getId());
+//            interaction.setMessage(post.getMessage());
+//            interaction.setMessageLink(post.getLink());
+//            interaction.setSocialNetwork(SocialNetwork.LINKEDIN);
+//            interaction.setState(InteractionState.OPEN);
+//            interaction.setType(getType(post));
+//
+//            interactions.add(interaction);
         }
 
         return interactions;
