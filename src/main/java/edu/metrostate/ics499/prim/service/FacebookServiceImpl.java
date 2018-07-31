@@ -2,7 +2,6 @@ package edu.metrostate.ics499.prim.service;
 
 import com.google.common.base.Strings;
 import edu.metrostate.ics499.prim.model.*;
-import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -209,7 +208,6 @@ public class FacebookServiceImpl implements FacebookService {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
                 .findBySocialNetwork(SocialNetwork.FACEBOOK);
 
-        Facebook facebook = null;
         List<Facebook> facebooks = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {

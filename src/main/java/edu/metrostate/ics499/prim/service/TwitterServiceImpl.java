@@ -1,7 +1,6 @@
 package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.*;
-import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -19,8 +18,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.*;
-
 import org.springframework.social.twitter.api.Tweet;
+import org.springframework.social.twitter.api.TweetData;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 import org.springframework.social.twitter.connect.TwitterConnectionFactory;
@@ -32,7 +31,7 @@ import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 public class TwitterServiceImpl implements TwitterService {
     private static final String CLIENT_ID = "client_id";
     private static final String CLIENT_SECRET = "client_secret";
-    private static final String FB_EXCHANGE_TOKEN = "fb_exchange_token";
+    private static final String TWITTER_EXCHANGE_TOKEN = "twitter_exchange_token";
     private static final String GRANT_TYPE = "grant_type";
     private static final String PRIM_NAMESPACE = "primnamespace";
 
@@ -73,7 +72,7 @@ public class TwitterServiceImpl implements TwitterService {
     @Override
     public String buildAuthorizationUrl() {
         TwitterConnectionFactory connectionFactory = new TwitterConnectionFactory(twitterAppId, twitterSecret);
-        OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+        OAuth2Operations oauthOperations = (OAuth2Operations) connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
         params.setRedirectUri(twitterAuthUri);
         params.setScope(twitterPermissions);
@@ -92,7 +91,7 @@ public class TwitterServiceImpl implements TwitterService {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService.findNonExpiredBySocialNetwork(SocialNetwork.TWITTER);
 
         TwitterConnectionFactory connectionFactory = new TwitterConnectionFactory(twitterAppId, twitterSecret);
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, twitterAuthUri, null);
+        AccessGrant accessGrant = ((OAuth2Operations) connectionFactory.getOAuthOperations()).exchangeForAccess(code, twitterAuthUri, null);
 
         if (socialNetworkRegistrationList.isEmpty()) {
             socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant);
@@ -100,14 +99,14 @@ public class TwitterServiceImpl implements TwitterService {
             Date now = new Date();
             boolean found = false;
 
-            String[] fields = {"id", "name"};
             for (int i = 0; i < socialNetworkRegistrationList.size(); i++) {
                 SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
-                Twitter fbCurrent = new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
-                Twitter fbNew = new TwitterTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
-                String idCurrent = fbCurrent.fetchObject("me", String.class, fields);
-                String idNew = fbNew.fetchObject("me", String.class, fields);
+                Twitter current = new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+                Twitter newTweet = new TwitterTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
+                
+                long idCurrent = current.userOperations().getProfileId();
+                long idNew = newTweet.userOperations().getProfileId();
 
                 if (Objects.equals(idCurrent, idNew) == true) {
                     found = true;
@@ -140,7 +139,7 @@ public class TwitterServiceImpl implements TwitterService {
                 .queryParam(CLIENT_ID, twitterAppId)
                 .queryParam(CLIENT_SECRET, twitterSecret)
                 .queryParam(GRANT_TYPE, twitterGrantType)
-                .queryParam(FB_EXCHANGE_TOKEN, socialNetworkRegistration.getToken())
+                .queryParam(TWITTER_EXCHANGE_TOKEN, socialNetworkRegistration.getToken())
                 .build();
 
         String url = uri.toString();
@@ -208,7 +207,6 @@ public class TwitterServiceImpl implements TwitterService {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
                 .findBySocialNetwork(SocialNetwork.TWITTER);
 
-        Twitter twitter = null;
         List<Twitter> twitters = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
@@ -233,12 +231,124 @@ public class TwitterServiceImpl implements TwitterService {
      */
     @Override
     public List<Tweet> getAllTweetTypeItems(Twitter twitter) {
-        List<Tweet> posts = new LinkedList<>();
+        List<Tweet> tweets = new LinkedList<>();
 
-        posts.addAll(twitter.feedOperations().getFeed());
-        posts.addAll(twitter.feedOperations().getTagged());
+        tweets.addAll(getAllTweetItems(twitter));
+        tweets.addAll(getAllRetweetItems(twitter));
+        tweets.addAll(getAllMentionItems(twitter));
+       
+        return tweets;
+    }
 
-        return posts;
+    private List<Tweet> getAllTweetItems(Twitter twitter) {
+        List<Tweet> tweets = new LinkedList<>();
+        
+        for (Tweet tweet : twitter.timelineOperations().getHomeTimeline()) {
+        	tweets.add(tweet);
+        }
+        
+        return tweets;
+    }
+    
+    private List<Tweet> getAllRetweetItems(Twitter twitter) {
+        List<Tweet> tweets = new LinkedList<>();
+        
+        for (Tweet tweet : twitter.timelineOperations().getRetweetsOfMe()) {
+        	tweets.add(tweet);
+        }
+        
+        return tweets;
+    }
+    
+    private List<Tweet> getAllMentionItems(Twitter twitter) {
+        List<Tweet> tweets = new LinkedList<>();
+        
+        for (Tweet tweet : twitter.timelineOperations().getMentions()) {
+        	tweets.add(tweet);
+        }
+        
+        return tweets;
+    }
+    
+    /**
+     * Returns a list of all supported tweets from the authenticated accounts.
+     *
+     * @return a list of all supported tweets from the authenticated accounts.
+     */
+    @Transactional
+    private List<Tweet> getAllTweetItems() {
+        List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
+                .findBySocialNetwork(SocialNetwork.TWITTER);
+
+        Twitter twitter = null;
+        List<Tweet> tweets = new LinkedList<>();
+
+        for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
+            if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
+                refreshToken(socialNetworkRegistration);
+            }
+
+            twitter = new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+
+            tweets.addAll(getAllTweetItems(twitter));
+            socialNetworkRegistration.setLastUsed(new Date());
+        }
+
+        return tweets;
+    }
+
+    /**
+     * Returns a list of all supported retweets from the authenticated accounts.
+     *
+     * @return a list of all supported retweets from the authenticated accounts.
+     */
+    @Transactional
+    private List<Tweet> getAllRetweetItems() {
+        List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
+                .findBySocialNetwork(SocialNetwork.TWITTER);
+
+        Twitter twitter = null;
+        List<Tweet> tweets = new LinkedList<>();
+
+        for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
+            if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
+                refreshToken(socialNetworkRegistration);
+            }
+
+            twitter = new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+
+            tweets.addAll(getAllRetweetItems(twitter));
+            socialNetworkRegistration.setLastUsed(new Date());
+        }
+
+        return tweets;
+    }
+
+    /**
+     * Returns a list of all supported mentions from the authenticated accounts.
+     *
+     * @return a list of all supported mentions from the authenticated accounts.
+     */
+    @Transactional
+    private List<Tweet> getAllMentionItems() {
+        List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
+                .findBySocialNetwork(SocialNetwork.TWITTER);
+
+        Twitter twitter = null;
+        List<Tweet> tweets = new LinkedList<>();
+
+        for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
+            if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
+                refreshToken(socialNetworkRegistration);
+            }
+
+            twitter = new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
+
+            tweets.addAll(getAllMentionItems(twitter));
+            socialNetworkRegistration.setLastUsed(new Date());
+        }
+
+        return tweets;
     }
 
     /**
@@ -253,7 +363,7 @@ public class TwitterServiceImpl implements TwitterService {
                 .findBySocialNetwork(SocialNetwork.TWITTER);
 
         Twitter twitter = null;
-        List<Tweet> posts = new LinkedList<>();
+        List<Tweet> tweets = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
             if (socialNetworkRegistrationService.isExpired(socialNetworkRegistration)) {
@@ -262,11 +372,11 @@ public class TwitterServiceImpl implements TwitterService {
 
             twitter = new TwitterTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
 
-            posts.addAll(getAllTweetTypeItems(twitter));
+            tweets.addAll(getAllTweetTypeItems(twitter));
             socialNetworkRegistration.setLastUsed(new Date());
         }
 
-        return posts;
+        return tweets;
     }
 
     /**
@@ -277,47 +387,85 @@ public class TwitterServiceImpl implements TwitterService {
     @Override
     public List<Interaction> getInteractions() {
         List<Interaction> interactions = new ArrayList<>();
+        Set<Interaction> hashInteractions = new HashSet<>();
 
         // Get the Twitter Feed data.
-        for (Tweet tweet : getAllTweetTypeItems()) {
+        for (Tweet tweet : getAllTweetItems()) {
             Interaction interaction = new Interaction();
 
-            Date createdTime = tweet.getCreatedTime();
+            Date createdTime = tweet.getCreatedAt();
             interaction.setCreatedTime(createdTime != null ? createdTime : new Date());
 
-            interaction.setDescription(tweet.getDescription());
             interaction.setFlag(InteractionFlag.NEW);
 
-            final Reference from = tweet.getFrom();
+            interaction.setFromId("" + tweet.getFromUserId());
+            interaction.setFromName(tweet.getFromUser());
 
-            if (from != null) {
-                interaction.setFromId(tweet.getFrom().getId());
-                interaction.setFromName(tweet.getFrom().getName());
+            interaction.setMessageId(tweet.getIdStr());
+            interaction.setMessage(tweet.getText());
+            
+            if (tweet.hasUrls()) {
+            	interaction.setMessageLink(tweet.getEntities().getUrls().get(0).getUrl());
             }
-
-            interaction.setMessageId(tweet.getId());
-            interaction.setMessage(tweet.getMessage());
-            interaction.setMessageLink(tweet.getLink());
+            
             interaction.setSocialNetwork(SocialNetwork.TWITTER);
             interaction.setState(InteractionState.OPEN);
-            interaction.setType(getType(tweet));
+            interaction.setType(InteractionType.TWEET);
 
-            interactions.add(interaction);
+            hashInteractions.add(interaction);
         }
 
+        for (Tweet tweet : getAllRetweetItems()) {
+            Interaction interaction = new Interaction();
+
+            Date createdTime = tweet.getCreatedAt();
+            interaction.setCreatedTime(createdTime != null ? createdTime : new Date());
+
+            interaction.setFlag(InteractionFlag.NEW);
+
+            interaction.setFromId("" + tweet.getFromUserId());
+            interaction.setFromName(tweet.getFromUser());
+
+            interaction.setMessageId(tweet.getIdStr());
+            interaction.setMessage(tweet.getText());
+            
+            if (tweet.hasUrls()) {
+            	interaction.setMessageLink(tweet.getEntities().getUrls().get(0).getUrl());
+            }
+            
+            interaction.setSocialNetwork(SocialNetwork.TWITTER);
+            interaction.setState(InteractionState.OPEN);
+            interaction.setType(InteractionType.RETWEET);
+
+            hashInteractions.add(interaction);
+        }
+        
+        for (Tweet tweet : getAllMentionItems()) {
+            Interaction interaction = new Interaction();
+
+            Date createdTime = tweet.getCreatedAt();
+            interaction.setCreatedTime(createdTime != null ? createdTime : new Date());
+
+            interaction.setFlag(InteractionFlag.NEW);
+
+            interaction.setFromId("" + tweet.getFromUserId());
+            interaction.setFromName(tweet.getFromUser());
+
+            interaction.setMessageId(tweet.getIdStr());
+            interaction.setMessage(tweet.getText());
+            
+            if (tweet.hasUrls()) {
+            	interaction.setMessageLink(tweet.getEntities().getUrls().get(0).getUrl());
+            }
+            
+            interaction.setSocialNetwork(SocialNetwork.TWITTER);
+            interaction.setState(InteractionState.OPEN);
+            interaction.setType(InteractionType.MENTION);
+
+            hashInteractions.add(interaction);
+        }
+        
         return interactions;
-    }
-
-    private InteractionType getType(Tweet tweet) {
-        Post.PostType postType = tweet.getType();
-
-        InteractionType interactionType = null;
-
-        if (postType != null) {
-            interactionType = InteractionType.valueOf(postType.name());
-        }
-
-        return interactionType;
     }
 
     /**
