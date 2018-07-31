@@ -220,21 +220,47 @@ public class Interaction implements Serializable {
         this.flag = flag;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Interaction that = (Interaction) o;
-        return Objects.equals(getId(), that.getId());
-    }
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((messageId == null) ? 0 : messageId.hashCode());
+		result = prime * result + ((socialNetwork == null) ? 0 : socialNetwork.hashCode());
+		return result;
+	}
 
-    @Override
-    public int hashCode() {
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Interaction)) {
+			return false;
+		}
+		Interaction other = (Interaction) obj;
+		if (messageId == null) {
+			if (other.messageId != null) {
+				return false;
+			}
+		} else if (!messageId.equals(other.messageId)) {
+			return false;
+		}
+		if (socialNetwork != other.socialNetwork) {
+			return false;
+		}
+		return true;
+	}
 
-        return Objects.hash(getId());
-    }
-
-    @Override
+	@Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Interaction{");
         sb.append("id=").append(id);

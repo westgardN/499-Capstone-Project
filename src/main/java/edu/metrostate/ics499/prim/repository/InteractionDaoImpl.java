@@ -191,4 +191,16 @@ public class InteractionDaoImpl extends AbstractDao<Integer, Interaction> implem
             delete(interaction);
         }
     }
+
+    @Override
+    public boolean interactionMessageExists(Interaction interaction) {
+        CriteriaBuilder builder = getCriteriaBuilder();
+        CriteriaQuery<Long> crit = builder.createQuery(Long.class);
+        Root<Interaction> from = crit.from(Interaction.class);
+        Predicate clause = builder.equal(from.get("messageId"), interaction.getMessageId());
+        crit.select(builder.count(from)).where(clause);
+        TypedQuery<Long> query = getSession().createQuery(crit);
+
+        return query.getSingleResult() > 0;
+    }
 }

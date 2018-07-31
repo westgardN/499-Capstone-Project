@@ -166,7 +166,11 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public void addInteractions(List<Interaction> interactions) {
         for (Interaction interaction : interactions) {
-            save(interaction);
+            if (dao.interactionMessageExists(interaction)) {
+                update(interaction);
+            } else {
+                save(interaction);
+            }
         }
     }
 

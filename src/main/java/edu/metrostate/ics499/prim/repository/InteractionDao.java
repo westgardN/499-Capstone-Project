@@ -94,4 +94,12 @@ public interface InteractionDao {
      */
     void deleteById(int id);
 
+    /**
+     * Returns true if the message id of the specified Interaction already exists in the database.
+     *
+     * @param interaction The interaction to check for. Message ID must be populated.
+     *
+     * @return true if the specified interaction message id already exists in the database.
+     */
+    boolean interactionMessageExists(Interaction interaction);
 }
