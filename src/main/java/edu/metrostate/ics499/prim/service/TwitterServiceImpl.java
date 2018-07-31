@@ -35,28 +35,28 @@ public class TwitterServiceImpl implements TwitterService {
     private static final String GRANT_TYPE = "grant_type";
     private static final String PRIM_NAMESPACE = "primnamespace";
 
-    @Value("${spring.social.twitter.appId}")
+//    @Value("${spring.social.twitter.appId}")
     String twitterAppId;
 
-    @Value("${spring.social.twitter.appSecret}")
+//    @Value("${spring.social.twitter.appSecret}")
     String twitterSecret;
 
-    @Value("${spring.social.twitter.authUri}")
+//    @Value("${spring.social.twitter.authUri}")
     String twitterAuthUri;
 
-    @Value("${spring.social.twitter.refreshTokenPath}")
+//    @Value("${spring.social.twitter.refreshTokenPath}")
     String twitterRefreshTokenPath;
 
-    @Value("${spring.social.twitter.scheme}")
+//    @Value("${spring.social.twitter.scheme}")
     String twitterScheme;
 
-    @Value("${spring.social.twitter.host}")
+//    @Value("${spring.social.twitter.host}")
     String twitterHost;
 
-    @Value("${spring.social.twitter.grantType}")
+//    @Value("${spring.social.twitter.grantType}")
     String twitterGrantType;
 
-    @Value("${spring.social.twitter.permissions}")
+//    @Value("${spring.social.twitter.permissions}")
     String twitterPermissions;
 
     @Autowired
