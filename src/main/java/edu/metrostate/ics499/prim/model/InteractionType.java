@@ -22,6 +22,10 @@ public enum InteractionType {
      */
     STATUS("STATUS"),
     /**
+     * The Interaction is a RETWEET. Mainly used by Twitter.
+     */
+    RETWEET("RETWEET"),
+    /**
      * The Interaction is a TWEET. Mainly used by Twitter.
      */
     TWEET("TWEET"),
