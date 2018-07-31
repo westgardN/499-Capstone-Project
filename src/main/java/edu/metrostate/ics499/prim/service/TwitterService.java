@@ -22,11 +22,12 @@ public interface TwitterService extends InteractionProvider {
     String buildAuthorizationUrl();
 
     /**
-     *  Registers Twitter using the specified verification code.
+     *  Registers Twitter using the specified token and verification code.
      *
-     * @param code the verification code received from the client request.
+     * @param oauthToken the token received from the client request.
+     * @param oauthVerifier the verification code from the client request.
      */
-    void registerTwitter(String code);
+    void registerTwitter(String oauthToken, String oauthVerifier);
 
     /**
      * Refreshes the specified SocialNetworkRegistration token.
@@ -64,6 +65,54 @@ public interface TwitterService extends InteractionProvider {
      * @return a list of all supported post types from the authenticated accounts.
      */
     List<Tweet> getAllTweetTypeItems();
+
+    /**
+     * Returns a list of all supported post types from the specified accounts
+     *
+     * @param twitter the Twitter account to retrieve the data from.
+     *
+     * @return a list of all supported post types from the specified account.
+     */
+    List<Tweet> getAllTweetItems(Twitter twitter);
+
+    /**
+     * Returns a list of all supported post types from the authenticated accounts.
+     *
+     * @return a list of all supported post types from the authenticated accounts.
+     */
+    List<Tweet> getAllTweetItems();
+
+    /**
+     * Returns a list of all supported post types from the specified accounts
+     *
+     * @param twitter the Twitter account to retrieve the data from.
+     *
+     * @return a list of all supported post types from the specified account.
+     */
+    List<Tweet> getAllRetweetItems(Twitter twitter);
+
+    /**
+     * Returns a list of all supported post types from the authenticated accounts.
+     *
+     * @return a list of all supported post types from the authenticated accounts.
+     */
+    List<Tweet> getAllRetweetItems();
+
+    /**
+     * Returns a list of all supported post types from the specified accounts
+     *
+     * @param twitter the Twitter account to retrieve the data from.
+     *
+     * @return a list of all supported post types from the specified account.
+     */
+    List<Tweet> getAllMentionItems(Twitter twitter);
+
+    /**
+     * Returns a list of all supported post types from the authenticated accounts.
+     *
+     * @return a list of all supported post types from the authenticated accounts.
+     */
+    List<Tweet> getAllMentionItems();
 
     /**
      * Returns a list of all non-expired Twitter instances.

@@ -44,6 +44,7 @@ public class RoleServiceImpl implements RoleService{
      * @return a persistent Role object identified by the specified type.
      * If no Role of that type exists, null is returned.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Role findByType(RoleType type) {
         return dao.findByType(type);

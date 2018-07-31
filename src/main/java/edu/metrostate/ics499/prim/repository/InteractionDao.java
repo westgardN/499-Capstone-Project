@@ -23,6 +23,18 @@ public interface InteractionDao {
     Interaction findById(int id);
 
     /**
+     * Returns a persistent Interaction object identified by the specified message id.
+     * If no Interaction with that message id exists, null is returned.
+     *
+     * @param messageId the Interaction Message Id to retrieve.
+     * @param socialNetwork the Social Network associated with the message.
+     *
+     * @return a persistent Interaction object identified by the specified message id.
+     * If no Interaction with that id exists, null is returned.
+     */
+    Interaction findBySocialNetworkAndMessageId(String messageId, SocialNetwork socialNetwork);
+
+    /**
      * Returns a List of persistent Interactions for the specified Social Network. If no Interactions exist,
      * an empty List is returned.
      *

@@ -49,8 +49,8 @@ public class TwitterController {
      * @throws IOException thrown by the HttpServletResponse if an error occurs.
      */
     @GetMapping("/register")
-    public void register(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
-        twitterService.registerTwitter(code);
+    public void register(@RequestParam("oauth_token") String oauthToken, @RequestParam("oauth_verifier") String oauthVerifier, HttpServletResponse response) throws IOException {
+        twitterService.registerTwitter(oauthToken, oauthVerifier);
 
         response.sendRedirect("/social/list");
     }
