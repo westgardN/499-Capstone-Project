@@ -9,7 +9,7 @@ import java.util.List;
  * The SocialNetworkRegistrationDao interface defines the operations that can be performed for an
  * SocialNetworkRegistration.
  */
-public interface SocialNetworkRegistrationDao {
+public interface SocialNetworkRegistrationDao extends IRepository {
 
     /**
      * Returns a persistent SocialNetworkRegistration object identified by the specified id.

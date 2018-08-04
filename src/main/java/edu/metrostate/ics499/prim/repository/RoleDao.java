@@ -9,7 +9,7 @@ import edu.metrostate.ics499.prim.model.RoleType;
  * The RoleDao interface defines the available persistence operations that can be performed for
  * a Role.
  */
-public interface RoleDao {
+public interface RoleDao extends IRepository {
 
     /**
      * Returns all of the Roles found in the backing store as a List.

@@ -8,7 +8,7 @@ import edu.metrostate.ics499.prim.model.User;
  * The UserDao interface defines the available persistence operations that can be performed for
  * a User.
  */
-public interface UserDao {
+public interface UserDao extends IRepository {
 
     /**
      * Finds and returns a User based on the primary key. Returns null if no user is found.

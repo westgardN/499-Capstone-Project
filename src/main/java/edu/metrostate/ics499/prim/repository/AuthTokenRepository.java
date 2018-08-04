@@ -27,7 +27,7 @@ import javax.persistence.criteria.Root;
 @Repository("tokenRepositoryDao")
 @Transactional
 public class AuthTokenRepository extends AbstractDao<String, PersistentLogin>
-        implements PersistentTokenRepository {
+        implements PersistentTokenRepository, IRepository {
 
     static final Logger logger = LoggerFactory.getLogger(AuthTokenRepository.class);
 
