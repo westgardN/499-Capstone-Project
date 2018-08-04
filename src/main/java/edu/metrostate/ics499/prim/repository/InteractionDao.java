@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * The InteractionDao interface defines the operations that can be performed for an Interaction.
  */
-public interface InteractionDao {
+public interface InteractionDao extends IRepository {
 
     /**
      * Returns a persistent Interaction object identified by the specified id.
