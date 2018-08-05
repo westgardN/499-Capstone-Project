@@ -15,6 +15,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,6 +213,23 @@ public class InteractionServiceImpl implements InteractionService {
             Object obj[] = results.get(i);
             result.put((SocialNetwork)obj[0], (Long)obj[1]);
         }
+
+        return result;
+    }
+
+    /**
+     * Returns a list of available reports along with hthe URL to get the data for the report.
+     * The first element in the object array is the name of the report, and the second element
+     * is the URL to get the data for that report.
+     *
+     * @param request the HttpServletRequest to get the host information from.
+     * @return a list of available reports along with hthe URL to get the data for the report.
+     */
+    @Override
+    public List<Object[]> getAvailableReports(HttpServletRequest request) {
+        List<Object[]> result = new ArrayList<>();
+
+        result.add(new Object[] {"Lifetime Interaction Count By Social Network", "http://localhost:8080/report/interactionCountBySocialNetwork"});
 
         return result;
     }
