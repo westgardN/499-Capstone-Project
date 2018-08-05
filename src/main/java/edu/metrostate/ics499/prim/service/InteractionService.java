@@ -4,7 +4,9 @@ import edu.metrostate.ics499.prim.model.Interaction;
 import edu.metrostate.ics499.prim.model.InteractionType;
 import edu.metrostate.ics499.prim.model.SocialNetwork;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The InteractionService provides an interface for easily working with Interactions.
@@ -111,4 +113,21 @@ public interface InteractionService {
      */
     void addInteractionsFromDataProviders();
 
+    /**
+     * Returns a map that contains the count of interactions for each social network.
+     *
+     * @return a map that contains the count of interactions for each social network.
+     */
+    Map<SocialNetwork, Long> interactionCountBySocialNetwork();
+
+    /**
+     * Returns a list of available reports along with hthe URL to get the data for the report.
+     * The first element in the object array is the name of the report, and the second element
+     * is the URL to get the data for that report.
+     *
+     * @param request the HttpServletRequest to get the host information from.
+     *
+     * @return a list of available reports along with hthe URL to get the data for the report.
+     */
+    List<Object[]> getAvailableReports(HttpServletRequest request);
 }

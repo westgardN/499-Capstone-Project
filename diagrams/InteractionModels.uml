@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>edu.metrostate.ics499.prim.model.Interaction</OriginalElement>
+  <nodes>
+    <node x="1127.5" y="44.0">javax.persistence.Entity</node>
+    <node x="188.0" y="223.0">edu.metrostate.ics499.prim.model.InteractionFlag</node>
+    <node x="1074.25" y="267.0">edu.metrostate.ics499.prim.model.InteractionResponse</node>
+    <node x="428.0" y="55.0">java.io.Serializable</node>
+    <node x="610.0" y="311.0">edu.metrostate.ics499.prim.model.InteractionState</node>
+    <node x="831.5" y="0.0">javax.persistence.Table</node>
+    <node x="798.0" y="190.0">edu.metrostate.ics499.prim.model.Interaction</node>
+    <node x="372.0" y="311.0">edu.metrostate.ics499.prim.model.InteractionResponseType</node>
+    <node x="0.0" y="267.0">edu.metrostate.ics499.prim.model.InteractionType</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="edu.metrostate.ics499.prim.model.InteractionResponse" target="javax.persistence.Entity">
+      <point x="52.5" y="-114.5" />
+      <point x="34.75" y="26.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.model.InteractionResponseType" target="java.io.Serializable">
+      <point x="0.0" y="-70.5" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.model.Interaction" target="java.io.Serializable">
+      <point x="-68.33333333333326" y="-191.5" />
+      <point x="832.1666666666667" y="160.0" />
+      <point x="523.4" y="160.0" />
+      <point x="42.39999999999998" y="15.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.model.InteractionFlag" target="java.io.Serializable">
+      <point x="0.0" y="-158.5" />
+      <point x="270.0" y="170.0" />
+      <point x="459.8" y="170.0" />
+      <point x="-21.19999999999999" y="15.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.model.Interaction" target="javax.persistence.Entity">
+      <point x="68.33333333333337" y="-191.5" />
+      <point x="968.8333333333334" y="170.0" />
+      <point x="1162.25" y="170.0" />
+      <point x="-34.75" y="26.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.model.InteractionResponse" target="javax.persistence.Table">
+      <point x="-52.5" y="-114.5" />
+      <point x="1126.75" y="160.0" />
+      <point x="1038.5" y="160.0" />
+      <point x="69.0" y="70.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.model.InteractionType" target="java.io.Serializable">
+      <point x="0.0" y="-114.5" />
+      <point x="84.0" y="160.0" />
+      <point x="438.6" y="160.0" />
+      <point x="-42.39999999999998" y="15.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.model.InteractionState" target="java.io.Serializable">
+      <point x="0.0" y="-70.5" />
+      <point x="694.0" y="170.0" />
+      <point x="502.20000000000005" y="170.0" />
+      <point x="21.200000000000045" y="15.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.model.Interaction" target="javax.persistence.Table">
+      <point x="0.0" y="-191.5" />
+      <point x="-69.0" y="70.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="623.5" y="314.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

@@ -15,12 +15,9 @@ import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
-import org.springframework.social.twitter.api.Tweet;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -46,23 +43,23 @@ public class LinkedInServiceImpl implements LinkedInService {
 	@Value("${spring.social.linkedIn.appSecret}")
 	String linkedInSecret;
 
-	@Value("${spring.social.linkedIn.authUri}")
-	String linkedInAuthUri;
+    @Value("${spring.social.linkedIn.authUri}")
+    String linkedInAuthUri;
 
-	@Value("${spring.social.linkedIn.refreshTokenPath}")
-	String linkedInRefreshTokenPath;
+    @Value("${spring.social.linkedIn.refreshTokenPath}")
+    String linkedInRefreshTokenPath;
 
-	@Value("${spring.social.linkedIn.scheme}")
-	String linkedInScheme;
+    @Value("${spring.social.linkedIn.scheme}")
+    String linkedInScheme;
 
-	@Value("${spring.social.linkedIn.host}")
-	String linkedInHost;
+    @Value("${spring.social.linkedIn.host}")
+    String linkedInHost;
 
-	@Value("${spring.social.linkedIn.grantType}")
-	String linkedInGrantType;
+    @Value("${spring.social.linkedIn.grantType}")
+    String linkedInGrantType;
 
-	@Value("${spring.social.linkedIn.permissions}")
-	String linkedInPermissions;
+    @Value("${spring.social.linkedIn.permissions}")
+    String linkedInPermissions;
 
 	@Autowired
 	SocialNetworkRegistrationService socialNetworkRegistrationService;

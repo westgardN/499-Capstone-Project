@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * The DataRefreshRequestDao interface defines the operations that can be performed for a DataRefreshRequest.
  */
-public interface DataRefreshRequestDao {
+public interface DataRefreshRequestDao extends IRepository {
 
     /**
      * Returns a persistent DataRefreshRequest object identified by the specified id.

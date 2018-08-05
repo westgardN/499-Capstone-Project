@@ -8,7 +8,7 @@ import java.util.List;
  * The InteractionResponseDao interface defines the operations that can be performed for an
  * InteractionResponse.
  */
-public interface InteractionResponseDao {
+public interface InteractionResponseDao extends IRepository {
 
     /**
      * Returns a persistent InteractionResponse object identified by the specified id.

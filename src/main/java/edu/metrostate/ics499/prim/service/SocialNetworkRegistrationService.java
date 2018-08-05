@@ -2,6 +2,7 @@ package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.SocialNetwork;
 import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
+import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
 
 import java.util.List;
@@ -86,6 +87,16 @@ public interface SocialNetworkRegistrationService {
      * @param socialNetworkRegistration the SocialNetworkRegistration to update.
      */
     void update(SocialNetworkRegistration socialNetworkRegistration);
+
+    /**
+     * Registers a social network in the database based on the provided OAuth Grant.
+     *
+     * @param socialNetwork the social network to register.
+     * @param accessGrant the OAuth Token received from registration.
+     *
+     * @return returns true if registration was successful; false otherwise.
+     */
+    boolean register(SocialNetwork socialNetwork, OAuthToken accessGrant);
 
     /**
      * Registers a social network in the database based on the provided OAuth Grant.

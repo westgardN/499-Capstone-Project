@@ -9,7 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The InteractionServiceImpl implements the InteractionService
@@ -167,6 +177,8 @@ public class InteractionServiceImpl implements InteractionService {
     public void addInteractions(List<Interaction> interactions) {
         for (Interaction interaction : interactions) {
             if (dao.interactionMessageExists(interaction)) {
+                Interaction existing = dao.findBySocialNetworkAndMessageId(interaction.getMessageId(), interaction.getSocialNetwork());
+                interaction.setId(existing.getId());
                 update(interaction);
             } else {
                 save(interaction);
@@ -183,5 +195,42 @@ public class InteractionServiceImpl implements InteractionService {
         for (InteractionProvider interactionProvider : interactionProviderService.getAllProviders()) {
             addInteractions(interactionProvider.getInteractions());
         }
+    }
+
+    /**
+     * Returns a map that contains the count of interactions for each social network.
+     *
+     * @return a map that contains the count of interactions for each social network.
+     */
+    @Override
+    public Map<SocialNetwork, Long> interactionCountBySocialNetwork() {
+        Map<SocialNetwork, Long> result = new HashMap<>();
+        String queryString = "SELECT socialNetwork, Count(id) FROM Interaction GROUP BY socialNetwork";
+        Query query = dao.getSession().createQuery(queryString);
+        List<Object[]> results = query.getResultList();
+
+        for (int i = 0; i < results.size(); i++) {
+            Object obj[] = results.get(i);
+            result.put((SocialNetwork)obj[0], (Long)obj[1]);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a list of available reports along with hthe URL to get the data for the report.
+     * The first element in the object array is the name of the report, and the second element
+     * is the URL to get the data for that report.
+     *
+     * @param request the HttpServletRequest to get the host information from.
+     * @return a list of available reports along with hthe URL to get the data for the report.
+     */
+    @Override
+    public List<Object[]> getAvailableReports(HttpServletRequest request) {
+        List<Object[]> result = new ArrayList<>();
+
+        result.add(new Object[] {"Lifetime Interaction Count By Social Network", "http://localhost:8080/report/interactionCountBySocialNetwork"});
+
+        return result;
     }
 }

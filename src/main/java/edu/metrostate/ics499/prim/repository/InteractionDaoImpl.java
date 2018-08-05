@@ -14,6 +14,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository("interactionDao")
@@ -46,6 +47,33 @@ public class InteractionDaoImpl extends AbstractDao<Integer, Interaction> implem
         }
 
         return interaction;
+    }
+
+    /**
+     * Returns a persistent Interaction object identified by the specified message id.
+     * If no Interaction with that message id exists, null is returned.
+     *
+     * @param messageId the Interaction Message Id to retrieve.
+     * @param socialNetwork the Social Network associated with the message.
+     *
+     * @return a persistent Interaction object identified by the specified message id.
+     * If no Interaction with that id exists, null is returned.
+     */
+    @Override
+    public Interaction findBySocialNetworkAndMessageId(String messageId, SocialNetwork socialNetwork) {
+        CriteriaBuilder builder = getCriteriaBuilder();
+        CriteriaQuery<Interaction> crit = builder.createQuery(Interaction.class);
+        Root<Interaction> from = crit.from(Interaction.class);
+        List<Predicate> predicates = new ArrayList<Predicate>();
+        predicates.add(builder.equal(from.get("messageId"), messageId));
+        predicates.add(builder.equal(from.get("socialNetwork"), socialNetwork));
+        Predicate clause = builder.and((predicates.toArray(new Predicate[predicates.size()])));
+        crit.select(from).where(clause);
+        TypedQuery<Interaction> query = getSession().createQuery(crit);
+
+        List<Interaction> result = query.getResultList();
+
+        return result.isEmpty() ? null : result.get(0);
     }
 
     /**

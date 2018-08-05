@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * The InteractionDao interface defines the operations that can be performed for an Interaction.
  */
-public interface InteractionDao {
+public interface InteractionDao extends IRepository {
 
     /**
      * Returns a persistent Interaction object identified by the specified id.
@@ -21,6 +21,18 @@ public interface InteractionDao {
      * If no Interaction with that id exists, null is returned.
      */
     Interaction findById(int id);
+
+    /**
+     * Returns a persistent Interaction object identified by the specified message id.
+     * If no Interaction with that message id exists, null is returned.
+     *
+     * @param messageId the Interaction Message Id to retrieve.
+     * @param socialNetwork the Social Network associated with the message.
+     *
+     * @return a persistent Interaction object identified by the specified message id.
+     * If no Interaction with that id exists, null is returned.
+     */
+    Interaction findBySocialNetworkAndMessageId(String messageId, SocialNetwork socialNetwork);
 
     /**
      * Returns a List of persistent Interactions for the specified Social Network. If no Interactions exist,

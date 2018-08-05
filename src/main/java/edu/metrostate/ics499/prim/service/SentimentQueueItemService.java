@@ -99,4 +99,35 @@ public interface SentimentQueueItemService {
      * Deletes all unprocessed SentimentsQueueItems from the backing store.
      */
     void deleteAllUnprocessed();
+
+    /**
+     * Adds the interaction to the queue
+     *
+     * @param interaction the interaction to add to the queue.
+     */
+    void enqueue(Interaction interaction);
+
+    /**
+     * Removes the next item in the queue and returns it. If the queue is empty an
+     * exception is thrown.
+     *
+     * @return the next item in the queue to process.
+     */
+    Interaction dequeue();
+
+    /**
+     * Returns true if the queue is empty.
+     *
+     * @return true if the queue is empty.
+     */
+    boolean isEmpty();
+
+    /**
+     * Returns the next item in the queue but does not remove it from
+     * the queue. If the queue is empty an
+     * exception is thrown.
+     *
+     * @return the next item in the queue to process.
+     */
+    Interaction peek();
 }

@@ -37,7 +37,7 @@ public abstract class AbstractDao<PK extends Serializable, T> {
      *
      * @return a Hibernate Session object that can be used to JPA operations.
      */
-    protected Session getSession(){
+    public Session getSession(){
         return sessionFactory.getCurrentSession();
     }
 
@@ -91,7 +91,7 @@ public abstract class AbstractDao<PK extends Serializable, T> {
      *
      * @return a JPA CriteriaBuilder that can be used to build and execute queries.
      */
-    protected CriteriaBuilder getCriteriaBuilder() {
+    public CriteriaBuilder getCriteriaBuilder() {
         return getSession().getCriteriaBuilder();
     }
 
