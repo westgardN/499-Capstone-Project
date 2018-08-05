@@ -5,6 +5,7 @@ import edu.metrostate.ics499.prim.model.InteractionType;
 import edu.metrostate.ics499.prim.model.SocialNetwork;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The InteractionService provides an interface for easily working with Interactions.
@@ -111,4 +112,10 @@ public interface InteractionService {
      */
     void addInteractionsFromDataProviders();
 
+    /**
+     * Returns a map that contains the count of interactions for each social network.
+     *
+     * @return a map that contains the count of interactions for each social network.
+     */
+    Map<SocialNetwork, Long> interactionCountBySocialNetwork();
 }

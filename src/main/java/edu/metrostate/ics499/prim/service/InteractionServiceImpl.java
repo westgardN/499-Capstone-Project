@@ -9,7 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The InteractionServiceImpl implements the InteractionService
@@ -185,5 +193,25 @@ public class InteractionServiceImpl implements InteractionService {
         for (InteractionProvider interactionProvider : interactionProviderService.getAllProviders()) {
             addInteractions(interactionProvider.getInteractions());
         }
+    }
+
+    /**
+     * Returns a map that contains the count of interactions for each social network.
+     *
+     * @return a map that contains the count of interactions for each social network.
+     */
+    @Override
+    public Map<SocialNetwork, Long> interactionCountBySocialNetwork() {
+        Map<SocialNetwork, Long> result = new HashMap<>();
+        String queryString = "SELECT socialNetwork, Count(id) FROM Interaction GROUP BY socialNetwork";
+        Query query = dao.getSession().createQuery(queryString);
+        List<Object[]> results = query.getResultList();
+
+        for (int i = 0; i < results.size(); i++) {
+            Object obj[] = results.get(i);
+            result.put((SocialNetwork)obj[0], (Long)obj[1]);
+        }
+
+        return result;
     }
 }
