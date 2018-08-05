@@ -60,6 +60,7 @@ public class AuthFailureListener implements ApplicationListener<AuthenticationFa
             user.setFailedLogins(user.getFailedLogins() + 1);
             if (user.getFailedLogins() >= 5) {
             	user.setStatus(UserStatus.LOCKED);
+            	user.setEnabled(false);
             }
             userService.update(user);
             logger.info("User : {}", user);
