@@ -40,7 +40,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * Adds associations between views and controller endpoints for the home page.
+     * Adds associations between views and controller end points for the home page.
      * @param registry the controller registry we will be adding to.
      */
     public void addViewControllers(ViewControllerRegistry registry) {
