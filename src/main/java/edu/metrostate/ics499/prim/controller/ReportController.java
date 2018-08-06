@@ -23,10 +23,10 @@ public class ReportController {
     InteractionService interactionService;
 
     /**
-     * Generates the Facebook authorization URL that the client is redirected to.
+     * Generates the data for the interaction count by social network report.
      *
-     * @return the URL to redirect the client to.
-     * @throws IOException
+     * @return A list of Object arrays that contain the label and data for each
+     * result.
      */
     @ResponseBody
     @GetMapping("/interactionCountBySocialNetwork")
@@ -34,6 +34,13 @@ public class ReportController {
         return interactionService.interactionCountBySocialNetwork();
     }
 
+    /**
+     * Returns a list of available reports to run.
+     *
+     * @param request the request object
+     * @param response the response object
+     * @return a list of available reports to run.
+     */
     @GetMapping("/")
     public ModelAndView reportList(HttpServletRequest request, HttpServletResponse response) {
         return new ModelAndView("report/list", "reports", interactionService.getAvailableReports(request));
