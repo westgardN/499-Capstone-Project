@@ -10,14 +10,9 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-6">
+        <div class="col col-3">
             <h2 class="text-center" th:text="#{label.reportList.title}">Available Reports</h2>
             <hr>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col col-3">
             <ul th:each="report : ${reports}" class="list-group">
                 <li class="list-group-item list-group-item-primary">
                     <a th:utext="${report[0]}" th:onclick="'clickReport(\'' + ${report[0]} + '\', \'' + ${report[1]} + '\');'" href="#"></a>
@@ -25,7 +20,7 @@
             </ul>
         </div>
         <div class="col col-8">
-            <div id="chartContainer" style="height: 300px; width: 100%"></div>
+            <div id="chartContainer"></div>
         </div>
         <div class="col col-1">
 
