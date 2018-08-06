@@ -16,11 +16,11 @@ public enum InteractionResponseType {
     /**
      * The Interaction was deferred.
      */
-    DEFERRED("DEFERRED"),
+    DEFERRED("FOLLOWUP"),
     /**
      * The Interaction was deleted.
      */
-    DELETED("DELETED");
+    DELETED("IGNORED");
 
     private String interactionResponseType;
 

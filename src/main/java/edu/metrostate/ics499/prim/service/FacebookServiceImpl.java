@@ -1,7 +1,7 @@
 package edu.metrostate.ics499.prim.service;
 
+import com.google.common.base.Strings;
 import edu.metrostate.ics499.prim.model.*;
-import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -208,7 +208,6 @@ public class FacebookServiceImpl implements FacebookService {
         List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
                 .findBySocialNetwork(SocialNetwork.FACEBOOK);
 
-        Facebook facebook = null;
         List<Facebook> facebooks = new LinkedList<>();
 
         for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
@@ -235,11 +234,23 @@ public class FacebookServiceImpl implements FacebookService {
     public List<Post> getAllPostTypeItems(Facebook facebook) {
         List<Post> posts = new LinkedList<>();
 
-        posts.addAll(facebook.feedOperations().getFeed());
-        //posts.addAll(facebook.feedOperations().getPosts());
-        posts.addAll(facebook.feedOperations().getTagged());
+        for (Post post : facebook.feedOperations().getFeed()) {
+            addPost(posts, post);
+        }
+
+        for (Post post : facebook.feedOperations().getTagged()) {
+            addPost(posts, post);
+        }
 
         return posts;
+    }
+
+    private void addPost(List<Post> posts, Post post) {
+        InteractionType type = getType(post);
+        if (!Strings.isNullOrEmpty(post.getMessage())
+                && (type == InteractionType.LINK || type == InteractionType.STATUS)) {
+            posts.add(post);
+        }
     }
 
     /**
@@ -312,7 +323,7 @@ public class FacebookServiceImpl implements FacebookService {
     private InteractionType getType(Post post) {
         Post.PostType postType = post.getType();
 
-        InteractionType interactionType = null;
+        InteractionType interactionType = InteractionType.UNKNOWN;
 
         if (postType != null) {
             interactionType = InteractionType.valueOf(postType.name());

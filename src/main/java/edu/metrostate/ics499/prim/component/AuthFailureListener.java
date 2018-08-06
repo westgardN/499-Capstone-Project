@@ -47,7 +47,7 @@ public class AuthFailureListener implements ApplicationListener<AuthenticationFa
         Object username = event.getAuthentication().getPrincipal();
         logger.info("Failed login using username [" + username + "]");
 
-        // Retrieve the persistent User that trieed to log in.
+        // Retrieve the persistent User that tried to log in.
         User user = userService.findBySsoId(username.toString());
 
         logger.info("User : {}", user);
@@ -60,6 +60,7 @@ public class AuthFailureListener implements ApplicationListener<AuthenticationFa
             user.setFailedLogins(user.getFailedLogins() + 1);
             if (user.getFailedLogins() >= 5) {
             	user.setStatus(UserStatus.LOCKED);
+            	user.setEnabled(false);
             }
             userService.update(user);
             logger.info("User : {}", user);

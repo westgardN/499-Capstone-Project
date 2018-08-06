@@ -116,125 +116,281 @@ public class Interaction implements Serializable {
     @Enumerated(EnumType.STRING)
     private InteractionFlag flag;
 
+    /**
+     * Gets id
+     *
+     * @return value of id
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     * Sets id to the specified value in id
+     *
+     * @param id the new value for id
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
+    /**
+     * Gets createdTime
+     *
+     * @return value of createdTime
+     */
     public Date getCreatedTime() {
         return createdTime;
     }
 
+    /**
+     * Sets createdTime to the specified value in createdTime
+     *
+     * @param createdTime the new value for createdTime
+     */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
     }
 
+    /**
+     * Gets description
+     *
+     * @return value of description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets description to the specified value in description
+     *
+     * @param description the new value for description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Gets fromId
+     *
+     * @return value of fromId
+     */
     public String getFromId() {
         return fromId;
     }
 
+    /**
+     * Sets fromId to the specified value in fromId
+     *
+     * @param fromId the new value for fromId
+     */
     public void setFromId(String fromId) {
         this.fromId = fromId;
     }
 
+    /**
+     * Gets fromName
+     *
+     * @return value of fromName
+     */
     public String getFromName() {
         return fromName;
     }
 
+    /**
+     * Sets fromName to the specified value in fromName
+     *
+     * @param fromName the new value for fromName
+     */
     public void setFromName(String fromName) {
         this.fromName = fromName;
     }
 
+    /**
+     * Gets messageId
+     *
+     * @return value of messageId
+     */
     public String getMessageId() {
         return messageId;
     }
 
+    /**
+     * Sets messageId to the specified value in messageId
+     *
+     * @param messageId the new value for messageId
+     */
     public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
 
+    /**
+     * Gets messageLink
+     *
+     * @return value of messageLink
+     */
     public String getMessageLink() {
         return messageLink;
     }
 
+    /**
+     * Sets messageLink to the specified value in messageLink
+     *
+     * @param messageLink the new value for messageLink
+     */
     public void setMessageLink(String messageLink) {
         this.messageLink = messageLink;
     }
 
+    /**
+     * Gets message
+     *
+     * @return value of message
+     */
     public String getMessage() {
         return message;
     }
 
+    /**
+     * Sets message to the specified value in message
+     *
+     * @param message the new value for message
+     */
     public void setMessage(String message) {
         this.message = message;
     }
 
+    /**
+     * Gets sentiment
+     *
+     * @return value of sentiment
+     */
     public Integer getSentiment() {
         return sentiment;
     }
 
+    /**
+     * Sets sentiment to the specified value in sentiment
+     *
+     * @param sentiment the new value for sentiment
+     */
     public void setSentiment(Integer sentiment) {
         this.sentiment = sentiment;
     }
 
+    /**
+     * Gets socialNetwork
+     *
+     * @return value of socialNetwork
+     */
     public SocialNetwork getSocialNetwork() {
         return socialNetwork;
     }
 
+    /**
+     * Sets socialNetwork to the specified value in socialNetwork
+     *
+     * @param socialNetwork the new value for socialNetwork
+     */
     public void setSocialNetwork(SocialNetwork socialNetwork) {
         this.socialNetwork = socialNetwork;
     }
 
+    /**
+     * Gets type
+     *
+     * @return value of type
+     */
     public InteractionType getType() {
         return type;
     }
 
+    /**
+     * Sets type to the specified value in type
+     *
+     * @param type the new value for type
+     */
     public void setType(InteractionType type) {
         this.type = type;
     }
 
+    /**
+     * Gets state
+     *
+     * @return value of state
+     */
     public InteractionState getState() {
         return state;
     }
 
+    /**
+     * Sets state to the specified value in state
+     *
+     * @param state the new value for state
+     */
     public void setState(InteractionState state) {
         this.state = state;
     }
 
+    /**
+     * Gets flag
+     *
+     * @return value of flag
+     */
     public InteractionFlag getFlag() {
         return flag;
     }
 
+    /**
+     * Sets flag to the specified value in flag
+     *
+     * @param flag the new value for flag
+     */
     public void setFlag(InteractionFlag flag) {
         this.flag = flag;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Interaction that = (Interaction) o;
-        return Objects.equals(getId(), that.getId());
-    }
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((messageId == null) ? 0 : messageId.hashCode());
+		result = prime * result + ((socialNetwork == null) ? 0 : socialNetwork.hashCode());
+		return result;
+	}
 
-    @Override
-    public int hashCode() {
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Interaction)) {
+			return false;
+		}
+		Interaction other = (Interaction) obj;
+		if (messageId == null) {
+			if (other.messageId != null) {
+				return false;
+			}
+		} else if (!messageId.equals(other.messageId)) {
+			return false;
+		}
+		if (socialNetwork != other.socialNetwork) {
+			return false;
+		}
+		return true;
+	}
 
-        return Objects.hash(getId());
-    }
-
-    @Override
+	@Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Interaction{");
         sb.append("id=").append(id);

@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -49,12 +50,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     AuthenticationSuccessHandler authenticationSuccessHandler;
 
+    @Autowired
+    AuthenticationFailureHandler authenticationFailureHandler;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/", "/home", "/login", "/logout")
                 .permitAll()
-                .antMatchers("/user/profile", "/user/changePassword", "/interaction/*")
+                .antMatchers("/user/profile", "/user/changePassword", "/interaction/**", "/report/**", "/interaction/ignore/*")
                 .access("hasRole('USER') or hasRole('ADMIN') or hasRole('DBA')")
                 .antMatchers("/user/list", "/user/new/**", "/user/delete/*", "/social/*", "/facebook/*", "/twitter/*", "/linkedin/*")
                 .access("hasRole('ADMIN')")
@@ -63,6 +67,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .successHandler(authenticationSuccessHandler)
+                .failureUrl("/login")
+                .failureHandler(authenticationFailureHandler)
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .usernameParameter("ssoId")
@@ -73,10 +79,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .tokenRepository(tokenRepository)
                 .tokenValiditySeconds(86400)
                 .and()
-                .csrf()
-                .and()
                 .exceptionHandling()
                 .accessDeniedPage("/accessDenied");
+
+        http.csrf().disable();
     }
 
     @Override

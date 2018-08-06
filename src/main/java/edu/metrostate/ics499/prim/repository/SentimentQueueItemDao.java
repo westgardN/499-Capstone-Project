@@ -9,7 +9,7 @@ import java.util.List;
  * The SentimentQueueItemDao interface defines the operations that can be performed for an
  * SentimentQueueItem.
  */
-public interface SentimentQueueItemDao {
+public interface SentimentQueueItemDao extends IRepository {
 
     /**
      * Returns a persistent SentimentQueueItemDao object identified by the specified id.

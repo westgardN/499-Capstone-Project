@@ -15,6 +15,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "SENTIMENT_INTERACTION_QUEUE")
 public class SentimentQueueItem implements Serializable, Comparable<SentimentQueueItem> {
+    public final int DEFAULT_PRIORITY = 10;
 
     /**
      * The auto generated Primary Key
@@ -51,6 +52,28 @@ public class SentimentQueueItem implements Serializable, Comparable<SentimentQue
     @Column(name = "processed", columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean processed;
+
+    /**
+     * Creates a new SentimentQueueItem with default priority and no Interaction.
+     */
+    public SentimentQueueItem() {
+        this(null);
+    }
+
+    /**
+     * Creates a new SentimentQueueItem with default priority with
+     * the specified Interaction.
+     *
+     * @param interaction the Interaction to associate with this queue item.
+     */
+    public SentimentQueueItem(Interaction interaction) {
+        if (interaction != null) {
+            this.interaction = interaction;
+        }
+        this.createdTime = new Date();
+        this.priority = DEFAULT_PRIORITY;
+        this.processed = false;
+    }
 
     public Integer getId() {
         return id;
@@ -91,7 +114,6 @@ public class SentimentQueueItem implements Serializable, Comparable<SentimentQue
     public void setProcessed(boolean processed) {
         this.processed = processed;
     }
-
 
     @Override
     public boolean equals(Object o) {

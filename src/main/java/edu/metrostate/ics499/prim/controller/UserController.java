@@ -38,7 +38,6 @@ public class UserController {
 
     static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-
     @Autowired
     UserService userService;
 

@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
@@ -19,6 +24,9 @@ public class SentimentQueueItemServiceImpl implements SentimentQueueItemService 
 
     @Autowired
     private SentimentQueueItemDao dao;
+
+    @Autowired
+    private InteractionService interactionService;
 
     /**
      * Returns a persistent SentimentQueueItemDao object identified by the specified id.
@@ -80,7 +88,7 @@ public class SentimentQueueItemServiceImpl implements SentimentQueueItemService 
      */
     @Override
     public List<SentimentQueueItem> findUnprocessed() {
-        return findUnprocessed();
+        return dao.findUnprocessed();
     }
 
     /**
@@ -146,5 +154,57 @@ public class SentimentQueueItemServiceImpl implements SentimentQueueItemService 
     @Override
     public void deleteAllUnprocessed() {
         dao.deleteAllUnprocessed();
+    }
+
+    /**
+     * Adds the interaction to the queue
+     *
+     * @param interaction the interaction to add to the queue.
+     */
+    @Override
+    public void enqueue(Interaction interaction) {
+        SentimentQueueItem sentimentQueueItem = new SentimentQueueItem(interaction);
+
+        save(sentimentQueueItem);
+    }
+
+    /**
+     * Removes the next item in the queue and returns it. If the queue is empty an
+     * exception is thrown.
+     *
+     * @return the next item in the queue to process.
+     */
+    @Override
+    public Interaction dequeue() {
+        return null;
+    }
+
+    /**
+     * Returns true if the queue is empty.
+     *
+     * @return true if the queue is empty.
+     */
+    @Override
+    public boolean isEmpty() {
+        CriteriaBuilder builder = dao.getCriteriaBuilder();
+        CriteriaQuery<Long> crit = builder.createQuery(Long.class);
+        Root<SentimentQueueItem> from = crit.from(SentimentQueueItem.class);
+        Predicate clause = builder.notEqual(from.get("processed"), true);
+        crit.select(builder.count(from)).where(clause);
+        TypedQuery<Long> query = dao.getSession().createQuery(crit);
+
+        return query.getSingleResult() == 0;
+    }
+
+    /**
+     * Returns the next item in the queue but does not remove it from
+     * the queue. If the queue is empty an
+     * exception is thrown.
+     *
+     * @return the next item in the queue to process.
+     */
+    @Override
+    public Interaction peek() {
+        return null;
     }
 }

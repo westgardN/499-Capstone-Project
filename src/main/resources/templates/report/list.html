@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="/fragments/header :: commonHeader(~{::title})">
+    <title>Reports</title>
+</head>
+<body>
+<div th:replace="/fragments/navigation :: navigation" />
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <h2 class="text-center" th:text="#{label.reportList.title}">Available Reports</h2>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col col-3">
+            <ul th:each="report : ${reports}" class="list-group">
+                <li class="list-group-item list-group-item-primary">
+                    <a th:utext="${report[0]}" th:onclick="'clickReport(\'' + ${report[0]} + '\', \'' + ${report[1]} + '\');'" href="#"></a>
+                </li>
+            </ul>
+        </div>
+        <div class="col col-8">
+            <div id="chartContainer" style="height: 300px; width: 100%"></div>
+        </div>
+        <div class="col col-1">
+
+        </div>
+    </div>
+    <footer th:replace="/fragments/footer :: footer" />
+</div>
+
+<div th:replace="/fragments/scripts :: commonScripts(~{::script})" />
+<script type="text/javascript" th:src="@{/js/reports.js}"> </script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+</body>
+</html>

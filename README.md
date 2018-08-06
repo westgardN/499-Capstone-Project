@@ -16,7 +16,8 @@ If you don't have the type you first need to clone the repository.
 
 ### Setup Prim MySQL Database ###
 
-* Run the setup_prim_db_mysql.sql on your MySQL server to create the prim database and user.
+* Run the setup_prim_db_mysql.sql, located in the scripts folder in the root of the project, on your MySQL server to create the prim database and user.
+* If your MySQL server is not on the same machine that you will be running PRIM, then please update the application.properties file, located under src/main/resources, with the connection information to your MySQL server.
 
 ### Building PRIM ###
 
@@ -72,4 +73,4 @@ Visual Studio Code works great and I am sure there are others that work as well.
 
 ### Notes on Checking in Changes ###
 
-Under no circustances should any IDE project files being checked in to the git repository. Just don't do it.
+Under no circumstances should any IDE project files being checked in to the git repository. Just don't do it.

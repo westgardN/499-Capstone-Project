@@ -3,6 +3,7 @@ package edu.metrostate.ics499.prim.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.metrostate.ics499.prim.model.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,10 @@ public class PrimUserDetailsService implements UserDetailsService {
         if (user == null) {
             logger.info("User not found");
             throw new UsernameNotFoundException("No user found with SSO ID: " + ssoId);
+        }
+
+        if (user.getStatus() == UserStatus.LOCKED) {
+            throw new RuntimeException("blocked");
         }
 
         /*

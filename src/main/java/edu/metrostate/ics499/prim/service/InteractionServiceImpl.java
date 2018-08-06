@@ -1,15 +1,18 @@
 package edu.metrostate.ics499.prim.service;
 
-import edu.metrostate.ics499.prim.model.Interaction;
-import edu.metrostate.ics499.prim.model.InteractionType;
-import edu.metrostate.ics499.prim.model.SocialNetwork;
+import edu.metrostate.ics499.prim.model.*;
 import edu.metrostate.ics499.prim.provider.InteractionProvider;
 import edu.metrostate.ics499.prim.repository.InteractionDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The InteractionServiceImpl implements the InteractionService
@@ -73,7 +76,7 @@ public class InteractionServiceImpl implements InteractionService {
      * an empty List is returned.
      */
     @Override
-    public List<Interaction> findByFlag(String flag) {
+    public List<Interaction> findByFlag(InteractionFlag flag) {
         return dao.findByFlag(flag);
     }
 
@@ -111,6 +114,54 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public List<Interaction> findAll() {
         return dao.findAll();
+    }
+
+    /**
+     * Returns a List of all Open persistent Interactions. If no Open Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Open persistent Interactions. If no Open Interactions exist,
+     * an empty List is returned.
+     */
+    @Override
+    public List<Interaction> findAllOpen() {
+        return dao.findAllOpen();
+    }
+
+    /**
+     * Returns a List of all Closed persistent Interactions. If no Closed Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Closed persistent Interactions. If no Closed Interactions exist,
+     * an empty List is returned.
+     */
+    @Override
+    public List<Interaction> findAllClosed() {
+        return dao.findAllClosed();
+    }
+
+    /**
+     * Returns a List of all Deferred persistent Interactions. If no Deferred Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Deferred persistent Interactions. If no Deferred Interactions exist,
+     * an empty List is returned.
+     */
+    @Override
+    public List<Interaction> findAllDeferred() {
+        return dao.findAllDeferred();
+    }
+
+    /**
+     * Returns a List of all Deleted persistent Interactions. If no Deleted Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Deleted persistent Interactions. If no Deleted Interactions exist,
+     * an empty List is returned.
+     */
+    @Override
+    public List<Interaction> findAllDeleted() {
+        return dao.findAllDeleted();
     }
 
     /**
@@ -166,7 +217,13 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public void addInteractions(List<Interaction> interactions) {
         for (Interaction interaction : interactions) {
-            save(interaction);
+            if (dao.interactionMessageExists(interaction)) {
+                Interaction existing = dao.findBySocialNetworkAndMessageId(interaction.getMessageId(), interaction.getSocialNetwork());
+                interaction.setId(existing.getId());
+                update(interaction);
+            } else {
+                save(interaction);
+            }
         }
     }
 
@@ -179,5 +236,128 @@ public class InteractionServiceImpl implements InteractionService {
         for (InteractionProvider interactionProvider : interactionProviderService.getAllProviders()) {
             addInteractions(interactionProvider.getInteractions());
         }
+    }
+
+    /**
+     * Returns a list that contains the count of interactions for each social network.
+     *
+     * @return a list that contains the count of interactions for each social network.
+     */
+    @Override
+    public List<Object[]> interactionCountBySocialNetwork() {
+        Map<SocialNetwork, Long> result = new HashMap<>();
+        String queryString = "SELECT socialNetwork, Count(id) FROM Interaction GROUP BY socialNetwork";
+        Query query = dao.getSession().createQuery(queryString);
+        List<Object[]> results = query.getResultList();
+
+        return results;
+    }
+
+    /**
+     * Returns a list that contains the count of interactions for each state.
+     *
+     * @return a list that contains the count of interactions for each state.
+     */
+    @Override
+    public List<Object[]> interactionCountByState() {
+        Map<SocialNetwork, Long> result = new HashMap<>();
+        String queryString = "SELECT state, Count(id) FROM Interaction GROUP BY state";
+        Query query = dao.getSession().createQuery(queryString);
+        List<Object[]> results = query.getResultList();
+
+        return results;
+    }
+
+    /**
+     * Returns a list of available reports along with hthe URL to get the data for the report.
+     * The first element in the object array is the name of the report, and the second element
+     * is the URL to get the data for that report.
+     *
+     * @param request the HttpServletRequest to get the host information from.
+     * @return a list of available reports along with hthe URL to get the data for the report.
+     */
+    @Override
+    public List<Object[]> getAvailableReports(HttpServletRequest request) {
+        List<Object[]> result = new ArrayList<>();
+
+        result.add(new Object[] {"Lifetime Interaction Count By Social Network", buildUrl(request, "report/interactionCountBySocialNetwork")});
+        result.add(new Object[] {"Lifetime Interaction Count By State", buildUrl(request, "report/interactionCountByState")});
+
+        return result;
+    }
+
+    /**
+     * Sets the status of the specified interaction to InteractionStatus.IGNORED.
+     *
+     * @param id the id of the interaction to ignore.
+     */
+    @Override
+    public void ignoreById(int id) {
+        Interaction interaction = findById(id);
+
+        if (interaction != null) {
+            interaction.setState(InteractionState.IGNORED);
+        }
+    }
+
+    /**
+     * Sets the status of the specified interaction to InteractionStatus.CLOSED.
+     *
+     * @param id the id of the interaction to ignore.
+     */
+    @Override
+    public void closeById(int id) {
+        Interaction interaction = findById(id);
+
+        if (interaction != null) {
+            interaction.setState(InteractionState.CLOSED);
+        }
+    }
+
+    /**
+     * Sets the status of the specified interaction to InteractionStatus.FOLLOWUP.
+     *
+     * @param id the id of the interaction to ignore.
+     */
+    @Override
+    public void deferById(int id) {
+        Interaction interaction = findById(id);
+
+        if (interaction != null) {
+            interaction.setState(InteractionState.FOLLOWUP);
+        }
+    }
+
+    /**
+     * Sets the status of the specified interaction to InteractionStatus.OPEN.
+     *
+     * @param id the id of the interaction to ignore.
+     */
+    @Override
+    public void reopenById(int id) {
+        Interaction interaction = findById(id);
+
+        if (interaction != null) {
+            interaction.setState(InteractionState.OPEN);
+        }
+    }
+
+    /**
+     * This method builds a URL for an endpoint
+     * @param request the request object
+     * @param endPoint the end point to build a URL for.
+     * @return the request URL based on the request object.
+     */
+    private String buildUrl(HttpServletRequest request, String endPoint) {
+        final int serverPort = request.getServerPort();
+        String url = "";
+        if ((serverPort == 80) || (serverPort == 443)) {
+            // No need to add the server port for standard HTTP and HTTPS ports, the scheme will help determine it.
+            url = String.format("%s://%s/%s", request.getScheme(), request.getServerName(), endPoint);
+        } else {
+            url = String.format("%s://%s:%s/%s", request.getScheme(), request.getServerName(), serverPort, endPoint);
+        }
+
+        return url;
     }
 }
