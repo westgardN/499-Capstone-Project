@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -29,7 +30,7 @@ public class ReportController {
      */
     @ResponseBody
     @GetMapping("/interactionCountBySocialNetwork")
-    public Map<SocialNetwork, Long> createFacebookAuthorizationUrl() throws IOException {
+    public List<Object[]> interactionCountBySocialNetwork() throws IOException {
         return interactionService.interactionCountBySocialNetwork();
     }
 

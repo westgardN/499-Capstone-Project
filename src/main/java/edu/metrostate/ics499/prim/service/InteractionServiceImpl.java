@@ -203,18 +203,18 @@ public class InteractionServiceImpl implements InteractionService {
      * @return a map that contains the count of interactions for each social network.
      */
     @Override
-    public Map<SocialNetwork, Long> interactionCountBySocialNetwork() {
+    public List<Object[]> interactionCountBySocialNetwork() {
         Map<SocialNetwork, Long> result = new HashMap<>();
         String queryString = "SELECT socialNetwork, Count(id) FROM Interaction GROUP BY socialNetwork";
         Query query = dao.getSession().createQuery(queryString);
         List<Object[]> results = query.getResultList();
 
-        for (int i = 0; i < results.size(); i++) {
-            Object obj[] = results.get(i);
-            result.put((SocialNetwork)obj[0], (Long)obj[1]);
-        }
+//        for (int i = 0; i < results.size(); i++) {
+//            Object obj[] = results.get(i);
+//            result.put((SocialNetwork)obj[0], (Long)obj[1]);
+//        }
 
-        return result;
+        return results;
     }
 
     /**

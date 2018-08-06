@@ -118,7 +118,7 @@ public interface InteractionService {
      *
      * @return a map that contains the count of interactions for each social network.
      */
-    Map<SocialNetwork, Long> interactionCountBySocialNetwork();
+    List<Object[]> interactionCountBySocialNetwork();
 
     /**
      * Returns a list of available reports along with hthe URL to get the data for the report.
