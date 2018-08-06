@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <h2 class="text-center" th:text="#{label.interactionList.title}">Open Interactions</h2>
+            <h2 class="text-center" th:text="#{label.closedList.title}">Ignored Interactions</h2>
             <hr>
         </div>
     </div>
@@ -35,7 +35,7 @@
                     <p th:if="${interaction.sentiment == null}" th:text="'Sentiment: Not scored yet.'"></p>
                     <p th:if="${interaction.sentiment != null}" th:text="'Sentiment: ' interaction.sentiment"></p>
                     <div class="btn-group">
-                        <button class="btn btn-primary" th:onclick="'closeInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${closeUrl + interaction.id} + '\')'">Close</button>&nbsp;
+                        <button class="btn btn-secondary" th:onclick="'reopenInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${reopenUrl + interaction.id} + '\')'">Re-open</button>&nbsp;
                         <button class="btn btn-danger" th:onclick="'ignoreInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${ignoreUrl + interaction.id} + '\')'">Ignore</button>&nbsp;
                         <button class="btn btn-warning" th:onclick="'followUpInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${followUpUrl + interaction.id} + '\')'">Follow-up</button>&nbsp;
                         <button class="btn btn-success" th:onclick="'replyInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${replyUrl + interaction.id} + '\')'">Reply</button>

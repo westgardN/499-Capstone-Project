@@ -33,7 +33,9 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="interactionNavbarDropdownMenuLink">
                             <a th:class="${#strings.contains(viewName, 'interaction/interactionList')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/interaction/list}">View Open</a>
-                            <a th:class="${#strings.contains(viewName, 'interaction/followup')} == true ? 'dropdown-item active' : 'dropdown-item'" href="#">View Follow-up</a>
+                            <a th:class="${#strings.contains(viewName, 'interaction/deferred')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/interaction/deferred}">View Follow-up</a>
+                            <a th:class="${#strings.contains(viewName, 'interaction/ignored')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/interaction/ignored}">View Ignored</a>
+                            <a th:class="${#strings.contains(viewName, 'interaction/closed')} == true ? 'dropdown-item active' : 'dropdown-item'" th:href="@{/interaction/closed}">View Closed</a>
                         </div>
                     </li>
                     <li th:class="${#strings.contains(viewName, 'social')} == true ? 'nav-item dropdown active' : 'nav-item dropdown'" sec:authorize="isAuthenticated() && hasAnyRole('USER', 'ADMIN')">

@@ -34,6 +34,12 @@ public class ReportController {
         return interactionService.interactionCountBySocialNetwork();
     }
 
+    @ResponseBody
+    @GetMapping("/interactionCountByState")
+    public List<Object[]> interactionCountByState() throws IOException {
+        return interactionService.interactionCountByState();
+    }
+
     /**
      * Returns a list of available reports to run.
      *

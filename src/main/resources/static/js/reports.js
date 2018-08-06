@@ -28,17 +28,11 @@ var processObjectListToDataPoints = function(rawReportData) {
 }
 
 var getReportData = function(reportName, reportDataUrl) {
-    var xmlhttp = new XMLHttpRequest();
-    var url = reportDataUrl;
-
-    xmlhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var reportData = JSON.parse(this.responseText);
+    $.get(reportDataUrl, function (reportData, status) {
+        if (status == "success") {
             loadReport(reportName, reportData);
         }
-    };
-    xmlhttp.open("GET", url, true);
-    xmlhttp.send();
+    });
 }
 
 var clickReport = function(reportName, reportDataUrl) {

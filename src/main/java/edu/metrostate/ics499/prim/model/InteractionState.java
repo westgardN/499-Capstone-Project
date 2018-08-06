@@ -14,13 +14,13 @@ public enum InteractionState {
      */
     CLOSED("CLOSED"),
     /**
-     * The Interaction is DEFERRED.
+     * The Interaction is FOLLOWUP.
      */
-    DEFERRED("DEFERRED"),
+    FOLLOWUP("FOLLOWUP"),
     /**
-     * The Interaction is DELETED.
+     * The Interaction is IGNORED.
      */
-    DELETED("DELETED");
+    IGNORED("IGNORED");
 
     private String interactionState;
 

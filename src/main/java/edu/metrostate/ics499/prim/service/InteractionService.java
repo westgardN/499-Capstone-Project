@@ -1,6 +1,7 @@
 package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.Interaction;
+import edu.metrostate.ics499.prim.model.InteractionFlag;
 import edu.metrostate.ics499.prim.model.InteractionType;
 import edu.metrostate.ics499.prim.model.SocialNetwork;
 
@@ -52,7 +53,7 @@ public interface InteractionService {
      * @return a List of persistent Interactions for the specified flag. If no Interactions exist,
      * an empty List is returned.
      */
-    List<Interaction> findByFlag(String flag);
+    List<Interaction> findByFlag(InteractionFlag flag);
 
     /**
      * Returns a List of persistent Interactions that have no sentiment score. If no Interactions exist,
@@ -80,6 +81,42 @@ public interface InteractionService {
      * an empty List is returned.
      */
     List<Interaction> findAll();
+
+    /**
+     * Returns a List of all Open persistent Interactions. If no Open Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Open persistent Interactions. If no Open Interactions exist,
+     * an empty List is returned.
+     */
+    List<Interaction> findAllOpen();
+
+    /**
+     * Returns a List of all Closed persistent Interactions. If no Closed Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Closed persistent Interactions. If no Closed Interactions exist,
+     * an empty List is returned.
+     */
+    List<Interaction> findAllClosed();
+
+    /**
+     * Returns a List of all Deferred persistent Interactions. If no Deferred Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Deferred persistent Interactions. If no Deferred Interactions exist,
+     * an empty List is returned.
+     */
+    List<Interaction> findAllDeferred();
+
+    /**
+     * Returns a List of all Deleted persistent Interactions. If no Deleted Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Deleted persistent Interactions. If no Deleted Interactions exist,
+     * an empty List is returned.
+     */
+    List<Interaction> findAllDeleted();
 
     /**
      * Immediately saves the specified Interaction to the backing store.
@@ -114,11 +151,18 @@ public interface InteractionService {
     void addInteractionsFromDataProviders();
 
     /**
-     * Returns a map that contains the count of interactions for each social network.
+     * Returns a list that contains the count of interactions for each social network.
      *
-     * @return a map that contains the count of interactions for each social network.
+     * @return a list that contains the count of interactions for each social network.
      */
     List<Object[]> interactionCountBySocialNetwork();
+
+    /**
+     * Returns a list that contains the count of interactions for each state.
+     *
+     * @return a list that contains the count of interactions for each state.
+     */
+    List<Object[]> interactionCountByState();
 
     /**
      * Returns a list of available reports along with hthe URL to get the data for the report.
@@ -130,4 +174,32 @@ public interface InteractionService {
      * @return a list of available reports along with hthe URL to get the data for the report.
      */
     List<Object[]> getAvailableReports(HttpServletRequest request);
+
+    /**
+     * Sets the status of the specified interaction to InteractionStatus.IGNORED.
+     *
+     * @param id the id of the interaction to ignore.
+     */
+    void ignoreById(int id);
+
+    /**
+     * Sets the status of the specified interaction to InteractionStatus.CLOSED.
+     *
+     * @param id the id of the interaction to ignore.
+     */
+    void closeById(int id);
+
+    /**
+     * Sets the status of the specified interaction to InteractionStatus.FOLLOWUP.
+     *
+     * @param id the id of the interaction to ignore.
+     */
+    void deferById(int id);
+
+    /**
+     * Sets the status of the specified interaction to InteractionStatus.OPEN.
+     *
+     * @param id the id of the interaction to ignore.
+     */
+    void reopenById(int id);
 }

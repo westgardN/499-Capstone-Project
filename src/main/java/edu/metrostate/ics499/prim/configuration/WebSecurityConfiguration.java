@@ -58,7 +58,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/", "/home", "/login", "/logout")
                 .permitAll()
-                .antMatchers("/user/profile", "/user/changePassword", "/interaction/*", "/report/*")
+                .antMatchers("/user/profile", "/user/changePassword", "/interaction/**", "/report/**", "/interaction/ignore/*")
                 .access("hasRole('USER') or hasRole('ADMIN') or hasRole('DBA')")
                 .antMatchers("/user/list", "/user/new/**", "/user/delete/*", "/social/*", "/facebook/*", "/twitter/*", "/linkedin/*")
                 .access("hasRole('ADMIN')")
@@ -79,10 +79,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .tokenRepository(tokenRepository)
                 .tokenValiditySeconds(86400)
                 .and()
-                .csrf()
-                .and()
                 .exceptionHandling()
                 .accessDeniedPage("/accessDenied");
+
+        http.csrf().disable();
     }
 
     @Override
