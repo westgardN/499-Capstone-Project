@@ -30,7 +30,7 @@
                     <span th:text="'From: ' + ${interaction.fromName}"></span>
                     <span th:text="'on: ' + ${#dates.format(interaction.createdTime, 'MM/dd/yyyy hh:mm a')}"></span>
                     <p th:if="${interaction.description != null}" th:text="'Description: ' + ${interaction.description}"></p>
-                    <p th:if="${interaction.messageLink != null}"><a target="_blank" th:href="${interaction.messageLink}" th:text="'Message: ' + ${interaction.message}"></a></p>
+                    <p th:if="${interaction.messageLink != null}">Message: <a target="_blank" th:href="${interaction.messageLink}" th:text="${interaction.message}"></a></p>
                     <p th:if="${interaction.messageLink == null}" th:text="'Message: ' + ${interaction.message}"></p>
                     <p th:if="${interaction.sentiment == null}" th:text="'Sentiment: Not scored yet.'"></p>
                     <p th:if="${interaction.sentiment != null}" th:text="'Sentiment: ' interaction.sentiment"></p>
