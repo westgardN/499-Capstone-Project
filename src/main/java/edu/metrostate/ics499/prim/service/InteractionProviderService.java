@@ -18,11 +18,15 @@ public class InteractionProviderService {
     @Autowired
     private TwitterService twitterService;
 
+    @Autowired
+    private LinkedInService linkedInService;
+
     public List<InteractionProvider> getAllProviders() {
         List<InteractionProvider> interactionProviders = new ArrayList<>();
 
         interactionProviders.add(facebookService);
         interactionProviders.add(twitterService);
+        interactionProviders.add(linkedInService);
 
         return interactionProviders;
     }

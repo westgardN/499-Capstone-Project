@@ -1,28 +1,20 @@
 package edu.metrostate.ics499.prim.service;
 
 import edu.metrostate.ics499.prim.model.*;
-import edu.metrostate.ics499.prim.provider.InteractionProvider;
+import edu.metrostate.ics499.prim.templates.PrimLinkedInTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.social.linkedin.api.LinkedIn;
-import org.springframework.social.linkedin.api.LinkedInProfile;
-import org.springframework.social.linkedin.api.Post;
+import org.springframework.social.linkedin.api.*;
 import org.springframework.social.linkedin.api.impl.LinkedInTemplate;
 import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.client.RestOperations;
+
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.*;
 
 /**
@@ -60,7 +52,7 @@ public class LinkedInServiceImpl implements LinkedInService {
 		OAuth2Parameters params = new OAuth2Parameters();
 		params.setRedirectUri(linkedInAuthUri);
 		params.setScope(linkedInPermissions);
-		params.setState("Just Some Random Text.");
+		params.setState(connectionFactory.generateState());
 
 		return oauthOperations.buildAuthorizeUrl(params);
 	}
@@ -216,9 +208,30 @@ public class LinkedInServiceImpl implements LinkedInService {
 	 * @return a list of all supported post types from the specified account.
 	 */
 	@Override
-	public List<Post> getAllPostTypeItems(LinkedIn linkedIn) {
+	public List<Post> getAllPostTypeItems(PrimLinkedInTemplate linkedIn) {
 		List<Post> posts = new LinkedList<>();
-		posts.addAll(getAllPostTypeItems());
+
+		String profileId = linkedIn.profileOperations().getProfileId();
+
+		LinkedInProfile linkedInProfile = linkedIn.profileOperations().getUserProfile();
+        LinkedInProfileFull linkedInProfileFull = linkedIn.profileOperations().getUserProfileFull();
+
+		List<LinkedInCompany> companies = linkedIn.getCompaniesMemberIsAdministratorOf();
+
+		for (LinkedInCompany linkedInCompany : companies) {
+            //linkedIn.companyOperations().
+		    Company company = linkedIn.companyOperations().getCompany(linkedInCompany.getId());
+
+            final List<LinkedInNetworkUpdate> networkUpdates = linkedIn.networkUpdateOperations().getNetworkUpdates();
+        }
+//
+//		for (Post post : linkedIn.feedOperations().getFeed()) {
+//			posts.add(post);
+//		}
+//
+//		for (Post post : linkedIn.feedOperations().getTagged()) {
+//			posts.add(post);
+//		}
 
 		return posts;
 	}
@@ -236,7 +249,7 @@ public class LinkedInServiceImpl implements LinkedInService {
 		List<SocialNetworkRegistration> socialNetworkRegistrationList = socialNetworkRegistrationService
 				.findBySocialNetwork(SocialNetwork.LINKEDIN);
 
-		LinkedIn linkedIn = null;
+        PrimLinkedInTemplate linkedIn = null;
 		List<Post> posts = new LinkedList<>();
 
 		for (SocialNetworkRegistration socialNetworkRegistration : socialNetworkRegistrationList) {
@@ -244,7 +257,7 @@ public class LinkedInServiceImpl implements LinkedInService {
 				refreshToken(socialNetworkRegistration);
 			}
 
-			linkedIn = new LinkedInTemplate(socialNetworkRegistration.getToken());
+			linkedIn = new PrimLinkedInTemplate(socialNetworkRegistration.getToken());
 
 			posts.addAll(getAllPostTypeItems(linkedIn));
 			socialNetworkRegistration.setLastUsed(new Date());

@@ -221,8 +221,6 @@ public class InteractionServiceImpl implements InteractionService {
                 Interaction existing = dao.findBySocialNetworkAndMessageId(interaction.getMessageId(), interaction.getSocialNetwork());
                 interaction.setId(existing.getId());
                 update(interaction);
-            } else {
-                save(interaction);
             }
         }
     }
