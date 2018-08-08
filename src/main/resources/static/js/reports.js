@@ -1,24 +1,30 @@
-var loadReport = function (reportName, reportData) {
-    var chart = new CanvasJS.Chart("chartContainer", {
+var loadReport = function (reportName, reportData, reportType) {
 
-        title:{
-            text: reportName
-        },
-        data: [//array of dataSeries
-            { //dataSeries object
+    if (reportData === undefined || reportData === null || reportData.length == 0) {
+        $("#chartContainer").empty();
+        $("#chartContainer").append("<h3>No data</h3>")
+    } else {
+        var chart = new CanvasJS.Chart("chartContainer", {
 
-                /*** Change type "column" to "bar", "area", "line" or "pie"***/
-                type: "column",
-                dataPoints: processObjectListToDataPoints(reportData)
-            }
-        ]
-    });
+            title:{
+                text: reportName
+            },
+            data: [//array of dataSeries
+                { //dataSeries object
 
-    chart.render();
+                    /*** Change type "column" to "bar", "area", "line" or "pie"***/
+                    type: reportType,
+                    dataPoints: processObjectListToDataPoints(reportData)
+                }
+            ]
+        });
+
+        chart.render();
+    }
 };
 
 var processObjectListToDataPoints = function(rawReportData) {
-    var reportData = new Array(2);
+    var reportData = new Array(rawReportData.length);
 
     for (var i = 0; i < rawReportData.length; i++) {
         reportData[i] = {label: (rawReportData[i])[0], y: (rawReportData[i])[1]}
@@ -27,12 +33,34 @@ var processObjectListToDataPoints = function(rawReportData) {
     return reportData;
 }
 
-var getReportData = function(reportName, reportDataUrl) {
-    $.get(reportDataUrl, function (reportData, status) {
-        if (status == "success") {
-            loadReport(reportName, reportData);
+var getReportData = function(reportName, reportDataUrl, reportType) {
+    if (reportType === undefined || reportType === null || reportType === "") {
+        reportType = "column";
+    }
+
+    var headers = {};
+
+    if (csrfHeader !== undefined && csrfHeader !== null && csrfHeader !== "") {
+        headers[csrfHeader] = csrfToken;
+    }
+
+    $.ajax({
+        url: reportDataUrl,
+        cache: false,
+        type: "GET",
+        dataType: "json",
+        headers: headers,
+        success: function (reportData, status, xhr) {
+            if (status == "success") {
+                loadReport(reportName, reportData, reportType);
+            }
         }
     });
+    // $.get(reportDataUrl, function (reportData, status) {
+    //     if (status == "success") {
+    //         loadReport(reportName, reportData, reportType);
+    //     }
+    // });
 }
 
 var clickReport = function(reportName, reportDataUrl) {

@@ -4,12 +4,13 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head th:replace="/fragments/header :: commonHeader(~{::title})">
     <title>Reports</title>
+    <sec:csrfMetaTags />
 </head>
 <body>
 <div th:replace="/fragments/navigation :: navigation" />
 
-<div class="container-fluid">
-    <div class="row">
+<div class="container-fluid h-100">
+    <div class="row h-100 justify-content-center align-items-center">
         <div class="col col-3">
             <h2 class="text-center" th:text="#{label.reportList.title}">Available Reports</h2>
             <hr>
@@ -20,7 +21,8 @@
             </ul>
         </div>
         <div class="col col-8">
-            <div id="chartContainer"></div>
+            <div id="chartContainer">
+            </div>
         </div>
         <div class="col col-1">
 

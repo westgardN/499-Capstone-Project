@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.social.facebook.api.Action;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.Post;
 import org.springframework.social.facebook.api.Reference;
@@ -309,7 +310,16 @@ public class FacebookServiceImpl implements FacebookService {
 
             interaction.setMessageId(post.getId());
             interaction.setMessage(post.getMessage());
-            interaction.setMessageLink(post.getLink());
+            List<Action> actions = post.getActions();
+
+            String linkComment = post.getLink();
+
+            for (Action action : actions) {
+                if (action.getName().equalsIgnoreCase("comment") == true) {
+                    linkComment = action.getLink();
+                }
+            }
+            interaction.setMessageLink(linkComment);
             interaction.setSocialNetwork(SocialNetwork.FACEBOOK);
             interaction.setState(InteractionState.OPEN);
             interaction.setType(getType(post));

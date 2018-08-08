@@ -9,6 +9,7 @@ import org.springframework.social.oauth1.OAuth1Parameters;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
+import org.springframework.social.twitter.api.UrlEntity;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 import org.springframework.stereotype.Service;
@@ -354,9 +355,15 @@ public class TwitterServiceImpl implements TwitterService {
         interaction.setMessageId(tweet.getIdStr());
         interaction.setMessage(tweet.getText());
 
-        if (tweet.hasUrls()) {
-            interaction.setMessageLink(tweet.getEntities().getUrls().get(0).getUrl());
+        String linkComment = "";
+
+        if (tweet.getEntities().hasUrls()) {
+            for (UrlEntity url : tweet.getEntities().getUrls()) {
+                linkComment = url.getDisplayUrl();
+                final Map<String, Object> extraData = url.getExtraData();
+            }
         }
+        interaction.setMessageLink(linkComment);
 
         interaction.setSocialNetwork(SocialNetwork.TWITTER);
         interaction.setState(InteractionState.OPEN);

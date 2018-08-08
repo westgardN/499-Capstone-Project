@@ -217,10 +217,8 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public void addInteractions(List<Interaction> interactions) {
         for (Interaction interaction : interactions) {
-            if (dao.interactionMessageExists(interaction)) {
-                Interaction existing = dao.findBySocialNetworkAndMessageId(interaction.getMessageId(), interaction.getSocialNetwork());
-                interaction.setId(existing.getId());
-                update(interaction);
+            if (!dao.interactionMessageExists(interaction)) {
+                save(interaction);
             }
         }
     }

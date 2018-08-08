@@ -220,9 +220,9 @@ public class LinkedInServiceImpl implements LinkedInService {
 
 		for (LinkedInCompany linkedInCompany : companies) {
             //linkedIn.companyOperations().
-		    Company company = linkedIn.companyOperations().getCompany(linkedInCompany.getId());
+//		    Company company = linkedIn.companyOperations().getCompany(linkedInCompany.getId());
 
-            final List<LinkedInNetworkUpdate> networkUpdates = linkedIn.networkUpdateOperations().getNetworkUpdates();
+//            final List<LinkedInNetworkUpdate> networkUpdates = linkedIn.networkUpdateOperations().getNetworkUpdates();
         }
 //
 //		for (Post post : linkedIn.feedOperations().getFeed()) {

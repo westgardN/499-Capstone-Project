@@ -74,15 +74,17 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .usernameParameter("ssoId")
                 .passwordParameter("password")
                 .and()
-                .rememberMe().
-                rememberMeParameter("remember-me")
+                .rememberMe()
+                .rememberMeParameter("remember-me")
                 .tokenRepository(tokenRepository)
                 .tokenValiditySeconds(86400)
+                .and()
+                .csrf()
                 .and()
                 .exceptionHandling()
                 .accessDeniedPage("/accessDenied");
 
-        http.csrf().disable();
+
     }
 
     @Override
