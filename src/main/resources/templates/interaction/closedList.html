@@ -45,6 +45,7 @@
                 <!--<td th:text="${interaction.state}"></td>-->
                 <!--<td th:text="${interaction.flag}"></td>-->
             </ul>
+            <h2 th:if="${#lists.isEmpty(interactions)}" class="text-center">You have not closed any Interactions yet</h2>
         </div>
         <div class="col col-2">
 
