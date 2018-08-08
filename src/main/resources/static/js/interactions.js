@@ -1,4 +1,4 @@
-var updateInteractionStatusAndRemoveFromDom = function (elementId, endPoint) {
+var updateInteractionStatusAndRemoveFromDom = function (elementId, endPoint, replyLink) {
     var headers = {};
 
     if (csrfHeader !== undefined && csrfHeader !== null && csrfHeader !== "") {
@@ -21,6 +21,13 @@ var updateInteractionStatusAndRemoveFromDom = function (elementId, endPoint) {
                 $("#" + elementId).fadeOut(300, function () {
                     $("#" + elementId).remove();
                 });
+
+                // if (replyLink !== undefined && replyLink !== null && replyLink !== "") {
+                //     $("#replyBody").load(replyLink, function() {
+                //         $("replyModal").modal({backdrop: "static"});
+                //     });
+                //
+                // }
             }
         },
         error: function (xhr, status, error) {
@@ -37,14 +44,14 @@ var reopenInteraction = function (elementId, endPoint) {
     updateInteractionStatusAndRemoveFromDom(elementId, endPoint);
 };
 
-var closeInteraction = function (elementId, endPoint) {
-    updateInteractionStatusAndRemoveFromDom(elementId, endPoint);
+var closeInteraction = function (elementId, endPoint, replyLink) {
+    updateInteractionStatusAndRemoveFromDom(elementId, endPoint, replyLink);
 };
 
 var followUpInteraction = function (elementId, endPoint) {
     updateInteractionStatusAndRemoveFromDom(elementId, endPoint);
 };
 
-var replyInteraction = function (elementId, endPoint) {
-    updateInteractionStatusAndRemoveFromDom(elementId, endPoint);
+var replyInteraction = function (elementId, endPoint, replyLink) {
+    updateInteractionStatusAndRemoveFromDom(elementId, endPoint, replyLink);
 };

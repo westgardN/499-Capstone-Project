@@ -61,7 +61,7 @@ dependencies {
     compile("com.fasterxml.jackson.core:jackson-databind")
     compile("org.springframework.social:spring-social-facebook:2.0.3.RELEASE")
     compile("org.springframework.social:spring-social-twitter:1.1.2.RELEASE")
-    compile("org.springframework.social:spring-social-linkedin:1.0.0.RELEASE")
+    compile("org.springframework.social:spring-social-linkedin:1.0.2.RELEASE")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
