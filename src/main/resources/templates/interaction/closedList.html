@@ -23,7 +23,7 @@
         </div>
         <div class="col col-8">
             <ul class="list-group" th:each="interaction : ${interactions}">
-                <li th:id="${'interaction-' + interaction.id}" th:class="${interaction.sentiment == null ? 'list-group-item list-group-item-primary' : interaction.sentiment <= 33 ? 'list-group-item list-group-item-success' : interaction.sentiment > 33 && interaction.sentiment <= 66 ? 'list-group-item list-group-item-warning' : 'list-group-item list-group-item-error'}">
+                <li th:id="${'interaction-' + interaction.id}" th:class="${interaction.sentiment == null ? 'list-group-item list-group-item-primary' : interaction.sentiment <= 33 ? 'list-group-item list-group-item-success' : interaction.sentiment > 33 && interaction.sentiment <= 66 ? 'list-group-item list-group-item-warning' : 'list-group-item list-group-item-danger'}">
                     <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).FACEBOOK}" th:src="@{/imgs/social/facebook/f_logo.jpg}">
                     <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).TWITTER}" th:src="@{/imgs/social/twitter/t_logo-a.png}">
                     <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).LINKEDIN}" th:src="@{/imgs/social/linkedin/connect_with_linkedin-logo-150x150.jpg}">
@@ -33,7 +33,7 @@
                     <p th:if="${interaction.messageLink != null}">Message: <a target="_blank" th:href="${interaction.messageLink}" th:text="${interaction.message}"></a></p>
                     <p th:if="${interaction.messageLink == null}" th:text="'Message: ' + ${interaction.message}"></p>
                     <p th:if="${interaction.sentiment == null}" th:text="'Sentiment: Not scored yet.'"></p>
-                    <p th:if="${interaction.sentiment != null}" th:text="'Sentiment: ' interaction.sentiment"></p>
+                    <p th:if="${interaction.sentiment != null}" th:text="'Sentiment: ' + ${interaction.sentiment}"></p>
                     <div class="btn-group">
                         <button class="btn btn-secondary" th:onclick="'reopenInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${reopenUrl + interaction.id} + '\')'">Re-open</button>&nbsp;
                         <button class="btn btn-danger" th:onclick="'ignoreInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${ignoreUrl + interaction.id} + '\')'">Ignore</button>&nbsp;

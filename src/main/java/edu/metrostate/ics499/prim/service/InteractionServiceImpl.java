@@ -28,6 +28,9 @@ public class InteractionServiceImpl implements InteractionService {
     @Autowired
     private InteractionProviderService interactionProviderService;
 
+    @Autowired
+    private SentimentQueueItemService sentimentQueueItemService;
+
     /**
      * Returns a persistent Interaction object identified by the specified id.
      * If no Interaction with that id exists, null is returned.
@@ -219,6 +222,7 @@ public class InteractionServiceImpl implements InteractionService {
         for (Interaction interaction : interactions) {
             if (!dao.interactionMessageExists(interaction)) {
                 save(interaction);
+                sentimentQueueItemService.enqueue(interaction);
             }
         }
     }
@@ -228,7 +232,6 @@ public class InteractionServiceImpl implements InteractionService {
      */
     @Override
     public void addInteractionsFromDataProviders() {
-
         for (InteractionProvider interactionProvider : interactionProviderService.getAllProviders()) {
             addInteractions(interactionProvider.getInteractions());
         }

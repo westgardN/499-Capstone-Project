@@ -7,10 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,7 +144,7 @@ public class InteractionDaoImpl extends AbstractDao<Integer, Interaction> implem
         CriteriaQuery<Interaction> crit = builder.createQuery(Interaction.class);
         Root<Interaction> from = crit.from(Interaction.class);
         Predicate clause = builder.equal(from.get("state"), state);
-        crit.select(from).where(clause);
+        crit.select(from).where(clause).orderBy(builder.asc(from.get("createdTime")), builder.desc(from.get("sentiment")));
         TypedQuery<Interaction> query = getSession().createQuery(crit);
 
         return query.getResultList();
