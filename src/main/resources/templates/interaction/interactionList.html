@@ -44,8 +44,8 @@
                         <button class="btn btn-primary" th:onclick="'closeInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${closeUrl + interaction.id} + '\')'">Close</button>&nbsp;
                         <button class="btn btn-danger" th:onclick="'ignoreInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${ignoreUrl + interaction.id} + '\')'">Ignore</button>&nbsp;
                         <button class="btn btn-warning" th:onclick="'followUpInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${followUpUrl + interaction.id} + '\')'">Follow-up</button>&nbsp;
-                        <a th:if="${interaction.messageLink != null}" class="btn btn-success" target="_blank" th:href="${interaction.messageLink}">Reply</a>
-                        <button th:if="${interaction.messageLink == null}" class="btn btn-success" th:onclick="'replyInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${replyUrl + interaction.id} + '\')'">Reply</button>
+                        <a th:if="${interaction.messageLink != null}" class="btn btn-success"  th:onclick="'closeInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${closeUrl + interaction.id} + '\'); return true;'"target="_blank" th:href="${interaction.messageLink}">Reply</a>
+                        <!--<button th:if="${interaction.messageLink == null}" class="btn btn-success" th:onclick="'replyInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${replyUrl + interaction.id} + '\')'">Reply</button>-->
                     </div>
                 </li>
                 <!--<td th:text="${interaction.state}"></td>-->
