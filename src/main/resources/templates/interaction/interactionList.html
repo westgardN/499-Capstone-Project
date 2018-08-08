@@ -3,6 +3,12 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head th:replace="/fragments/header :: commonHeader(~{::title})">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <meta name="_csrf_parameter" th:content="${_csrf.parameterName}"/>
+
     <title>Interactions</title>
 </head>
 <body>
@@ -27,7 +33,7 @@
                     <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).FACEBOOK}" th:src="@{/imgs/social/facebook/f_logo.jpg}">
                     <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).TWITTER}" th:src="@{/imgs/social/twitter/t_logo-a.png}">
                     <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).LINKEDIN}" th:src="@{/imgs/social/linkedin/connect_with_linkedin-logo-150x150.jpg}">
-                    <span th:text="'From: ' + ${interaction.fromName}"></span>
+                    <span th:text="'From: ' + ${interaction.fromName != null ? interaction.fromName : 'Unavailable'}"></span>
                     <span th:text="'on: ' + ${#dates.format(interaction.createdTime, 'MM/dd/yyyy hh:mm a')}"></span>
                     <p th:if="${interaction.description != null}" th:text="'Description: ' + ${interaction.description}"></p>
                     <p th:if="${interaction.messageLink != null}">Message: <a target="_blank" th:href="${interaction.messageLink}" th:text="${interaction.message}"></a></p>

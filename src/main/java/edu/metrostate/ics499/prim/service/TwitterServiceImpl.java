@@ -15,6 +15,7 @@ import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.net.URLEncoder;
 import java.time.Duration;
 import java.util.*;
 
@@ -341,7 +342,7 @@ public class TwitterServiceImpl implements TwitterService {
         return tweets;
     }
 
-    Interaction interactionFromTweet(Tweet tweet, InteractionType interactionType) {
+    private Interaction interactionFromTweet(Tweet tweet, InteractionType interactionType) {
         Interaction interaction = new Interaction();
 
         Date createdTime = tweet.getCreatedAt();
@@ -355,14 +356,14 @@ public class TwitterServiceImpl implements TwitterService {
         interaction.setMessageId(tweet.getIdStr());
         interaction.setMessage(tweet.getText());
 
-        String linkComment = "";
+        String linkComment = "https://twitter.com/intent/tweet?in-reply-to=" + tweet.getIdStr();
 
-        if (tweet.getEntities().hasUrls()) {
-            for (UrlEntity url : tweet.getEntities().getUrls()) {
-                linkComment = url.getDisplayUrl();
-                final Map<String, Object> extraData = url.getExtraData();
-            }
-        }
+//        if (tweet.getEntities().hasUrls()) {
+//            for (UrlEntity url : tweet.getEntities().getUrls()) {
+//                linkComment = url.getDisplayUrl();
+//                final Map<String, Object> extraData = url.getExtraData();
+//            }
+//        }
         interaction.setMessageLink(linkComment);
 
         interaction.setSocialNetwork(SocialNetwork.TWITTER);

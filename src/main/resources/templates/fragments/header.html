@@ -3,6 +3,12 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
     <head th:fragment="commonHeader(title)">
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <!-- default header name is X-CSRF-TOKEN -->
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+        <meta name="_csrf_parameter" th:content="${_csrf.parameterName}"/>
+
         <title th:replace="${title}">PRIM</title>
 
         <!-- Common styles and scripts to all pages -->
