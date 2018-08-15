@@ -23,7 +23,7 @@
         </div>
         <div class="col col-8">
             <ul class="list-group" th:each="interaction : ${interactions}">
-                <li th:id="${'interaction-' + interaction.id}" th:class="${interaction.sentiment == null ? 'list-group-item list-group-item-primary' : interaction.sentiment <= 33 ? 'list-group-item list-group-item-success' : interaction.sentiment > 33 && interaction.sentiment <= 66 ? 'list-group-item list-group-item-warning' : 'list-group-item list-group-item-danger'}">
+                <li th:id="${'interaction-' + interaction.id}" th:class="${interaction.sentiment == null ? 'list-group-item list-group-item-primary' : interaction.sentiment >= 80 ? 'list-group-item list-group-item-success' : interaction.sentiment < 80 && interaction.sentiment >= 50 ? 'list-group-item list-group-item-warning' : 'list-group-item list-group-item-danger'}">
                     <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).FACEBOOK}" th:src="@{/imgs/social/facebook/f_logo.jpg}">
                     <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).TWITTER}" th:src="@{/imgs/social/twitter/t_logo-a.png}">
                     <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).LINKEDIN}" th:src="@{/imgs/social/linkedin/connect_with_linkedin-logo-150x150.jpg}">

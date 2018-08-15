@@ -94,23 +94,25 @@ public class FacebookServiceImpl implements FacebookService {
 
         FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
         AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, facebookAuthUri, null);
+        String[] fields = {"name"};
+        Facebook facebook = new FacebookTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
+        String[] names = facebook.fetchObject("me", String.class, fields).split("\\,");
+        String name = names[0].split("\\:")[1].replace("\"", "");
 
         if (socialNetworkRegistrationList.isEmpty()) {
-            socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
+            socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant, name);
         } else {
             Date now = new Date();
             boolean found = false;
 
-            String[] fields = {"id", "name"};
+
             for (int i = 0; i < socialNetworkRegistrationList.size(); i++) {
                 SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
                 Facebook fbCurrent = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
-                Facebook fbNew = new FacebookTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
                 String idCurrent = fbCurrent.fetchObject("me", String.class, fields);
-                String idNew = fbNew.fetchObject("me", String.class, fields);
 
-                if (Objects.equals(idCurrent, idNew) == true) {
+                if (Objects.equals(idCurrent, name) == true) {
                     found = true;
                     socialNetworkRegistration.setToken(accessGrant.getAccessToken());
                     socialNetworkRegistration.setRefreshToken(accessGrant.getRefreshToken());
@@ -121,7 +123,7 @@ public class FacebookServiceImpl implements FacebookService {
             }
 
             if (!found) {
-                socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
+                socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant, name);
             }
         }
     }

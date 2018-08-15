@@ -73,9 +73,12 @@ public class TwitterServiceImpl implements TwitterService {
         OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuthToken token = new OAuthToken(oauthToken, oauthVerifier);
         OAuthToken accessGrant = oauthOperations.exchangeForAccessToken(new AuthorizedRequestToken(token, oauthVerifier), null);
+        Twitter twitter = getTwitter(accessGrant.getValue(), accessGrant.getSecret());
+        String name = twitter.userOperations().getScreenName();
+        long id = twitter.userOperations().getProfileId();
 
         if (socialNetworkRegistrationList.isEmpty()) {
-            socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant);
+            socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant, name);
         } else {
             Date now = new Date();
             boolean found = false;
@@ -84,12 +87,10 @@ public class TwitterServiceImpl implements TwitterService {
                 SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
                 Twitter current = getTwitter(socialNetworkRegistration.getToken(), socialNetworkRegistration.getRefreshToken());
-                Twitter newTweet = getTwitter(accessGrant.getValue(), accessGrant.getSecret());
 
                 long idCurrent = current.userOperations().getProfileId();
-                long idNew = newTweet.userOperations().getProfileId();
 
-                if (Objects.equals(idCurrent, idNew) == true) {
+                if (Objects.equals(idCurrent, id) == true) {
                     found = true;
                     socialNetworkRegistration.setToken(accessGrant.getValue());
                     socialNetworkRegistration.setRefreshToken(accessGrant.getSecret());
@@ -101,7 +102,7 @@ public class TwitterServiceImpl implements TwitterService {
             }
 
             if (!found) {
-                socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant);
+                socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant, name);
             }
         }
     }

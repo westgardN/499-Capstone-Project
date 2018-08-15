@@ -71,9 +71,12 @@ public class LinkedInServiceImpl implements LinkedInService {
 
 		LinkedInConnectionFactory connectionFactory = new LinkedInConnectionFactory(linkedInAppId, linkedInSecret);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, linkedInAuthUri, null);
+		LinkedIn liNew = new LinkedInTemplate(accessGrant.getAccessToken());
+        String name = liNew.profileOperations().getUserProfile().getLastName() + ", " + liNew.profileOperations().getUserProfile().getFirstName();
+		String idNew = liNew.profileOperations().getProfileId();
 
 		if (socialNetworkRegistrationList.isEmpty()) {
-			socialNetworkRegistrationService.register(SocialNetwork.LINKEDIN, accessGrant);
+			socialNetworkRegistrationService.register(SocialNetwork.LINKEDIN, accessGrant, name);
 		} else {
 			Date now = new Date();
 			boolean found = false;
@@ -82,10 +85,8 @@ public class LinkedInServiceImpl implements LinkedInService {
 				SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
 				LinkedIn liCurrent = new LinkedInTemplate(socialNetworkRegistration.getToken());
-				LinkedIn liNew = new LinkedInTemplate(accessGrant.getAccessToken());
 
 				String idCurrent = liCurrent.profileOperations().getProfileId();
-				String idNew = liNew.profileOperations().getProfileId();
 
 				if (Objects.equals(idCurrent, idNew) == true) {
 					found = true;
@@ -98,7 +99,7 @@ public class LinkedInServiceImpl implements LinkedInService {
 			}
 
 			if (!found) {
-				socialNetworkRegistrationService.register(SocialNetwork.LINKEDIN, accessGrant);
+				socialNetworkRegistrationService.register(SocialNetwork.LINKEDIN, accessGrant, name);
 			}
 		}
 	}

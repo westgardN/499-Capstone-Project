@@ -31,7 +31,7 @@ var updateInteractionStatusAndRemoveFromDom = function (elementId, endPoint, rep
             }
         },
         error: function (xhr, status, error) {
-            windows.alert("Status: " + status + "\nError: " + error);
+            window.alert("Status: " + status + "\nError: " + error);
         }
     });
 };

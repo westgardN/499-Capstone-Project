@@ -54,6 +54,9 @@ var getReportData = function(reportName, reportDataUrl, reportType) {
             if (status == "success") {
                 loadReport(reportName, reportData, reportType);
             }
+        },
+        error: function (xhr, status, error) {
+            window.alert("Status: " + status + "\nError: " + error);
         }
     });
     // $.get(reportDataUrl, function (reportData, status) {

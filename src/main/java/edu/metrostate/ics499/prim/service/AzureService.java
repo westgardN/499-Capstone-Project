@@ -27,8 +27,9 @@ public class AzureService {
 	 * @param toSend
 	 */
 	public void sendData(String urlAddress, String key, String toSend){
-				
-		try {
+        DataOutputStream out = null;
+
+        try {
 			url = new URL(urlAddress);
 			con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("POST");
@@ -38,20 +39,26 @@ public class AzureService {
 			con.setDoOutput(true);
 		    con.setDoInput(true);
 			con.setRequestProperty("Content-Type", "application/json");
-			DataOutputStream out = new DataOutputStream(con.getOutputStream());
+			out = new DataOutputStream(con.getOutputStream());
 			
 			out.writeBytes(toSend);
 			out.flush();
 			out.close();
-			
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e1) {
+                }
+            }
+			if (con != null) {
+			    con.disconnect();
+            }
 		}
 		
 	}
-	
-	
+
 	/**
 	 * Retrieves the processed data from azure.
 	 * 
@@ -59,10 +66,14 @@ public class AzureService {
 	 */
 	public String retrieveData(){
 		String returnString = null;
-		
-		try {
-			
-			BufferedReader in = new BufferedReader(
+        BufferedReader in = null;
+
+        if (con == null) {
+            return "";
+        }
+
+        try {
+			in = new BufferedReader(
 					  new InputStreamReader(con.getInputStream()));
 			String inputLine;
 			StringBuffer content = new StringBuffer();
@@ -75,10 +86,18 @@ public class AzureService {
 			in.close();
 			con.disconnect();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            if (con != null) {
+			    con.disconnect();
+            }
 		}
-		
 		
 		return returnString;
 	}

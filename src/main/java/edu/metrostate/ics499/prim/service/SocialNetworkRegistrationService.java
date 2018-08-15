@@ -93,20 +93,22 @@ public interface SocialNetworkRegistrationService {
      *
      * @param socialNetwork the social network to register.
      * @param accessGrant the OAuth Token received from registration.
+     * @param name the social network name
      *
      * @return returns true if registration was successful; false otherwise.
      */
-    boolean register(SocialNetwork socialNetwork, OAuthToken accessGrant);
+    boolean register(SocialNetwork socialNetwork, OAuthToken accessGrant, String name);
 
     /**
      * Registers a social network in the database based on the provided OAuth Grant.
      *
      * @param socialNetwork the social network to register.
      * @param accessGrant the OAuth Grant received from registration.
+     * @param name the social network name
      *
      * @return returns true if registration was successful; false otherwise.
      */
-    boolean register(SocialNetwork socialNetwork, AccessGrant accessGrant);
+    boolean register(SocialNetwork socialNetwork, AccessGrant accessGrant, String name);
 
     /**
      * Deletes the specified SocialNetworkRegistration from the backing store.

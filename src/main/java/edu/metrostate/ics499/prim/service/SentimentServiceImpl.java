@@ -13,16 +13,20 @@ import edu.metrostate.ics499.prim.service.AzureService;
 import edu.metrostate.ics499.prim.service.SentimentQueueItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("sentimentService")
 public class SentimentServiceImpl implements SentimentService {
 	
 	private List<SentimentQueueItem> sentimentItems;
 
-	@Autowired
-	SentimentQueueItemService sentimentQueueItemService;
-	
-	public static final int MAX_ITEMS = 1000;			// the maximum number of documents in a request is 1,000.
+    @Autowired
+    SentimentQueueItemService sentimentQueueItemService;
+
+    @Autowired
+    InteractionService interactionService;
+
+    public static final int MAX_ITEMS = 1000;			// the maximum number of documents in a request is 1,000.
 	public static final int MAX_CHARACTERS = 5000;	// the maximum size of a single document is 5,000 characters.
 	
 	private final String urlAddress = "https://westcentralus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment";
@@ -39,15 +43,9 @@ public class SentimentServiceImpl implements SentimentService {
 
 		sentimentItems = sentimentQueueItemService.findUnprocessed();
 		
-		while (!sentimentItems.isEmpty()) {
-			
-			String data = prepareData();
-			sentimentDocuments = sendData(data);
-			this.processData(sentimentDocuments);
-			
-			sentimentItems.addAll(sentimentQueueItemService.findUnprocessed());
-		}
-		
+        String data = prepareData();
+        sentimentDocuments = sendData(data);
+        this.processData(sentimentDocuments);
 	}
 	
 	/**
@@ -113,11 +111,13 @@ public class SentimentServiceImpl implements SentimentService {
 		data =  JSONHeader + data + "}";
 		azureService.sendData(urlAddress, subscriptionKey, data);
 		data = azureService.retrieveData();
-		
-		data = data.substring(13);
-		data = (String) data.subSequence(0, data.length()-1);
-		sentimentDocuments = SentimentDocuments.toDocuments(data);
-		
+
+		if (data != null) {
+            data = data.substring(13);
+            data = (String) data.subSequence(0, data.length() - 1);
+            sentimentDocuments = SentimentDocuments.toDocuments(data);
+        }
+
 		return sentimentDocuments;
 	}
 	
@@ -155,7 +155,9 @@ public class SentimentServiceImpl implements SentimentService {
                 int convertedSentiment = convertSentimentToInt(sentiment);
                 interact.setSentiment(convertedSentiment);
 
+                interactionService.update(interact);
                 sentimentQueueItem.setProcessed(true);
+                sentimentQueueItemService.update(sentimentQueueItem);
             }
         }
 	}

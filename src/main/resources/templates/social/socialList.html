@@ -3,6 +3,12 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head th:replace="/fragments/header :: commonHeader(~{::title})">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <meta name="_csrf_parameter" th:content="${_csrf.parameterName}"/>
+
     <title>PRIM Registered Social Network Accounts</title>
 </head>
 <body>
@@ -11,30 +17,37 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-6">
+        <div class="col col-3"></div>
+        <div class="col col-6">
             <h2 class="text-center" th:text="#{label.socialList.title}">Registered Social Networks</h2>
             <hr>
         </div>
     </div>
-    <table class="table table-hover table-striped">
-        <thead class="thead-dark">
-        <tr>
-            <th scope="col">Network</th>
-            <th scope="col">Last Retrieved</th>
-            <th scope="col">Registered</th>
-            <th scope="col">Expires</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="account : ${accounts}">
-            <td th:text="${account.socialNetwork}"></td>
-            <td th:text="${account.lastUsed}"></td>
-            <td th:text="${account.createdTime}"></td>
-            <td th:text="${account.Expires}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col col-2">
+
+        </div>
+        <div class="col col-8">
+            <ul class="list-group" th:each="account : ${accounts}">
+                <li th:id="${'account-' + account.id}" th:class="'list-group-item'">
+                    <img th:width="32" th:height="32" th:if="${account.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).FACEBOOK}" th:src="@{/imgs/social/facebook/f_logo.jpg}">
+                    <img th:width="32" th:height="32" th:if="${account.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).TWITTER}" th:src="@{/imgs/social/twitter/t_logo-a.png}">
+                    <img th:width="32" th:height="32" th:if="${account.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).LINKEDIN}" th:src="@{/imgs/social/linkedin/connect_with_linkedin-logo-150x150.jpg}">
+                    <span th:text="'Account Name: ' + ${account.name}"></span>
+                    <br><span th:text="'Registered on: ' + ${#dates.format(account.createdTime, 'MM/dd/yyyy hh:mm a')}"></span>
+                    <br><span th:text="'Last used on: ' + ${account.lastUsed == null ? 'Never' : #dates.format(account.lastUsed, 'MM/dd/yyyy hh:mm a')}"></span>
+                    <br><span th:text="'Expires on: ' + ${account.expires == null ? 'Never' : #dates.format(account.expires, 'MM/dd/yyyy hh:mm a')}"></span>
+                    <br><div class="btn-group">
+                        <button class="btn btn-primary" th:onclick="'deleteSocialNetwork(\'account-' + ${account.id} + '\', \'' + ${deleteUrl + account.id} + '\')'">Delete</button>&nbsp;
+                    </div>
+                </li>
+            </ul>
+            <h2 th:if="${#lists.isEmpty(accounts)}" class="text-center">There are no registered social network accounts.</h2>
+        </div>
+        <div class="col col-2">
+
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
@@ -44,6 +57,6 @@
     <footer th:replace="/fragments/footer :: footer" />
 </div>
 <div th:replace="/fragments/scripts :: commonScripts(~{::script})" />
-
+<script type="text/javascript" th:src="@{/js/socialaccounts.js}"> </script>
 </body>
 </html>

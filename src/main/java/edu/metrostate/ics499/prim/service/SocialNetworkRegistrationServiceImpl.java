@@ -153,13 +153,16 @@ public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegist
      *
      * @param socialNetwork the social network to register.
      * @param accessGrant   the OAuth Token received from registration.
+     * @param name the social network name
+     *
      * @return returns true if registration was successful; false otherwise.
      */
     @Override
-    public boolean register(SocialNetwork socialNetwork, OAuthToken accessGrant) {
+    public boolean register(SocialNetwork socialNetwork, OAuthToken accessGrant, String name) {
         Date now = new Date();
 
         SocialNetworkRegistration socialNetworkRegistration = new SocialNetworkRegistration();
+        socialNetworkRegistration.setName(name);
         socialNetworkRegistration.setCreatedTime(now);
         socialNetworkRegistration.setSocialNetwork(socialNetwork);
         // Set an artificial expiration date of 1 year.
@@ -181,13 +184,16 @@ public class SocialNetworkRegistrationServiceImpl implements SocialNetworkRegist
      *
      * @param socialNetwork the social network to register.
      * @param accessGrant   the OAuth Grant received from registration.
+     * @param name the social network name
+     *
      * @return returns true if registration was successful; false otherwise.
      */
     @Override
-    public boolean register(SocialNetwork socialNetwork, AccessGrant accessGrant) {
+    public boolean register(SocialNetwork socialNetwork, AccessGrant accessGrant, String name) {
         Date now = new Date();
 
         SocialNetworkRegistration socialNetworkRegistration = new SocialNetworkRegistration();
+        socialNetworkRegistration.setName(name);
         socialNetworkRegistration.setCreatedTime(now);
         socialNetworkRegistration.setSocialNetwork(socialNetwork);
         socialNetworkRegistration.setToken(accessGrant.getAccessToken());
