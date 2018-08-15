@@ -1,10 +1,11 @@
-package edu.metrostate.ics499.prim.Test;
+package edu.metrostate.ics499.prim.test;
 
-import edu.metrostate.ics499.prim.controller.SentimentController;
+import edu.metrostate.ics499.prim.service.SentimentService;
 import edu.metrostate.ics499.prim.model.Document;
 import edu.metrostate.ics499.prim.model.Documents;
 import edu.metrostate.ics499.prim.model.Interaction;
 import edu.metrostate.ics499.prim.model.SentimentDocuments;
+import edu.metrostate.ics499.prim.service.SentimentServiceImpl;
 
 public class SentimentTestHelper {
 	
@@ -18,7 +19,7 @@ public class SentimentTestHelper {
 			"} ]";
 	
 	static Interaction testInteraction = new Interaction();
-	static SentimentController SC = new SentimentController();
+	static SentimentServiceImpl SC = new SentimentServiceImpl();
 	
 	static boolean failed = false;
 

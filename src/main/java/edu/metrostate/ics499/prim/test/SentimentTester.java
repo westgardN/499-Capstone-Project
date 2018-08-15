@@ -1,4 +1,4 @@
-package edu.metrostate.ics499.prim.Test;
+package edu.metrostate.ics499.prim.test;
 
 import edu.metrostate.ics499.prim.model.SentimentDocuments;
 

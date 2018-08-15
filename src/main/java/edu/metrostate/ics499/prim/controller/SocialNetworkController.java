@@ -2,6 +2,7 @@ package edu.metrostate.ics499.prim.controller;
 
 import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
 import edu.metrostate.ics499.prim.service.InteractionService;
+import edu.metrostate.ics499.prim.service.SentimentService;
 import edu.metrostate.ics499.prim.service.SocialNetworkRegistrationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -23,16 +23,19 @@ import java.util.List;
 @Controller
 public class SocialNetworkController {
 
-    static final Logger logger = LoggerFactory.getLogger(SocialNetworkController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocialNetworkController.class);
 
     @Autowired
-    MessageSource messageSource;
+    private MessageSource messageSource;
 
     @Autowired
-    SocialNetworkRegistrationService socialNetworkRegistrationService;
+    private SocialNetworkRegistrationService socialNetworkRegistrationService;
 
     @Autowired
-    InteractionService interactionService;
+    private InteractionService interactionService;
+
+    @Autowired
+    private SentimentService sentimentService;
 
     /**
      * This method will list all existing registered social accounts.
@@ -60,6 +63,7 @@ public class SocialNetworkController {
     public String refreshSocialData(ModelMap model) {
 
         interactionService.addInteractionsFromDataProviders();
+        sentimentService.getSentiment();
 
         return "redirect:/interaction/list";
     }
