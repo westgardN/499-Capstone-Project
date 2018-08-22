@@ -1,5 +1,6 @@
 package edu.metrostate.ics499.prim.configuration;
 
+import edu.metrostate.ics499.prim.component.PrimAuthenticationFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -55,6 +56,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        PrimAuthenticationFailureHandler primAuthenticationFailureHandler = (PrimAuthenticationFailureHandler) authenticationFailureHandler;
+
+        primAuthenticationFailureHandler.setDefaultFailureUrl("/login");
+        //primAuthenticationFailureHandler.setUseForward(true);
+
         http.authorizeRequests()
                 .antMatchers("/", "/home", "/login", "/logout")
                 .permitAll()
@@ -73,6 +80,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login")
                 .usernameParameter("ssoId")
                 .passwordParameter("password")
+                .permitAll()
                 .and()
                 .rememberMe()
                 .rememberMeParameter("remember-me")

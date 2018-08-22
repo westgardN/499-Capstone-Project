@@ -23,7 +23,7 @@
                 <div class="form-control-feedback">
                     <div th:if="${param.error}">
                         <span class="text-danger align-middle">
-                            <p><i class="fa fa-exclamation-triangle"></i> Invalid username or password.</p>
+                            <p><i class="fa fa-exclamation-triangle"></i><span th:text="${param.error}"Invalid username or password.</p>
                         </span>
                     </div>
                     <div th:if="${param.logout}">

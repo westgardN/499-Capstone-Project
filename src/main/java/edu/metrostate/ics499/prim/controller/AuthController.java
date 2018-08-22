@@ -52,7 +52,7 @@ public class AuthController {
      * This method handles logout requests.
      * Toggle the handlers if you are RememberMe functionality is useless in your app.
      */
-    @RequestMapping(value="/logout")
+    @RequestMapping(value="/logout", method = RequestMethod.POST)
     public String logoutPage (HttpServletRequest request, HttpServletResponse response){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null){
