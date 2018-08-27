@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -324,12 +322,12 @@ public class UserServiceImpl implements UserService{
      * SecurityToken is returned after persisting it to the store.
      *
      * @param user                the user the new token is for
-     * @param securityTokenString the token string
      * @return a new SecurityToken for the specified user with the specified token.
      */
     @Override
-    public SecurityToken createSecurityToken(User user, String securityTokenString) {
-        SecurityToken securityToken = new SecurityToken(user, securityTokenString);
+    public SecurityToken createSecurityToken(User user) {
+        final String token = UUID.randomUUID().toString();
+        SecurityToken securityToken = new SecurityToken(user, token);
 
         securityTokenDao.save(securityToken);
 
@@ -337,23 +335,36 @@ public class UserServiceImpl implements UserService{
     }
 
     /**
-     * Creates a new SecurityToken from the existing security token string.
+     * Updates the existing SecurityToken with a new unexpired token string.
      *
-     * @param securityTokenString the token string to create a new SecurityToken from.
-     * @return a new SecurityToken from the existing security token string.
+     * @param securityTokenString the token string to that identifies the SecurityToken to update.
+     *
+     * @return an updated SecurityToken with a new unexpired token string.
      */
     @Override
-    public SecurityToken generateNewSecurityToken(String securityTokenString) {
-        SecurityToken securityToken = securityTokenDao.find(securityTokenString);
-
+    public SecurityToken generateNewSecurityToken(SecurityToken securityToken) {
         if (securityToken == null) {
-            throw new NullPointerException("the specified security token string does not exist");
+            throw new NullPointerException("the security token does not exist");
         }
 
         securityToken.update(UUID.randomUUID().toString());
         securityTokenDao.save(securityToken);
 
         return securityToken;
+    }
+
+    /**
+     * Updates the existing SecurityToken with a new unexpired token string.
+     *
+     * @param securityTokenString the token string to that identifies the SecurityToken to update.
+     *
+     * @return an updated SecurityToken with a new unexpired token string.
+     */
+    @Override
+    public SecurityToken generateNewSecurityToken(String securityTokenString) {
+        SecurityToken securityToken = securityTokenDao.find(securityTokenString);
+
+        return generateNewSecurityToken(securityToken);
     }
 
     /**
@@ -384,8 +395,6 @@ public class UserServiceImpl implements UserService{
             user.setActivatedOn(new Date());
 
             userDao.save(user);
-
-            securityTokenDao.delete(securityToken);
         }
         return answer;
     }
@@ -420,6 +429,26 @@ public class UserServiceImpl implements UserService{
         }
 
         return answer;
+    }
+
+    /**
+     * Deletes the specified SecurityToken if it exists.
+     *
+     * @param token the token to delete.
+     */
+    @Override
+    public void deleteSecurityToken(String token) {
+        securityTokenDao.delete(token);
+    }
+
+    /**
+     * Deletes the specified SecurityToken if it exists.
+     *
+     * @param token the token to delete.
+     */
+    @Override
+    public void deleteSecurityToken(SecurityToken token) {
+        securityTokenDao.delete(token);
     }
 
     /**

@@ -56,37 +56,14 @@ import org.springframework.web.util.HtmlUtils;
  * This controller handles all User based requests such as adding, editing, and deleting users.
  */
 @Controller
-@SessionAttributes("roles")
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
-    @Autowired
-    @Qualifier("primUserDetailsService")
-    UserDetailsService userDetailsService;
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JavaMailSender javaMailSender;
-
-    @Autowired
-    private Environment environment;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     /**
      * This method will list all existing users.
@@ -137,23 +114,6 @@ public class UserController {
             return new ModelAndView(resultView, "user", userDataTransfer);
         }
     }
-
-    private User createUserAccount(UserDataTransfer userDataTransfer, BindingResult result) {
-        User user = null;
-
-        try {
-            user = userService.registerNewUser(userDataTransfer);
-        } catch (EmailExistsException e) {
-            result.rejectValue("email", "message.regEmailError");
-        } catch (SsoIdExistsException e) {
-            result.rejectValue("ssoId", "message.regSsoIdError");
-        } catch (UsernameExistsException e) {
-            result.rejectValue("username", "message.regUsernameError");
-        }
-
-        return user;
-    }
-
 
     /**
      * This method will provide the medium to update an existing user.
@@ -243,126 +203,32 @@ public class UserController {
         return "redirect:/user/list";
     }
 
-    @RequestMapping(value = "/user/registrationConfirm", method = RequestMethod.GET)
-    @Transactional
-    public String confirmRegistration(final HttpServletRequest request, final Model model, @RequestParam("token") final String token) throws UnsupportedEncodingException {
-        Locale locale = request.getLocale();
-        final String result = userService.validateRegistrationToken(token);
-        if (result.equals("valid")) {
-            final User user = userService.getUser(token);
-            // if (user.isUsing2FA()) {
-            // model.addAttribute("qr", userService.generateQRUrl(user));
-            // return "redirect:/qrcode.html?lang=" + locale.getLanguage();
-            // }
-            authWithoutPassword(request, user);
-            model.addAttribute("message", messageSource.getMessage("message.accountVerified", null, locale));
-            return "redirect:/login?lang=" + locale.getLanguage() + "&message=" + HtmlUtils.htmlEscape(messageSource.getMessage("message.accountVerified", null, locale));
+    private User createUserAccount(UserDataTransfer userDataTransfer, BindingResult result) {
+        User user = null;
+
+        try {
+            user = userService.registerNewUser(userDataTransfer);
+        } catch (EmailExistsException e) {
+            result.rejectValue("email", "message.regEmailError");
+        } catch (SsoIdExistsException e) {
+            result.rejectValue("ssoId", "message.regSsoIdError");
+        } catch (UsernameExistsException e) {
+            result.rejectValue("username", "message.regUsernameError");
         }
 
-        model.addAttribute("message", messageSource.getMessage("auth.message." + result, null, locale));
-        model.addAttribute("expired", "expired".equals(result));
-        model.addAttribute("token", token);
-        return "redirect:/user/badUser.html?lang=" + locale.getLanguage();
-    }
-
-    @RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
-    @ResponseBody
-    public MessageResponse resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
-        final SecurityToken newToken = userService.getSecurityToken(existingToken);
-        final User user = userService.getUser(newToken.getToken());
-        javaMailSender.send(constructResendVerificationTokenEmail(getAppUrl(request), request.getLocale(), newToken, user));
-        return new MessageResponse(messageSource.getMessage("message.resendToken", null, request.getLocale()));
-    }
-
-    // Reset password
-    @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST)
-    @ResponseBody
-    public MessageResponse resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
-        final User user = userService.findByEmail(userEmail);
-        if (user != null) {
-            final String token = UUID.randomUUID().toString();
-            userService.createSecurityToken(user, token);
-            javaMailSender.send(constructResetPasswordEmail(getAppUrl(request), request.getLocale(), token, user));
-        }
-        return new MessageResponse(messageSource.getMessage("message.resetPasswordEmail", null, request.getLocale()));
-    }
-
-    @RequestMapping(value = "/user/changePassword", method = RequestMethod.GET)
-    public String showChangePasswordPage(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) {
-        final String result = userService.validatePasswordToken(id, token);
-        if (!result.equalsIgnoreCase("valid")) {
-            model.addAttribute("message", messageSource.getMessage("auth.message." + result, null, locale));
-            return "redirect:/login?lang=" + locale.getLanguage();
-        }
-        return "redirect:/updatePassword.html?lang=" + locale.getLanguage();
-    }
-
-    @RequestMapping(value = "/user/savePassword", method = RequestMethod.POST)
-    @ResponseBody
-    public MessageResponse savePassword(final Locale locale, @Valid PasswordDataTransfer passwordDto) {
-        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userService.changePassword(user, passwordDto.getNewPassword());
-        return new MessageResponse(messageSource.getMessage("message.resetPasswordSuccess", null, locale));
-    }
-
-    // change user password
-    @RequestMapping(value = "/user/updatePassword", method = RequestMethod.POST)
-    @ResponseBody
-    public MessageResponse changeUserPassword(final Locale locale, @Valid PasswordDataTransfer passwordDto) throws InvalidCurrentPasswordException {
-        final User user = userService.findByEmail(((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmail());
-        if (!userService.isCurrentPasswordValid(user, passwordDto.getCurrentPassword())) {
-            throw new InvalidCurrentPasswordException();
-        }
-        userService.changePassword(user, passwordDto.getNewPassword());
-        return new MessageResponse(messageSource.getMessage("message.updatePasswordSuccess", null, locale));
-    }
-
-    private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final SecurityToken newToken, final User user) {
-        final String confirmationUrl = contextPath + "/registrationConfirm?token=" + newToken.getToken();
-        final String message = messageSource.getMessage("message.resendToken", null, locale);
-        return constructEmail("Resend Registration Token", message + " \r\n" + confirmationUrl, user);
-    }
-
-    private SimpleMailMessage constructResetPasswordEmail(final String contextPath, final Locale locale, final String token, final User user) {
-        final String url = contextPath + "/user/changePassword?id=" + user.getId() + "&token=" + token;
-        final String message = messageSource.getMessage("message.resetPassword", null, locale);
-        return constructEmail("Reset Password", message + " \r\n" + url, user);
-    }
-
-    private SimpleMailMessage constructEmail(String subject, String body, User user) {
-        final SimpleMailMessage email = new SimpleMailMessage();
-        email.setSubject(subject);
-        email.setText(body);
-        email.setTo(user.getEmail());
-        email.setFrom(environment.getProperty("support.email"));
-        return email;
+        return user;
     }
 
     private String getAppUrl(HttpServletRequest request) {
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-    }
+        String answer = "";
 
-    public void authWithHttpServletRequest(HttpServletRequest request, String username, String password) {
-        try {
-            request.login(username, password);
-        } catch (ServletException e) {
-            logger.error("Error during login ", e);
+        if (request.getServerPort() != 80 && request.getServerPort() != 443) {
+            answer = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();;
+        } else {
+            answer = request.getScheme() + "://" + request.getServerName() + request.getContextPath();;
         }
-    }
 
-    public void authWithAuthManager(HttpServletRequest request, String username, String password) {
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
-        authToken.setDetails(new WebAuthenticationDetails(request));
-        Authentication authentication = authenticationManager.authenticate(authToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        // request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-    }
-
-    public void authWithoutPassword(HttpServletRequest request, User user) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getSsoId());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        logger.info("Logging in {} user without a password: {}", authentication.isAuthenticated() ? "authenticated" : "unauthenticated", userDetails);
+        return answer;
     }
 
     /**
@@ -379,13 +245,4 @@ public class UserController {
         }
         return userName;
     }
-
-    /**
-     * This method will provide Role list to views
-     */
-    @ModelAttribute("roles")
-    public List<Role> initializeRoles() {
-        return roleService.findAll();
-    }
-
 }

@@ -2,6 +2,7 @@ package edu.metrostate.ics499.prim.component;
 
 import java.util.UUID;
 import edu.metrostate.ics499.prim.event.OnNewUserRegistrationCompleteEvent;
+import edu.metrostate.ics499.prim.model.SecurityToken;
 import edu.metrostate.ics499.prim.model.User;
 import edu.metrostate.ics499.prim.service.UserService;
 import org.slf4j.Logger;
@@ -45,10 +46,9 @@ public class NewUserRegistrationCompleteListener implements ApplicationListener<
 
     private void confirmRegistration(final OnNewUserRegistrationCompleteEvent event) {
         final User user = event.getUser();
-        final String token = UUID.randomUUID().toString();
-        userService.createSecurityToken(user, token);
+        final SecurityToken token = userService.createSecurityToken(user);
 
-        final SimpleMailMessage email = constructEmailMessage(event, user, token);
+        final SimpleMailMessage email = constructEmailMessage(event, user, token.getToken());
         javaMailSender.send(email);
         logger.info("New user registration e-mail has been sent.");
     }

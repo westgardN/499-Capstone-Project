@@ -174,18 +174,26 @@ public interface UserService {
      * SecurityToken is returned after persisting it to the store.
      *
      * @param user the user the new token is for
-     * @param securityTokenString the token string
      *
      * @return a new SecurityToken for the specified user with the specified token.
      */
-    SecurityToken createSecurityToken(User user, String securityTokenString);
+    SecurityToken createSecurityToken(User user);
 
     /**
-     * Creates a new SecurityToken from the existing security token string.
+     * Updates the existing SecurityToken with a new unexpired token string.
      *
-     * @param securityTokenString the token string to create a new SecurityToken from.
+     * @param securityToken the token to create a new token string for.
      *
-     * @return a new SecurityToken from the existing security token string.
+     * @return an updated SecurityToken with a new unexpired token string.
+     */
+    SecurityToken generateNewSecurityToken(final SecurityToken securityToken);
+
+    /**
+     * Updates the existing SecurityToken with a new unexpired token string.
+     *
+     * @param securityTokenString the token string to that identifies the SecurityToken to update.
+     *
+     * @return an updated SecurityToken with a new unexpired token string.
      */
     SecurityToken generateNewSecurityToken(final String securityTokenString);
 
@@ -213,6 +221,20 @@ public interface UserService {
      *         are valid, expired, and invalidToken.
      */
     String validatePasswordToken(long id, String securityTokenString);
+
+    /**
+     * Deletes the specified SecurityToken if it exists.
+     *
+     * @param token the token to delete.
+     */
+    void deleteSecurityToken(String token);
+
+    /**
+     * Deletes the specified SecurityToken if it exists.
+     *
+     * @param token the token to delete.
+     */
+    void deleteSecurityToken(SecurityToken token);
 
     /**
      * Returns the SecurityToken instance for the specified token string. Null is returned if the
