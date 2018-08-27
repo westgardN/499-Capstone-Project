@@ -44,7 +44,7 @@ public class AuthController {
         if (isCurrentAuthenticationAnonymous()) {
             return "login";
         } else {
-            return "redirect:/";
+            return "home";
         }
     }
 

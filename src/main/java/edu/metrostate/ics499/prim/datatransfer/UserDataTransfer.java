@@ -219,7 +219,7 @@ public class UserDataTransfer {
         sb.append(", firstName='").append(firstName).append('\'');
         sb.append(", lastName='").append(lastName).append('\'');
         sb.append(", password='").append("*** PROTECTED ***").append('\'');
-        sb.append(", confirmPassword='").append(confirmPassword).append('\'');
+        sb.append(", confirmPassword='").append("*** PROTECTED ***").append('\'');
         sb.append(", email='").append(email).append('\'');
         sb.append('}');
         return sb.toString();

@@ -6,6 +6,7 @@ import edu.metrostate.ics499.prim.datatransfer.UserDataTransfer;
 import edu.metrostate.ics499.prim.exception.EmailExistsException;
 import edu.metrostate.ics499.prim.exception.SsoIdExistsException;
 import edu.metrostate.ics499.prim.exception.UsernameExistsException;
+import edu.metrostate.ics499.prim.model.SecurityToken;
 import edu.metrostate.ics499.prim.model.User;
 
 /**
@@ -88,6 +89,13 @@ public interface UserService {
     void deleteBySsoId(String ssoId);
 
     /**
+     * Deletes all tokens for the specified user.
+     *
+     * @param user the User to delete tokens for.
+     */
+    void deleteTokens(final User user);
+
+    /**
      * Returns a List of all users. If no users are found, an empty list is returned.
      *
      * @return a List of all users. If no users are found, an empty list is returned.
@@ -106,15 +114,6 @@ public interface UserService {
      * @throws SsoIdExistsException indicates that the ssoId is not unique.
      */
     User registerNewUser(UserDataTransfer userDataTransfer) throws EmailExistsException, UsernameExistsException, SsoIdExistsException;
-
-    /**
-     *
-     * @param user
-     * @param password
-     */
-    void changePassword(User user, String password);
-
-    boolean isCurrentPasswordValid(User user, String password);
 
     /**
      * Returns true if the specified username is in fact unique. That is, if the username
@@ -149,4 +148,162 @@ public interface UserService {
      */
     boolean isSsoIdUnique(Integer id, String ssoId);
 
+    /**
+     * Returns a User reference for the specified SecurityToken string. If no user is found
+     * or the SecurityToken has expired then null is returned.
+     *
+     * @param securityTokenString the SecurityToken string to use to find the User
+     *
+     * @return a User reference for the specified SecurityToken string. If no user is found
+     * or the SecurityToken has expired then null is returned.
+     */
+    User getUser(String securityTokenString);
+
+    /**
+     * Returns a User reference for the specified SecurityToken string. If no user is found null is returned.
+     *
+     * @param securityTokenString the SecurityToken string to use to find the User
+     * @param notExpired if true then only not expired tokens are considered
+     *
+     * @return a User reference for the specified SecurityToken string. If no user is found null is returned.
+     */
+    User getUser(String securityTokenString, boolean notExpired);
+
+    /**
+     * Creates a new SecurityToken for the specified user with the specified token. The newly created
+     * SecurityToken is returned after persisting it to the store.
+     *
+     * @param user the user the new token is for
+     * @param securityTokenString the token string
+     *
+     * @return a new SecurityToken for the specified user with the specified token.
+     */
+    SecurityToken createSecurityToken(User user, String securityTokenString);
+
+    /**
+     * Creates a new SecurityToken from the existing security token string.
+     *
+     * @param securityTokenString the token string to create a new SecurityToken from.
+     *
+     * @return a new SecurityToken from the existing security token string.
+     */
+    SecurityToken generateNewSecurityToken(final String securityTokenString);
+
+    /**
+     * Returns a string that represents the state of the SecurityToken. The possible values
+     * are valid, expired, and invalidToken. If the token is valid, the associated user account
+     * is activated and set to enabled.
+     *
+     * @param securityTokenString the token string to validate
+     *
+     * @return a string that represents the state of the SecurityToken. The possible values
+     *         are valid, expired, and invalidToken.
+     */
+    String validateRegistrationToken(String securityTokenString);
+
+    /**
+     * Returns a string that represents the state of the SecurityToken. The possible values
+     * are valid, expired, and invalidToken. If the token is valid, the security context is
+     * updated with the new token.
+     *
+     * @param id The repository ID of the User the SecurityToken is for
+     * @param securityTokenString the token string to validate
+     *
+     * @return a string that represents the state of the SecurityToken. The possible values
+     *         are valid, expired, and invalidToken.
+     */
+    String validatePasswordToken(long id, String securityTokenString);
+
+    /**
+     * Returns the SecurityToken instance for the specified token string. Null is returned if the
+     * token does not exist.
+     *
+     * @param securityTokenString the SecurityToken string to use to find the SecurityToken
+     *
+     * @return the SecurityToken instance for the specified token string. Null is returned if the
+     *         token does not exist.
+     */
+    SecurityToken getSecurityToken(String securityTokenString);
+
+    /**
+     * Returns the first SecurityToken instance found for the specified User. Null is returned if a token doesn't
+     * exist for the specified User.
+     *
+     * @param user the User to use to find the SecurityToken
+     *
+     * @return the first SecurityToken instance found for the specified User. Null is returned if a token doesn't
+     *         exist for the specified User.
+     */
+    SecurityToken getSecurityToken(User user);
+
+    /**
+     * Returns the first SecurityToken instance found for the specified User. Null is returned if a token doesn't
+     * exist for the specified User.
+     *
+     * @param user the User to use to find the SecurityToken
+     * @param notExpired if true only valid tokens are considered.
+     *
+     * @return the first SecurityToken instance found for the specified User. Null is returned if a token doesn't
+     *         exist for the specified User.
+     */
+    SecurityToken getSecurityToken(User user, boolean notExpired);
+
+    /**
+     * Returns the SecurityTokens for the specified User. An empty list is returned if a token doesn't
+     * exist for the specified User.
+     *
+     * @param user the User to use to find the SecurityToken
+     *
+     * @return the SecurityTokens for the specified User. An empty list is returned if a token doesn't
+     *         exist for the specified User.
+     */
+    List<SecurityToken> getSecurityTokens(User user);
+
+    /**
+     * Returns the SecurityTokens for the specified User. An empty list is returned if a token doesn't
+     * exist for the specified User.
+     *
+     * @param user the User to use to find the SecurityToken
+     * @param notExpired if true only valid tokens are considered.
+     *
+     * @return the SecurityTokens for the specified User. An empty list is returned if a token doesn't
+     *         exist for the specified User.
+     */
+    List<SecurityToken> getSecurityTokens(User user, boolean notExpired);
+
+    /**
+     * Encrypts and sets the password of the specified User to the specified new password
+     *
+     * @param user the User to change the password for
+     * @param password the User's new password
+     */
+    void changePassword(final User user, final String password);
+
+    /**
+     * Returns true if the specified password string matches the current password for the
+     * specified user; otherwise false is returned.
+     *
+     * @param user the User to validate the password for
+     * @param currentPassword the User's current password
+     *
+     * @return true if the specified password string matches the current password for the
+     *         specified user; otherwise false is returned.
+     */
+    boolean isCurrentPasswordValid(final User user, final String currentPassword);
+
+    /**
+     * Records a failed login for the specified user. If the failure exceeds the max failed
+     * consecutive logins the account is then locked.
+     *
+     * @param user the User to fail the login for.
+     */
+    void failLogin(User user);
+
+    /**
+     * Records a successful login for the specified user. A successful login resets the user's failed
+     * logins.
+     *
+     * @param user the User to succeed the login for.
+     */
+    void successLogin(User user);
 }

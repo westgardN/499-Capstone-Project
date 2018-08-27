@@ -31,6 +31,11 @@
                             <p><i class="fa fa-exclamation-circle"></i> You have been logged out.</p>
                         </span>
                     </div>
+                    <div th:if="${param.message}">
+                        <span class="text-info align-middle">
+                            <p><i class="fa fa-exclamation-circle"></i> <span th:text="${param.message}"></span></p>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

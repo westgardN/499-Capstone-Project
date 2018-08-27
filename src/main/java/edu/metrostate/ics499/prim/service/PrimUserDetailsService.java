@@ -51,9 +51,9 @@ public class PrimUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("No user found with SSO ID: " + ssoId);
         }
 
-        if (user.getStatus() == UserStatus.LOCKED) {
-            throw new RuntimeException("blocked");
-        }
+//        if (user.getStatus() == UserStatus.LOCKED) {
+//            throw new RuntimeException("locked");
+//        }
 
         /*
          * TODO: Need to actually finish implementing the rules that
@@ -64,7 +64,7 @@ public class PrimUserDetailsService implements UserDetailsService {
         boolean enabled = user.getEnabled();
         boolean notExpired = true;
         boolean notPasswordExpired = true;
-        boolean notLocked = true;
+        boolean notLocked = user.getStatus() != UserStatus.LOCKED;
 
         return new org.springframework.security.core.userdetails.User(
                 user.getSsoId(),

@@ -35,8 +35,11 @@ public class PrimAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String errorMessage = messages.getMessage("message.badCredentials", null, java.util.Locale.getDefault());
-        if (exception.getMessage().equalsIgnoreCase("blocked")) {
-            errorMessage = messages.getMessage("auth.message.blocked", null, java.util.Locale.getDefault());
+
+        if (exception.getMessage().contains("locked")) {
+            errorMessage = messages.getMessage("auth.message.locked", null, java.util.Locale.getDefault());
+        } else if (exception.getMessage().contains("disabled")) {
+            errorMessage = messages.getMessage("auth.message.disabled", null, java.util.Locale.getDefault());
         }
 
         saveException(request, exception);

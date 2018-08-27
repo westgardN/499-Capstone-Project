@@ -44,7 +44,6 @@ CREATE TABLE USER(
    last_visited_on DATETIME NULL,
    last_visited_from VARCHAR(100) NULL,
    last_password_changed_on DATETIME NULL,
-   user_key VARCHAR(100) NULL,
    activated_on DATETIME NULL,
    PRIMARY KEY (id),
    UNIQUE (username),
@@ -72,6 +71,19 @@ CREATE TABLE USER_ROLE(
 	PRIMARY KEY (user_id, role_id),
 	CONSTRAINT FK_USER FOREIGN KEY (user_id) REFERENCES USER(id),
 	CONSTRAINT FK_ROLE FOREIGN KEY (role_id) REFERENCES ROLE(id)
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+/*
+ * Security Token table is used for user authentication and authorization
+ */
+CREATE TABLE SECURITY_TOKEN(
+   id BIGINT NOT NULL AUTO_INCREMENT,
+   user_id BIGINT NOT NULL,
+   token VARCHAR(100) NOT NULL,
+   created_date DATETIME NOT NULL DEFAULT NOW(),
+   expiration_date DATETIME NULL,
+   PRIMARY KEY (id),
+   CONSTRAINT FK_USER_TOKEN FOREIGN KEY (user_id) REFERENCES USER(id)
 ) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 /*
