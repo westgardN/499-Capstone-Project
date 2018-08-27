@@ -192,7 +192,7 @@ public interface UserService {
     /**
      * Returns a string that represents the state of the SecurityToken. The possible values
      * are valid, expired, and invalidToken. If the token is valid, the associated user account
-     * is activated and set to enabled.
+     * is activated and set to enabled and the token is deleted.
      *
      * @param securityTokenString the token string to validate
      *
@@ -204,7 +204,7 @@ public interface UserService {
     /**
      * Returns a string that represents the state of the SecurityToken. The possible values
      * are valid, expired, and invalidToken. If the token is valid, the security context is
-     * updated with the new token.
+     * updated with the new token and the token is deleted.
      *
      * @param id The repository ID of the User the SecurityToken is for
      * @param securityTokenString the token string to validate

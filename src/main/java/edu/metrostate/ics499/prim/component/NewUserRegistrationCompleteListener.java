@@ -56,7 +56,7 @@ public class NewUserRegistrationCompleteListener implements ApplicationListener<
     private final SimpleMailMessage constructEmailMessage(final OnNewUserRegistrationCompleteEvent event, final User user, final String token) {
         final String recipientAddress = user.getEmail();
         final String subject = "Registration Confirmation";
-        final String confirmationUrl = event.getAppUrl() + "/user/registrationConfirm.html?token=" + token;
+        final String confirmationUrl = event.getAppUrl() + "/user/registrationConfirm?token=" + token;
         final String message = messageSource.getMessage("message.regSuccessEmail", null, event.getLocale());
         final SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);

@@ -12,11 +12,14 @@ import edu.metrostate.ics499.prim.repository.UserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserServiceImpl implements UserService{
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    @Autowired
+    @Qualifier("primUserDetailsService")
+    UserDetailsService userDetailsService;
 
     @Autowired
     private UserDao userDao;
@@ -352,7 +359,7 @@ public class UserServiceImpl implements UserService{
     /**
      * Returns a string that represents the state of the SecurityToken. The possible values
      * are valid, expired, and invalidToken. If the token is valid, the associated user account
-     * is activated and set to enabled.
+     * is activated and set to enabled and the token is deleted.
      *
      * @param securityTokenString the token string to validate
      * @return a string that represents the state of the SecurityToken. The possible values
@@ -377,6 +384,8 @@ public class UserServiceImpl implements UserService{
             user.setActivatedOn(new Date());
 
             userDao.save(user);
+
+            securityTokenDao.delete(securityToken);
         }
         return answer;
     }
@@ -384,7 +393,7 @@ public class UserServiceImpl implements UserService{
     /**
      * Returns a string that represents the state of the SecurityToken. The possible values
      * are valid, expired, and invalidToken. If the token is valid, the security context is
-     * updated with the new token.
+     * updated with the new token and the token is deleted.
      *
      * @param id                  The repository ID of the User the SecurityToken is for
      * @param securityTokenString the token string to validate
@@ -403,15 +412,11 @@ public class UserServiceImpl implements UserService{
             securityTokenDao.delete(securityToken);
         } else {
             final User user = securityToken.getUser();
-            final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getSsoId());
 
-            for (Role role : user.getRoles()) {
-                logger.info("Role : {}", role);
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getType()));
-            }
-
-            final Authentication auth = new UsernamePasswordAuthenticationToken(user, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            final Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            logger.info("Logging in {} user without a password: {}", authentication.isAuthenticated() ? "authenticated" : "unauthenticated", userDetails);
         }
 
         return answer;

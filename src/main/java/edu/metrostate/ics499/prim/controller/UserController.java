@@ -28,6 +28,7 @@ import edu.metrostate.ics499.prim.util.MessageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
@@ -40,6 +41,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
@@ -57,6 +59,10 @@ import org.springframework.web.util.HtmlUtils;
 @SessionAttributes("roles")
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @Autowired
+    @Qualifier("primUserDetailsService")
+    UserDetailsService userDetailsService;
 
     @Autowired
     private UserService userService;
@@ -248,7 +254,7 @@ public class UserController {
             // model.addAttribute("qr", userService.generateQRUrl(user));
             // return "redirect:/qrcode.html?lang=" + locale.getLanguage();
             // }
-            //authWithoutPassword(user);
+            authWithoutPassword(request, user);
             model.addAttribute("message", messageSource.getMessage("message.accountVerified", null, locale));
             return "redirect:/login?lang=" + locale.getLanguage() + "&message=" + HtmlUtils.htmlEscape(messageSource.getMessage("message.accountVerified", null, locale));
         }
@@ -352,14 +358,11 @@ public class UserController {
         // request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
     }
 
-    public void authWithoutPassword(User user) {
-        List<Role> roles = new ArrayList<>();
-        roles.addAll(user.getRoles());
-        List<GrantedAuthority> authorities = roles.stream().map(r -> new SimpleGrantedAuthority(r.getType().getRoleType())).collect(Collectors.toList());
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
-
+    public void authWithoutPassword(HttpServletRequest request, User user) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getSsoId());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        logger.info("Logging in {} user without a password: {}", authentication.isAuthenticated() ? "authenticated" : "unauthenticated", userDetails);
     }
 
     /**
