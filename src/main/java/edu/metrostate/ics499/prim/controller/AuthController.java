@@ -247,8 +247,10 @@ public class AuthController {
 
         if (authentication.isAuthenticated()) {
             logger.info("Logged in user: {} without a password", userDetails.getUsername());
+            userService.successLogin(user);
         } else {
             logger.info("Failed to login in user: {} without a password", userDetails.getUsername());
+            userService.failLogin(user);
         }
     }
 

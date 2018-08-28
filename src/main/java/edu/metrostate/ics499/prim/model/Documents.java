@@ -1,20 +1,47 @@
 package edu.metrostate.ics499.prim.model;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class Documents extends ArrayList<Document> {
-	
+public class Documents implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
+    private List<Document> documents;
+
+    public Documents() {
+        this.documents = new ArrayList<>();
+    }
+
+    public void add(Interaction interaction) {
+        this.add(new Document(interaction));
+    }
+
+    public void add(Document document) {
+        this.documents.add(document);
+    }
+
+    public boolean isEmpty() {
+        return this.documents.isEmpty();
+    }
+
+    public int size() {
+        return this.documents.size();
+    }
+
+    public void clear() {
+        this.documents.clear();
+    }
+
+    /**
 	 * 
 	 * @param documents
 	 * @return
@@ -56,4 +83,21 @@ public class Documents extends ArrayList<Document> {
 		return documents;
 	}
 
+    /**
+     * Gets documents
+     *
+     * @return value of documents
+     */
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    /**
+     * Sets documents to the specified value in documents
+     *
+     * @param documents the new value for documents
+     */
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
+    }
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 public class AzureService {
@@ -40,8 +41,10 @@ public class AzureService {
 		    con.setDoInput(true);
 			con.setRequestProperty("Content-Type", "application/json");
 			out = new DataOutputStream(con.getOutputStream());
-			
-			out.writeBytes(toSend);
+
+			//out.writeUTF(toSend);
+            byte[] encoded_text = toSend.getBytes(Charset.forName("UTF-8"));
+			out.write(encoded_text, 0, encoded_text.length);
 			out.flush();
 			out.close();
 

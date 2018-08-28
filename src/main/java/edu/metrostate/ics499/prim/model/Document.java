@@ -1,6 +1,7 @@
 package edu.metrostate.ics499.prim.model;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -116,11 +117,27 @@ public class Document {
 		return document;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Document document = (Document) o;
+		return Objects.equals(getId(), document.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getId());
+	}
+
+	@Override
 	public String toString() {
-		String data = "";
-		data = data + this.getText(); 
-		data = data + this.getId();
-		data = data + this.getLanguage();
-		return data;
+		final StringBuffer sb = new StringBuffer("Document{");
+		sb.append("ENGLISH='").append(ENGLISH).append('\'');
+		sb.append(", language='").append(language).append('\'');
+		sb.append(", id='").append(id).append('\'');
+		sb.append(", text='").append(text).append('\'');
+		sb.append('}');
+		return sb.toString();
 	}
 }

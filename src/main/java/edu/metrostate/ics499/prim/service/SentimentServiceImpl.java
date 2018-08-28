@@ -14,6 +14,7 @@ import edu.metrostate.ics499.prim.service.SentimentQueueItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 @Service("sentimentService")
 public class SentimentServiceImpl implements SentimentService {
@@ -31,8 +32,7 @@ public class SentimentServiceImpl implements SentimentService {
 	
 	private final String urlAddress = "https://westcentralus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment";
 	private final String subscriptionKey = "d9faff7692614982a34bb5f826c5c409";
-	private final String JSONHeader = "{\r\n" + "  \"documents\": ";
-	
+
 	/**
 	 * When called, processes all unprocessed SentimentQueueItems 
 	 * based on their priority and sets a sentiment for them.
@@ -44,8 +44,11 @@ public class SentimentServiceImpl implements SentimentService {
 		sentimentItems = sentimentQueueItemService.findUnprocessed();
 		
         String data = prepareData();
-        sentimentDocuments = sendData(data);
-        this.processData(sentimentDocuments);
+
+        if (data != null) {
+            sentimentDocuments = sendData(data);
+            this.processData(sentimentDocuments);
+        }
 	}
 	
 	/**
@@ -79,20 +82,21 @@ public class SentimentServiceImpl implements SentimentService {
 				 */
 				if(message.length() > MAX_CHARACTERS) {
 					message.substring(0, MAX_CHARACTERS);
-					document.setText(message);
+//                    document.setText(HtmlUtils.htmlEscape(message));
+                    document.setText(message);
 				}
 				
 				documents.add(document);
 				itemCount++;
 				
 			} else {
-				returnString = Documents.toJSON(documents);
+				returnString = documents.isEmpty() ? null : Documents.toJSON(documents);
 				return returnString;
 			}
 				
 		}
 		
-		returnString = Documents.toJSON(documents);
+		returnString = documents.isEmpty() ? null : Documents.toJSON(documents);
 		return returnString;
 	}
 	
@@ -108,7 +112,6 @@ public class SentimentServiceImpl implements SentimentService {
 		AzureService azureService = new AzureService();
 		SentimentDocuments sentimentDocuments = new SentimentDocuments();
 		
-		data =  JSONHeader + data + "}";
 		azureService.sendData(urlAddress, subscriptionKey, data);
 		data = azureService.retrieveData();
 
