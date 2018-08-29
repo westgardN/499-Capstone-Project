@@ -310,8 +310,14 @@ public class UserServiceImpl implements UserService{
 
         User user = null;
 
-        if (securityToken != null && !securityToken.isExpired()) {
-            user = securityToken.getUser();
+        if (securityToken != null) {
+            if (notExpired) {
+                if (!securityToken.isExpired()) {
+                    user = securityToken.getUser();
+                }
+            } else {
+                user = securityToken.getUser();
+            }
         }
 
         return user;
@@ -337,7 +343,7 @@ public class UserServiceImpl implements UserService{
     /**
      * Updates the existing SecurityToken with a new unexpired token string.
      *
-     * @param securityTokenString the token string to that identifies the SecurityToken to update.
+     * @param securityToken the token that identifies the SecurityToken to update.
      *
      * @return an updated SecurityToken with a new unexpired token string.
      */
@@ -370,7 +376,7 @@ public class UserServiceImpl implements UserService{
     /**
      * Returns a string that represents the state of the SecurityToken. The possible values
      * are valid, expired, and invalidToken. If the token is valid, the associated user account
-     * is activated and set to enabled and the token is deleted.
+     * is activated and set to enabled.
      *
      * @param securityTokenString the token string to validate
      * @return a string that represents the state of the SecurityToken. The possible values
@@ -385,7 +391,6 @@ public class UserServiceImpl implements UserService{
         if (securityToken == null) {
             answer = TOKEN_INVALID;
         } else if (securityToken.isExpired()) {
-            securityTokenDao.delete(securityToken);
             answer = TOKEN_EXPIRED;
         } else {
             User user = securityToken.getUser();
@@ -418,7 +423,6 @@ public class UserServiceImpl implements UserService{
             answer = TOKEN_INVALID;
         } else if (securityToken.isExpired()) {
             answer = TOKEN_EXPIRED;
-            securityTokenDao.delete(securityToken);
         } else {
             final User user = securityToken.getUser();
             final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getSsoId());

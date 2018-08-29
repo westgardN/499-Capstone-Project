@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="/fragments/header :: commonHeader(~{::title})">
+    <title>Bad Security Token</title>
+</head>
+<body th:with="httpStatus=${T(org.springframework.http.HttpStatus).valueOf(#response.status)}">
+
+<div th:replace="/fragments/navigation :: navigation"/>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <p class="text-center"></p>
+        </div>
+        <div class="card-body">
+            <p class="text-center card-text">
+            <h3 class="alert alert-danger" th:text="${message}">error</h3>
+            </p>
+            <div th:if="${expired}">
+                <br/>
+                <h3 class="alert alert-primary" th:text="#{label.form.resendRegistrationToken}">resend</h3>
+                <button id="resendButton" class="btn btn-primary" onclick="resendToken()">resend</button>
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    var serverContext = [[@{/}]];
+                        function resendToken() {
+                            var token = [[${param.token}]];
+                            $.get(serverContext + "user/resendRegistrationToken?token=" + token, function (data) {
+                                window.location.href = serverContext + "login?message=" + data.message;
+                            })
+                                .fail(function (data) {
+                                    if (data.responseJSON.error.indexOf("MailError") > -1) {
+                                        window.location.href = serverContext + "emailError.html";
+                                    }
+                                    else {
+                                        window.location.href = serverContext + "login?message=" + data.responseJSON.message;
+                                    }
+                                });
+                        };
+                    $(document).ajaxStart(function () {
+                        $("title").html("LOADING...");
+                        $("#resendButton").html("LOADING...");
+                    });
+                    /*]]>*/
+                </script>
+            </div>
+        </div>
+        <div class="card-footer">
+            <p class="text-center">
+                <a href="/home" th:href="@{/home}">Back to Home Page</a>
+            </p>
+        </div>
+    </div>
+
+    <footer th:replace="/fragments/footer :: footer"/>
+</div>
+<div th:replace="/fragments/scripts :: commonScripts(~{::script})"/>
+
+</body>
+</html>

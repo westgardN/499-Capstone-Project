@@ -137,31 +137,50 @@ public class AuthController {
         model.addAttribute("message", messageSource.getMessage("auth.message." + result, null, locale));
         model.addAttribute("expired", "expired".equals(result));
         model.addAttribute("token", token);
-        return "redirect:/user/badUser.html?lang=" + locale.getLanguage();
+        return "badSecurityToken";
     }
 
     @RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
     @ResponseBody
+    @Transactional
     public MessageResponse resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
+        logger.info("Resend Registration SecurityToken for token: {}", existingToken);
+        final MessageResponse messageResponse = new MessageResponse("");
+
         final SecurityToken newToken = userService.getSecurityToken(existingToken);
-        final User user = userService.getUser(newToken.getToken());
-        javaMailSender.send(constructResendVerificationTokenEmail(getAppUrl(request), request.getLocale(), newToken, user));
-        return new MessageResponse(messageSource.getMessage("message.resendToken", null, request.getLocale()));
+
+        if (newToken != null) {
+            final User user = userService.getUser(newToken.getToken(), false);
+            logger.info("Generating a new SecurityToken for user: {}", user.getUsername());
+            userService.generateNewSecurityToken(newToken);
+            logger.info("New SecurityToken generated: {}", newToken.getToken());
+            logger.info("Sending email to: {}", user.getEmail());
+            javaMailSender.send(constructResendVerificationTokenEmail(getAppUrl(request), request.getLocale(), newToken, user));
+            logger.info("New user registration e-mail has been re-sent.");
+            messageResponse.setMessage(messageSource.getMessage("message.resendToken", null, request.getLocale()));
+        } else {
+            logger.info("Unable to locate the SecurityToken for token: {}", existingToken);
+            messageResponse.setMessage(messageSource.getMessage("message.resendTokenFail", null, request.getLocale()));
+        }
+
+        return messageResponse;
     }
 
     // Reset password
     @RequestMapping(value = "/user/resetPassword", method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
     public MessageResponse resetPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
         final User user = userService.findByEmail(userEmail);
         if (user != null) {
             final SecurityToken token = userService.createSecurityToken(user);
             javaMailSender.send(constructResetPasswordEmail(getAppUrl(request), request.getLocale(), token.getToken(), user));
         }
-        return new MessageResponse(messageSource.getMessage("message.resetPasswordEmail", null, request.getLocale()));
+        return new MessageResponse(messageSource.getMessage("message.resetPassword", null, request.getLocale()));
     }
 
     @RequestMapping(value = "/user/changePassword", method = RequestMethod.GET)
+    @Transactional
     public String showChangePasswordPage(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) {
         final String result = userService.validatePasswordToken(id, token);
         if (!result.equalsIgnoreCase("valid")) {
@@ -173,6 +192,7 @@ public class AuthController {
 
     @RequestMapping(value = "/user/savePassword", method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
     public MessageResponse savePassword(final Locale locale, @Valid PasswordDataTransfer passwordDto) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userService.changePassword(user, passwordDto.getNewPassword());
@@ -182,6 +202,7 @@ public class AuthController {
     // change user password
     @RequestMapping(value = "/user/updatePassword", method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
     public MessageResponse changeUserPassword(final Locale locale, @Valid PasswordDataTransfer passwordDto) throws InvalidCurrentPasswordException {
         final User user = userService.findByEmail(((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmail());
         if (!userService.isCurrentPasswordValid(user, passwordDto.getCurrentPassword())) {
@@ -193,13 +214,13 @@ public class AuthController {
 
     private SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final SecurityToken newToken, final User user) {
         final String confirmationUrl = contextPath + "/user/registrationConfirm?token=" + newToken.getToken();
-        final String message = messageSource.getMessage("message.resendToken", null, locale);
+        final String message = messageSource.getMessage("message.resendTokenEmail", null, locale);
         return constructEmail("Resend Registration Token", message + " \r\n" + confirmationUrl, user);
     }
 
     private SimpleMailMessage constructResetPasswordEmail(final String contextPath, final Locale locale, final String token, final User user) {
         final String url = contextPath + "/user/changePassword?id=" + user.getId() + "&token=" + token;
-        final String message = messageSource.getMessage("message.resetPassword", null, locale);
+        final String message = messageSource.getMessage("message.resetPasswordEmail", null, locale);
         return constructEmail("Reset Password", message + " \r\n" + url, user);
     }
 
