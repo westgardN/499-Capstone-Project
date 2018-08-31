@@ -102,12 +102,6 @@ public class User implements Serializable {
     private Date lastPasswordChangedOn;
 
     /**
-     * Used to verify the user when recovering / resetting the account.
-     */
-    @Column(name = "user_key", length = 100, nullable = true)
-    private String userKey;
-
-    /**
      * The date and time the user account was activated.
      */
     @Column(name = "activated_on", nullable = true)
@@ -358,24 +352,6 @@ public class User implements Serializable {
     }
 
     /**
-     * Gets userKey
-     *
-     * @return value of userKey
-     */
-    public String getUserKey() {
-        return userKey;
-    }
-
-    /**
-     * Sets userKey to the specified value in userKey
-     *
-     * @param userKey the new value for userKey
-     */
-    public void setUserKey(String userKey) {
-        this.userKey = userKey;
-    }
-
-    /**
      * Gets activatedOn
      *
      * @return value of activatedOn
@@ -440,7 +416,6 @@ public class User implements Serializable {
         sb.append(", failedLogins=").append(failedLogins);
         sb.append(", lastVisitedOn=").append(lastVisitedOn);
         sb.append(", lastVisitedFrom='").append(lastVisitedFrom).append('\'');
-        sb.append(", userKey='").append(userKey).append('\'');
         sb.append(", activatedOn=").append(activatedOn);
         sb.append(", roles=").append(roles);
         sb.append('}');

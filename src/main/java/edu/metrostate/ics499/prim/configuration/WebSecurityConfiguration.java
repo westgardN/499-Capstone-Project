@@ -1,9 +1,11 @@
 package edu.metrostate.ics499.prim.configuration;
 
+import edu.metrostate.ics499.prim.component.PrimAuthenticationFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,12 +15,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -49,27 +54,39 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     AuthenticationSuccessHandler authenticationSuccessHandler;
 
+    @Autowired
+    AuthenticationFailureHandler authenticationFailureHandler;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        PrimAuthenticationFailureHandler primAuthenticationFailureHandler = (PrimAuthenticationFailureHandler) authenticationFailureHandler;
+
+        primAuthenticationFailureHandler.setDefaultFailureUrl("/login");
+        //primAuthenticationFailureHandler.setUseForward(true);
+
         http.authorizeRequests()
                 .antMatchers("/", "/home", "/login", "/logout")
                 .permitAll()
-                .antMatchers("/user/profile", "/user/changePassword", "/interaction/*")
+                .antMatchers("/user/profile", "/user/changePassword", "/interaction/**", "/report/**", "/interaction/ignore/*", "/social/refresh", "/social/list")
                 .access("hasRole('USER') or hasRole('ADMIN') or hasRole('DBA')")
-                .antMatchers("/user/list", "/user/new/**", "/user/delete/*", "/social/*", "/facebook/*", "/twitter/*", "/linkedin/*")
+                .antMatchers("/user/list", "/user/new/**", "/user/delete/*", "/social/register", "/social/delete/**", "/facebook/*", "/twitter/*", "/linkedin/*")
                 .access("hasRole('ADMIN')")
                 .antMatchers("/user/edit/*")
                 .access("hasRole('ADMIN') or hasRole('DBA')")
                 .and()
                 .formLogin()
                 .successHandler(authenticationSuccessHandler)
+                .failureUrl("/login")
+                .failureHandler(authenticationFailureHandler)
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .usernameParameter("ssoId")
                 .passwordParameter("password")
+                .permitAll()
                 .and()
-                .rememberMe().
-                rememberMeParameter("remember-me")
+                .rememberMe()
+                .rememberMeParameter("remember-me")
                 .tokenRepository(tokenRepository)
                 .tokenValiditySeconds(86400)
                 .and()
@@ -77,6 +94,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling()
                 .accessDeniedPage("/accessDenied");
+
+
     }
 
     @Override
@@ -110,4 +129,25 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new AuthenticationTrustResolverImpl();
     }
 
+    /**
+     * Override this method to expose the {@link AuthenticationManager} from
+     * {@link #configure(AuthenticationManagerBuilder)} to be exposed as a Bean. For
+     * example:
+     *
+     * <pre>
+     * &#064;Bean(name name="myAuthenticationManager")
+     * &#064;Override
+     * public AuthenticationManager authenticationManagerBean() throws Exception {
+     *     return super.authenticationManagerBean();
+     * }
+     * </pre>
+     *
+     * @return the {@link AuthenticationManager}
+     * @throws Exception
+     */
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 }

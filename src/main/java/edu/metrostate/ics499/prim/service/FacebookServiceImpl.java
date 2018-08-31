@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.social.facebook.api.Action;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.Post;
 import org.springframework.social.facebook.api.Reference;
@@ -93,23 +94,25 @@ public class FacebookServiceImpl implements FacebookService {
 
         FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
         AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, facebookAuthUri, null);
+        String[] fields = {"name"};
+        Facebook facebook = new FacebookTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
+        String[] names = facebook.fetchObject("me", String.class, fields).split("\\,");
+        String name = names[0].split("\\:")[1].replace("\"", "");
 
         if (socialNetworkRegistrationList.isEmpty()) {
-            socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
+            socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant, name);
         } else {
             Date now = new Date();
             boolean found = false;
 
-            String[] fields = {"id", "name"};
+
             for (int i = 0; i < socialNetworkRegistrationList.size(); i++) {
                 SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
                 Facebook fbCurrent = new FacebookTemplate(socialNetworkRegistration.getToken(), PRIM_NAMESPACE);
-                Facebook fbNew = new FacebookTemplate(accessGrant.getAccessToken(), PRIM_NAMESPACE);
                 String idCurrent = fbCurrent.fetchObject("me", String.class, fields);
-                String idNew = fbNew.fetchObject("me", String.class, fields);
 
-                if (Objects.equals(idCurrent, idNew) == true) {
+                if (Objects.equals(idCurrent, name) == true) {
                     found = true;
                     socialNetworkRegistration.setToken(accessGrant.getAccessToken());
                     socialNetworkRegistration.setRefreshToken(accessGrant.getRefreshToken());
@@ -120,7 +123,7 @@ public class FacebookServiceImpl implements FacebookService {
             }
 
             if (!found) {
-                socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant);
+                socialNetworkRegistrationService.register(SocialNetwork.FACEBOOK, accessGrant, name);
             }
         }
     }
@@ -309,7 +312,16 @@ public class FacebookServiceImpl implements FacebookService {
 
             interaction.setMessageId(post.getId());
             interaction.setMessage(post.getMessage());
-            interaction.setMessageLink(post.getLink());
+            List<Action> actions = post.getActions();
+
+            String linkComment = post.getLink();
+
+            for (Action action : actions) {
+                if (action.getName().equalsIgnoreCase("comment") == true) {
+                    linkComment = action.getLink();
+                }
+            }
+            interaction.setMessageLink(linkComment);
             interaction.setSocialNetwork(SocialNetwork.FACEBOOK);
             interaction.setState(InteractionState.OPEN);
             interaction.setType(getType(post));

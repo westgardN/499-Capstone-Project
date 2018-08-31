@@ -9,13 +9,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+
+import java.util.Locale;
+import java.util.Properties;
 
 /**
  * The WebMvcConfiguration class implements the Spring WebMvcConfigurer. It is used in lieu of
@@ -30,6 +38,9 @@ public class MvcConfiguration implements WebMvcConfigurer {
     @Autowired
     RoleIdToRoleTypeConverter roleIdToRoleTypeConverter;
 
+    @Autowired
+    Environment environment;
+
     /**
      * Configure Converter to be used.
      * In our example, we need a converter to convert string values[Roles] to Roles in newUser.html
@@ -40,7 +51,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * Adds associations between views and controller endpoints for the home page.
+     * Adds associations between views and controller end points for the home page.
      * @param registry the controller registry we will be adding to.
      */
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -80,6 +91,33 @@ public class MvcConfiguration implements WebMvcConfigurer {
     @Bean
     LayoutDialect layoutDialect() {
         return new LayoutDialect();
+    }
+
+    @Bean
+    public LocaleResolver localeResolver() {
+        final CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
+        cookieLocaleResolver.setDefaultLocale(Locale.ENGLISH);
+        return cookieLocaleResolver;
+    }
+
+    @Bean
+    public JavaMailSender javaMailSender() {
+        JavaMailSender mailSender = new JavaMailSenderImpl();
+        Properties mailProperties = new Properties();
+
+        mailProperties.setProperty("mail.transport.protocol", environment.getProperty("spring.mail.properties.mail.transport.protocol"));
+        mailProperties.setProperty("mail.smtps.auth", environment.getProperty("spring.mail.properties.mail.smtps.auth"));
+        mailProperties.setProperty("mail.smtps.starttls.enable", environment.getProperty("spring.mail.properties.mail.smtps.starttls.enable"));
+        mailProperties.setProperty("mail.smtps.timeout", environment.getProperty("spring.mail.properties.mail.smtps.timeout"));
+
+        ((JavaMailSenderImpl) mailSender).setHost(environment.getProperty("spring.mail.host"));
+        ((JavaMailSenderImpl) mailSender).setPort(Integer.parseInt(environment.getProperty("spring.mail.port")));
+        ((JavaMailSenderImpl) mailSender).setProtocol(environment.getProperty("spring.mail.protocol"));
+        ((JavaMailSenderImpl) mailSender).setUsername(environment.getProperty("spring.mail.username"));
+        ((JavaMailSenderImpl) mailSender).setPassword(environment.getProperty("spring.mail.password"));
+        ((JavaMailSenderImpl) mailSender).setJavaMailProperties(mailProperties);
+
+        return mailSender;
     }
 
     @Override

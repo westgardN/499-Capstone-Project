@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>edu.metrostate.ics499.prim.service.UserServiceImpl</OriginalElement>
+  <nodes>
+    <node x="317.0" y="902.0">edu.metrostate.ics499.prim.model.Role</node>
+    <node x="1037.6785714285716" y="454.0">edu.metrostate.ics499.prim.service.UserServiceImpl</node>
+    <node x="553.0" y="902.0">edu.metrostate.ics499.prim.model.UserStatus</node>
+    <node x="1274.0" y="0.0">edu.metrostate.ics499.prim.service.UserService</node>
+    <node x="779.0" y="902.0">edu.metrostate.ics499.prim.model.RoleType</node>
+    <node x="684.0" y="143.0">edu.metrostate.ics499.prim.service.RoleService</node>
+    <node x="684.0" y="619.0">edu.metrostate.ics499.prim.service.RoleServiceImpl</node>
+    <node x="469.16666666666674" y="176.0">org.springframework.stereotype.Service</node>
+    <node x="0.0" y="0.0">edu.metrostate.ics499.prim.model.User</node>
+    <node x="320.0" y="630.0">edu.metrostate.ics499.prim.service.PrimUserDetailsService</node>
+    <node x="942.0" y="77.0">org.springframework.transaction.annotation.Transactional</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="edu.metrostate.ics499.prim.service.RoleServiceImpl" target="org.springframework.stereotype.Service">
+      <point x="-79.33333333333326" y="-70.5" />
+      <point x="723.6666666666667" y="434.0" />
+      <point x="537.6666666666667" y="434.0" />
+      <point x="0.0" y="26.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.UserServiceImpl" target="org.springframework.stereotype.Service">
+      <point x="-101.66666666666674" y="-235.5" />
+      <point x="1088.5119047619046" y="424.0" />
+      <point x="583.3333333333335" y="424.0" />
+      <point x="45.66666666666674" y="26.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.PrimUserDetailsService" target="org.springframework.stereotype.Service">
+      <point x="0.0" y="-59.5" />
+      <point x="-45.66666666666674" y="26.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.UserServiceImpl" target="edu.metrostate.ics499.prim.service.UserService">
+      <point x="101.66666666666663" y="-235.5" />
+      <point x="1291.845238095238" y="434.0" />
+      <point x="1426.5" y="434.0" />
+      <point x="0.0" y="202.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.RoleServiceImpl" target="org.springframework.transaction.annotation.Transactional">
+      <point x="79.33333333333326" y="-70.5" />
+      <point x="882.3333333333333" y="434.0" />
+      <point x="1020.0" y="434.0" />
+      <point x="-78.0" y="125.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.RoleServiceImpl" target="edu.metrostate.ics499.prim.service.RoleService">
+      <point x="0.0" y="-70.5" />
+      <point x="0.0" y="59.0" />
+    </edge>
+    <edge source="edu.metrostate.ics499.prim.service.UserServiceImpl" target="org.springframework.transaction.annotation.Transactional">
+      <point x="0.0" y="-235.5" />
+      <point x="1190.1785714285716" y="434.0" />
+      <point x="1176.0" y="434.0" />
+      <point x="78.0" y="125.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="488.5" y="826.5" />
+  <SelectedNodes>
+    <node>edu.metrostate.ics499.prim.model.Role</node>
+    <node>edu.metrostate.ics499.prim.model.UserStatus</node>
+    <node>edu.metrostate.ics499.prim.model.RoleType</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

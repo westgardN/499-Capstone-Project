@@ -111,6 +111,9 @@
                         <p th:each="error: ${#fields.errors('confirmPassword')}" th:text="${error}">
                             <i class="fa fa-exclamation-triangle"></i> Validation error
                         </p>
+                        <p th:each="error: ${#fields.errors('global')}" th:text="${error}">
+                            <i class="fa fa-exclamation-triangle"></i> Validation error
+                        </p>
                     </span>
                 </div>
             </div>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="/fragments/header :: commonHeader(~{::title})">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <meta name="_csrf_parameter" th:content="${_csrf.parameterName}"/>
+
+    <title>Reports</title>
+</head>
+<body>
+<div th:replace="/fragments/navigation :: navigation" />
+
+<div class="container-fluid h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col col-3">
+            <h2 class="text-center" th:text="#{label.reportList.title}">Available Reports</h2>
+            <hr>
+            <ul th:each="report : ${reports}" class="list-group">
+                <li class="list-group-item list-group-item-primary">
+                    <a th:utext="${report[0]}" th:onclick="'clickReport(\'' + ${report[0]} + '\', \'' + ${report[1]} + '\');'" href="#"></a>
+                </li>
+            </ul>
+        </div>
+        <div class="col col-8">
+            <div id="chartContainer">
+            </div>
+        </div>
+        <div class="col col-1">
+
+        </div>
+    </div>
+    <footer th:replace="/fragments/footer :: footer" />
+</div>
+
+<div th:replace="/fragments/scripts :: commonScripts(~{::script})" />
+<script type="text/javascript" th:src="@{/js/reports.js}"> </script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+</body>
+</html>

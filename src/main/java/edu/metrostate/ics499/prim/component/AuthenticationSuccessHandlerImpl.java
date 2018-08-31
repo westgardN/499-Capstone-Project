@@ -50,9 +50,7 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         }
 
         // Update the current user's last logged in time, ip address, and reset failed logins to 0
-        user.setLastVisitedOn(new Date());
-        user.setLastVisitedFrom(request.getRemoteAddr());
-        user.setFailedLogins(0);
+        userService.successLogin(user);
 
         // Redirect to the home endpoint.
         response.sendRedirect("/");

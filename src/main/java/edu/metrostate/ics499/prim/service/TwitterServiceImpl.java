@@ -9,11 +9,13 @@ import org.springframework.social.oauth1.OAuth1Parameters;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
+import org.springframework.social.twitter.api.UrlEntity;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.net.URLEncoder;
 import java.time.Duration;
 import java.util.*;
 
@@ -71,9 +73,12 @@ public class TwitterServiceImpl implements TwitterService {
         OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuthToken token = new OAuthToken(oauthToken, oauthVerifier);
         OAuthToken accessGrant = oauthOperations.exchangeForAccessToken(new AuthorizedRequestToken(token, oauthVerifier), null);
+        Twitter twitter = getTwitter(accessGrant.getValue(), accessGrant.getSecret());
+        String name = twitter.userOperations().getScreenName();
+        long id = twitter.userOperations().getProfileId();
 
         if (socialNetworkRegistrationList.isEmpty()) {
-            socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant);
+            socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant, name);
         } else {
             Date now = new Date();
             boolean found = false;
@@ -82,12 +87,10 @@ public class TwitterServiceImpl implements TwitterService {
                 SocialNetworkRegistration socialNetworkRegistration = socialNetworkRegistrationList.get(i);
 
                 Twitter current = getTwitter(socialNetworkRegistration.getToken(), socialNetworkRegistration.getRefreshToken());
-                Twitter newTweet = getTwitter(accessGrant.getValue(), accessGrant.getSecret());
 
                 long idCurrent = current.userOperations().getProfileId();
-                long idNew = newTweet.userOperations().getProfileId();
 
-                if (Objects.equals(idCurrent, idNew) == true) {
+                if (Objects.equals(idCurrent, id) == true) {
                     found = true;
                     socialNetworkRegistration.setToken(accessGrant.getValue());
                     socialNetworkRegistration.setRefreshToken(accessGrant.getSecret());
@@ -99,7 +102,7 @@ public class TwitterServiceImpl implements TwitterService {
             }
 
             if (!found) {
-                socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant);
+                socialNetworkRegistrationService.register(SocialNetwork.TWITTER, accessGrant, name);
             }
         }
     }
@@ -340,7 +343,7 @@ public class TwitterServiceImpl implements TwitterService {
         return tweets;
     }
 
-    Interaction interactionFromTweet(Tweet tweet, InteractionType interactionType) {
+    private Interaction interactionFromTweet(Tweet tweet, InteractionType interactionType) {
         Interaction interaction = new Interaction();
 
         Date createdTime = tweet.getCreatedAt();
@@ -354,9 +357,15 @@ public class TwitterServiceImpl implements TwitterService {
         interaction.setMessageId(tweet.getIdStr());
         interaction.setMessage(tweet.getText());
 
-        if (tweet.hasUrls()) {
-            interaction.setMessageLink(tweet.getEntities().getUrls().get(0).getUrl());
-        }
+        String linkComment = "https://twitter.com/intent/tweet?in-reply-to=" + tweet.getIdStr();
+
+//        if (tweet.getEntities().hasUrls()) {
+//            for (UrlEntity url : tweet.getEntities().getUrls()) {
+//                linkComment = url.getDisplayUrl();
+//                final Map<String, Object> extraData = url.getExtraData();
+//            }
+//        }
+        interaction.setMessageLink(linkComment);
 
         interaction.setSocialNetwork(SocialNetwork.TWITTER);
         interaction.setState(InteractionState.OPEN);

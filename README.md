@@ -10,7 +10,7 @@ How to build and run PRIM
 
 ### How do I get set up? ###
 
-If you don't have the type you first need to clone the repository.
+If you don't have the source you first need to clone the repository.
 
 * git clone https://bitbucket.org/partyofv/ics499_project_alpha.git
 
@@ -18,6 +18,7 @@ If you don't have the type you first need to clone the repository.
 
 * Run the setup_prim_db_mysql.sql, located in the scripts folder in the root of the project, on your MySQL server to create the prim database and user.
 * If your MySQL server is not on the same machine that you will be running PRIM, then please update the application.properties file, located under src/main/resources, with the connection information to your MySQL server.
+* You must configure your MySQL server to support 4-byte UTF-8 characters. This is so that emojis are properly stored and displayed. Follow this guide on how to do this: https://mathiasbynens.be/notes/mysql-utf8mb4
 
 ### Building PRIM ###
 

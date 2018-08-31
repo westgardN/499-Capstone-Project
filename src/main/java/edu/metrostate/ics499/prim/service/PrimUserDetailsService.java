@@ -3,6 +3,7 @@ package edu.metrostate.ics499.prim.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.metrostate.ics499.prim.model.UserStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,10 @@ public class PrimUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("No user found with SSO ID: " + ssoId);
         }
 
+//        if (user.getStatus() == UserStatus.LOCKED) {
+//            throw new RuntimeException("locked");
+//        }
+
         /*
          * TODO: Need to actually finish implementing the rules that
          * dictate when a user gets disabled, expired, has to change
@@ -59,7 +64,7 @@ public class PrimUserDetailsService implements UserDetailsService {
         boolean enabled = user.getEnabled();
         boolean notExpired = true;
         boolean notPasswordExpired = true;
-        boolean notLocked = true;
+        boolean notLocked = user.getStatus() != UserStatus.LOCKED;
 
         return new org.springframework.security.core.userdetails.User(
                 user.getSsoId(),

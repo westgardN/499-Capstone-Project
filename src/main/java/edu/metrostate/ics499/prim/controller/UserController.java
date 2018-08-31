@@ -1,52 +1,69 @@
 package edu.metrostate.ics499.prim.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import edu.metrostate.ics499.prim.datatransfer.PasswordDataTransfer;
 import edu.metrostate.ics499.prim.datatransfer.UserDataTransfer;
+import edu.metrostate.ics499.prim.event.OnNewUserRegistrationCompleteEvent;
 import edu.metrostate.ics499.prim.exception.EmailExistsException;
+import edu.metrostate.ics499.prim.exception.InvalidCurrentPasswordException;
 import edu.metrostate.ics499.prim.exception.SsoIdExistsException;
 import edu.metrostate.ics499.prim.exception.UsernameExistsException;
 import edu.metrostate.ics499.prim.model.Role;
+import edu.metrostate.ics499.prim.model.SecurityToken;
 import edu.metrostate.ics499.prim.model.User;
 import edu.metrostate.ics499.prim.service.RoleService;
 import edu.metrostate.ics499.prim.service.UserService;
+import edu.metrostate.ics499.prim.util.MessageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * This controller handles all User based requests such as adding, editing, and deleting users.
  */
 @Controller
-@SessionAttributes("roles")
 public class UserController {
-
-    static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    RoleService roleService;
-
-    @Autowired
-    MessageSource messageSource;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * This method will list all existing users.
@@ -75,9 +92,9 @@ public class UserController {
      * saving user in database. It also validates the user input
      */
     @RequestMapping(value = { "/user/new" }, method = RequestMethod.POST)
-    public ModelAndView registerNewUser(@ModelAttribute("user") @Valid UserDataTransfer userDataTransfer,
+    public ModelAndView registerNewUser(@ModelAttribute("user") @Valid final UserDataTransfer userDataTransfer,
                                         BindingResult result,
-                                        WebRequest request) {
+                                        final HttpServletRequest request) {
         logger.info("Registering a new user account: {}", userDataTransfer);
         String resultView = "user/registration";
 
@@ -88,29 +105,15 @@ public class UserController {
         }
 
         if (user == null || result.hasErrors()) {
+            logger.info("Registering a new user account failed with errors");
             return new ModelAndView(resultView, "user", userDataTransfer);
         } else {
-            resultView = "/user/registrationSuccess";
+            logger.info("Registered new user account");
+            resultView = "user/registrationSuccess";
+            applicationEventPublisher.publishEvent(new OnNewUserRegistrationCompleteEvent(user, request.getLocale(), getAppUrl(request)));
             return new ModelAndView(resultView, "user", userDataTransfer);
         }
     }
-
-    private User createUserAccount(UserDataTransfer userDataTransfer, BindingResult result) {
-        User user = null;
-
-        try {
-            user = userService.registerNewUser(userDataTransfer);
-        } catch (EmailExistsException e) {
-            result.rejectValue("email", "message.regEmailError");
-        } catch (SsoIdExistsException e) {
-            result.rejectValue("ssoId", "message.regSsoIdError");
-        } catch (UsernameExistsException e) {
-            result.rejectValue("username", "message.regUsernameError");
-        }
-
-        return user;
-    }
-
 
     /**
      * This method will provide the medium to update an existing user.
@@ -121,7 +124,7 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("edit", true);
         model.addAttribute("loggedinuser", getPrincipal());
-        return "/user/registration";
+        return "user/registration";
     }
 
     /**
@@ -133,7 +136,7 @@ public class UserController {
                              ModelMap model, @PathVariable String ssoId) {
 
         if (result.hasErrors()) {
-            return "registration";
+            return "user/registration";
         }
 
         /* Disable updating the ssoId for now.
@@ -148,7 +151,7 @@ public class UserController {
 
         model.addAttribute("success", "User " + user.getFirstName() + " "+ user.getLastName() + " updated successfully");
         model.addAttribute("loggedinuser", getPrincipal());
-        return "/user/registrationsuccess";
+        return "user/registrationSuccess";
     }
 
     /**
@@ -200,6 +203,34 @@ public class UserController {
         return "redirect:/user/list";
     }
 
+    private User createUserAccount(UserDataTransfer userDataTransfer, BindingResult result) {
+        User user = null;
+
+        try {
+            user = userService.registerNewUser(userDataTransfer);
+        } catch (EmailExistsException e) {
+            result.rejectValue("email", "message.regEmailError");
+        } catch (SsoIdExistsException e) {
+            result.rejectValue("ssoId", "message.regSsoIdError");
+        } catch (UsernameExistsException e) {
+            result.rejectValue("username", "message.regUsernameError");
+        }
+
+        return user;
+    }
+
+    private String getAppUrl(HttpServletRequest request) {
+        String answer = "";
+
+        if (request.getServerPort() != 80 && request.getServerPort() != 443) {
+            answer = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();;
+        } else {
+            answer = request.getScheme() + "://" + request.getServerName() + request.getContextPath();;
+        }
+
+        return answer;
+    }
+
     /**
      * This method returns the principal[user-name] of logged-in user.
      */
@@ -214,13 +245,4 @@ public class UserController {
         }
         return userName;
     }
-
-    /**
-     * This method will provide Role list to views
-     */
-    @ModelAttribute("roles")
-    public List<Role> initializeRoles() {
-        return roleService.findAll();
-    }
-
 }
