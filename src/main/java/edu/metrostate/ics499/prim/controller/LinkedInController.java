@@ -38,6 +38,7 @@ public class LinkedInController {
     @GetMapping("/createLinkedInAuthorizationUrl")
     public String createLinkedInAuthorizationUrl() throws IOException {
         return linkedInService.buildAuthorizationUrl();
+       
     }
 
     /**
@@ -52,6 +53,7 @@ public class LinkedInController {
     @GetMapping("/register")
     public void register(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
     	linkedInService.registerLinkedIn(code);
+    	
 
         response.sendRedirect("/social/list");
     }
@@ -77,6 +79,7 @@ public class LinkedInController {
     @GetMapping("/feed")
     public List<Post> feed() {
         return linkedInService.getAllPostTypeItems();
+   
     }
 
 }

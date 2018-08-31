@@ -13,9 +13,9 @@ import java.util.Objects;
  * interface to support min priority queue.
  */
 @Entity
-@Table(name = "SENTIMENT_INTERACTION_QUEUE")
+@Table(name = "SENTIMENT_QUEUE")
 public class SentimentQueueItem implements Serializable, Comparable<SentimentQueueItem> {
-    public final int DEFAULT_PRIORITY = 10;
+    public static final int DEFAULT_PRIORITY = 10;
 
     /**
      * The auto generated Primary Key

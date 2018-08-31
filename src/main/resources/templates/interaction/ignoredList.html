@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:replace="/fragments/header :: commonHeader(~{::title})">
+    <title>Interactions</title>
+</head>
+<body>
+
+<div th:replace="/fragments/navigation :: navigation" />
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <h2 class="text-center" th:text="#{label.ignoredList.title}">Ignored Interactions</h2>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col col-2">
+
+        </div>
+        <div class="col col-8">
+            <ul class="list-group" th:each="interaction : ${interactions}">
+                <li th:id="${'interaction-' + interaction.id}" th:class="${interaction.sentiment == null ? 'list-group-item list-group-item-primary' : interaction.sentiment >= 80 ? 'list-group-item list-group-item-success' : interaction.sentiment < 80 && interaction.sentiment >= 50 ? 'list-group-item list-group-item-warning' : 'list-group-item list-group-item-danger'}">
+                    <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).FACEBOOK}" th:src="@{/imgs/social/facebook/f_logo.jpg}">
+                    <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).TWITTER}" th:src="@{/imgs/social/twitter/t_logo-a.png}">
+                    <img th:width="32" th:height="32" th:if="${interaction.socialNetwork == T(edu.metrostate.ics499.prim.model.SocialNetwork).LINKEDIN}" th:src="@{/imgs/social/linkedin/connect_with_linkedin-logo-150x150.jpg}">
+                    <span th:text="'From: ' + ${interaction.fromName != null ? interaction.fromName : 'Unavailable'}"></span>
+                    <span th:text="'on: ' + ${#dates.format(interaction.createdTime, 'MM/dd/yyyy hh:mm a')}"></span>
+                    <p th:if="${interaction.description != null}" th:text="'Description: ' + ${interaction.description}"></p>
+                    <p th:if="${interaction.messageLink != null}">Message: <a target="_blank" th:href="${interaction.messageLink}" th:text="${interaction.message}"></a></p>
+                    <p th:if="${interaction.messageLink == null}" th:text="'Message: ' + ${interaction.message}"></p>
+                    <p th:if="${interaction.sentiment == null}" th:text="'Sentiment: Not scored yet.'"></p>
+                    <p th:if="${interaction.sentiment != null}" th:text="'Sentiment: ' + ${interaction.sentiment}"></p>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" th:onclick="'closeInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${closeUrl + interaction.id} + '\')'">Close</button>&nbsp;
+                        <button class="btn btn-secondary" th:onclick="'reopenInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${reopenUrl + interaction.id} + '\')'">Re-open</button>&nbsp;
+                        <button class="btn btn-warning" th:onclick="'followUpInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${followUpUrl + interaction.id} + '\')'">Follow-up</button>&nbsp;
+                        <a th:if="${interaction.messageLink != null}" class="btn btn-success"  th:onclick="'closeInteraction(\'interaction-' + ${interaction.id} + '\', \'' + ${closeUrl + interaction.id} + '\'); return true;'"target="_blank" th:href="${interaction.messageLink}">Reply</a>
+                        <button th:if="${interaction.messageLink == null}" class="btn btn-outline-info" th:onclick="'return false;'">Reply unavailable</button>
+                    </div>
+                </li>
+                <!--<td th:text="${interaction.state}"></td>-->
+                <!--<td th:text="${interaction.flag}"></td>-->
+            </ul>
+            <h2 th:if="${#lists.isEmpty(interactions)}" class="text-center">There are no Ignored Interactions</h2>
+        </div>
+        <div class="col col-2">
+
+        </div>
+    </div>
+    <footer th:replace="/fragments/footer :: footer" />
+</div>
+<div th:replace="/fragments/scripts :: commonScripts(~{::script})" />
+<script type="text/javascript" th:src="@{/js/interactions.js}"> </script>
+
+</body>
+</html>

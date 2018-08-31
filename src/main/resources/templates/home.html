@@ -11,6 +11,16 @@
 <div class="container-fluid">
     <h1 class="text-center">Welcome to PRIM!</h1>
     <hr>
+    <div th:if="${message}">
+        <span class="text-center text-info align-middle">
+            <p class="text-center "><i class="fa fa-exclamation-circle"></i> <span th:text="${message}"></span></p>
+        </span>
+    </div>
+    <div th:if="${param.message}">
+        <span class="text-center text-info align-middle">
+            <p class="text-center "><i class="fa fa-exclamation-circle"></i> <span th:text="${param.message}"></span></p>
+        </span>
+    </div>
     <div sec:authorize="isAuthenticated()">
         <p class="text-center">Please select a menu item from the top to start using PRIM.</p>
     </div>

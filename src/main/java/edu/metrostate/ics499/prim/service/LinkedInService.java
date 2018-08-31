@@ -1,6 +1,7 @@
 package edu.metrostate.ics499.prim.service;
 import edu.metrostate.ics499.prim.model.SocialNetworkRegistration;
 import edu.metrostate.ics499.prim.provider.InteractionProvider;
+import edu.metrostate.ics499.prim.templates.PrimLinkedInTemplate;
 import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.social.linkedin.api.Post;
 import java.util.List;
@@ -55,7 +56,7 @@ public interface LinkedInService extends InteractionProvider {
 	     *
 	     * @return a list of all supported post types from the specified account.
 	     */
-	    List<Post> getAllPostTypeItems(LinkedIn linkedIn);
+	    List<Post> getAllPostTypeItems(PrimLinkedInTemplate linkedIn);
 
 	    /**
 	     * Returns a list of all supported post types from the authenticated accounts.

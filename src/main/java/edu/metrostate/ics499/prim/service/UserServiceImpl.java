@@ -6,12 +6,18 @@ import edu.metrostate.ics499.prim.datatransfer.UserDataTransfer;
 import edu.metrostate.ics499.prim.exception.EmailExistsException;
 import edu.metrostate.ics499.prim.exception.SsoIdExistsException;
 import edu.metrostate.ics499.prim.exception.UsernameExistsException;
-import edu.metrostate.ics499.prim.model.Role;
-import edu.metrostate.ics499.prim.model.RoleType;
-import edu.metrostate.ics499.prim.model.User;
-import edu.metrostate.ics499.prim.model.UserStatus;
+import edu.metrostate.ics499.prim.model.*;
+import edu.metrostate.ics499.prim.repository.SecurityTokenDao;
 import edu.metrostate.ics499.prim.repository.UserDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +29,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("userService")
 @Transactional
 public class UserServiceImpl implements UserService{
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    private UserDao dao;
+    @Qualifier("primUserDetailsService")
+    UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private SecurityTokenDao securityTokenDao;
+
+    public static final String TOKEN_INVALID = "invalidToken";
+    public static final String TOKEN_EXPIRED = "expired";
+    public static final String TOKEN_VALID = "valid";
 
     /**
      * Finds and returns a User based on the primary key. Returns null if no user is found.
@@ -41,7 +59,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public User findById(int id) {
-        return dao.findById(id);
+        return userDao.findById(id);
     }
 
     /**
@@ -52,7 +70,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public User findByUsername(String username) {
-        return dao.findByUsername(username);
+        return userDao.findByUsername(username);
     }
 
     /**
@@ -63,7 +81,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public User findByEmail(String email) {
-        return dao.findByEmail(email);
+        return userDao.findByEmail(email);
     }
 
     /**
@@ -74,7 +92,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public User findBySsoId(String ssoId) {
-        return dao.findBySsoId(ssoId);
+        return userDao.findBySsoId(ssoId);
     }
 
     /**
@@ -84,7 +102,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public void save(User user) {
-        dao.save(user);
+        userDao.save(user);
     }
 
     /**
@@ -97,7 +115,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public void update(User user) {
-        User entity = dao.findById(user.getId());
+        User entity = userDao.findById(user.getId());
         if(entity!=null){
             entity.setUsername(user.getUsername());
             if(!user.getPassword().equals(entity.getPassword())){
@@ -113,7 +131,6 @@ public class UserServiceImpl implements UserService{
             entity.setLastVisitedFrom(user.getLastVisitedFrom());
             entity.setLastVisitedOn(user.getLastVisitedOn());
             entity.setStatus(user.getStatus());
-            entity.setUserKey(user.getUserKey());
         }
     }
 
@@ -124,7 +141,8 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public void deleteById(int id) {
-        dao.deleteById(id);
+        deleteTokens(findById(id));
+        userDao.deleteById(id);
     }
 
     /**
@@ -134,7 +152,8 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public void deleteByUsername(String username) {
-        dao.deleteByUsername(username);
+        deleteTokens(findByUsername(username));
+        userDao.deleteByUsername(username);
     }
 
     /**
@@ -144,7 +163,8 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public void deleteByEmail(String email) {
-        dao.deleteByEmail(email);
+        deleteTokens(findByEmail(email));
+        userDao.deleteByEmail(email);
     }
 
     /**
@@ -154,7 +174,20 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public void deleteBySsoId(String ssoId) {
-        dao.deleteBySsoId(ssoId);
+        deleteTokens(findBySsoId(ssoId));
+        userDao.deleteBySsoId(ssoId);
+    }
+
+    /**
+     * Deletes all tokens for the specified user.
+     *
+     * @param user the User to delete tokens for.
+     */
+    @Override
+    public void deleteTokens(User user) {
+        if (user != null) {
+            securityTokenDao.delete(user);
+        }
     }
 
     /**
@@ -164,7 +197,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public List<User> findAll() {
-        return dao.findAll();
+        return userDao.findAll();
     }
 
     /**
@@ -198,27 +231,12 @@ public class UserServiceImpl implements UserService{
         user.setFirstName(userDataTransfer.getFirstName());
         user.setLastName(userDataTransfer.getLastName());
         user.setRoles(roleService.getRoleSet(RoleType.USER));
-        user.setStatus(UserStatus.ACTIVE);
-        user.setEnabled(true);
-        user.setActivatedOn(new Date());
+        user.setStatus(UserStatus.NOT_ACTIVATED);
+        user.setEnabled(false);
 
         save(user);
 
         return user;
-    }
-
-    /**
-     * @param user
-     * @param password
-     */
-    @Override
-    public void changePassword(User user, String password) {
-
-    }
-
-    @Override
-    public boolean isCurrentPasswordValid(User user, String password) {
-        return false;
     }
 
     /**
@@ -266,5 +284,297 @@ public class UserServiceImpl implements UserService{
         return ( user == null || ((id != null) && (Objects.equals(user.getId(), id))));
     }
 
+    /**
+     * Returns a User reference for the specified SecurityToken string. If no user is found
+     * or the SecurityToken has expired then null is returned.
+     *
+     * @param securityTokenString the SecurityToken string to use to find the User
+     * @return a User reference for the specified SecurityToken string. If no user is found
+     * or the SecurityToken has expired then null is returned.
+     */
+    @Override
+    public User getUser(String securityTokenString) {
+        return getUser(securityTokenString, true);
+    }
 
+    /**
+     * Returns a User reference for the specified SecurityToken string. If no user is found null is returned.
+     *
+     * @param securityTokenString the SecurityToken string to use to find the User
+     * @param notExpired          if true then only not expired tokens are considered
+     * @return a User reference for the specified SecurityToken string. If no user is found null is returned.
+     */
+    @Override
+    public User getUser(String securityTokenString, boolean notExpired) {
+        SecurityToken securityToken = securityTokenDao.find(securityTokenString, notExpired);
+
+        User user = null;
+
+        if (securityToken != null && !securityToken.isExpired()) {
+            user = securityToken.getUser();
+        }
+
+        return user;
+    }
+
+    /**
+     * Creates a new SecurityToken for the specified user with the specified token. The newly created
+     * SecurityToken is returned after persisting it to the store.
+     *
+     * @param user                the user the new token is for
+     * @return a new SecurityToken for the specified user with the specified token.
+     */
+    @Override
+    public SecurityToken createSecurityToken(User user) {
+        final String token = UUID.randomUUID().toString();
+        SecurityToken securityToken = new SecurityToken(user, token);
+
+        securityTokenDao.save(securityToken);
+
+        return securityToken;
+    }
+
+    /**
+     * Updates the existing SecurityToken with a new unexpired token string.
+     *
+     * @param securityTokenString the token string to that identifies the SecurityToken to update.
+     *
+     * @return an updated SecurityToken with a new unexpired token string.
+     */
+    @Override
+    public SecurityToken generateNewSecurityToken(SecurityToken securityToken) {
+        if (securityToken == null) {
+            throw new NullPointerException("the security token does not exist");
+        }
+
+        securityToken.update(UUID.randomUUID().toString());
+        securityTokenDao.save(securityToken);
+
+        return securityToken;
+    }
+
+    /**
+     * Updates the existing SecurityToken with a new unexpired token string.
+     *
+     * @param securityTokenString the token string to that identifies the SecurityToken to update.
+     *
+     * @return an updated SecurityToken with a new unexpired token string.
+     */
+    @Override
+    public SecurityToken generateNewSecurityToken(String securityTokenString) {
+        SecurityToken securityToken = securityTokenDao.find(securityTokenString);
+
+        return generateNewSecurityToken(securityToken);
+    }
+
+    /**
+     * Returns a string that represents the state of the SecurityToken. The possible values
+     * are valid, expired, and invalidToken. If the token is valid, the associated user account
+     * is activated and set to enabled and the token is deleted.
+     *
+     * @param securityTokenString the token string to validate
+     * @return a string that represents the state of the SecurityToken. The possible values
+     * are valid, expired, and invalidToken.
+     */
+    @Override
+    public String validateRegistrationToken(String securityTokenString) {
+        String answer = TOKEN_VALID;
+
+        final SecurityToken securityToken = securityTokenDao.find(securityTokenString);
+
+        if (securityToken == null) {
+            answer = TOKEN_INVALID;
+        } else if (securityToken.isExpired()) {
+            securityTokenDao.delete(securityToken);
+            answer = TOKEN_EXPIRED;
+        } else {
+            User user = securityToken.getUser();
+
+            user.setEnabled(true);
+            user.setStatus(UserStatus.ACTIVE);
+            user.setActivatedOn(new Date());
+
+            userDao.save(user);
+        }
+        return answer;
+    }
+
+    /**
+     * Returns a string that represents the state of the SecurityToken. The possible values
+     * are valid, expired, and invalidToken. If the token is valid, the security context is
+     * updated with the new token and the token is deleted.
+     *
+     * @param id                  The repository ID of the User the SecurityToken is for
+     * @param securityTokenString the token string to validate
+     * @return a string that represents the state of the SecurityToken. The possible values
+     * are valid, expired, and invalidToken.
+     */
+    @Override
+    public String validatePasswordToken(long id, String securityTokenString) {
+        final SecurityToken securityToken = securityTokenDao.find(securityTokenString);
+        String answer = TOKEN_VALID;
+
+        if (securityToken == null || securityToken.getUser().getId() != id) {
+            answer = TOKEN_INVALID;
+        } else if (securityToken.isExpired()) {
+            answer = TOKEN_EXPIRED;
+            securityTokenDao.delete(securityToken);
+        } else {
+            final User user = securityToken.getUser();
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getSsoId());
+
+            final Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            logger.info("Logging in {} user without a password: {}", authentication.isAuthenticated() ? "authenticated" : "unauthenticated", userDetails);
+        }
+
+        return answer;
+    }
+
+    /**
+     * Deletes the specified SecurityToken if it exists.
+     *
+     * @param token the token to delete.
+     */
+    @Override
+    public void deleteSecurityToken(String token) {
+        securityTokenDao.delete(token);
+    }
+
+    /**
+     * Deletes the specified SecurityToken if it exists.
+     *
+     * @param token the token to delete.
+     */
+    @Override
+    public void deleteSecurityToken(SecurityToken token) {
+        securityTokenDao.delete(token);
+    }
+
+    /**
+     * Returns the SecurityToken instance for the specified token string. Null is returned if the
+     * token does not exist.
+     *
+     * @param securityTokenString the SecurityToken string to use to find the SecurityToken
+     * @return the SecurityToken instance for the specified token string. Null is returned if the
+     * token does not exist.
+     */
+    @Override
+    public SecurityToken getSecurityToken(String securityTokenString) {
+        SecurityToken securityToken = securityTokenDao.find(securityTokenString);
+
+        return securityToken;
+    }
+
+    /**
+     * Returns the first SecurityToken instance found for the specified User. Null is returned if a token doesn't
+     * exist for the specified User.
+     *
+     * @param user the User to use to find the SecurityToken
+     * @return the first SecurityToken instance found for the specified User. Null is returned if a token doesn't
+     * exist for the specified User.
+     */
+    @Override
+    public SecurityToken getSecurityToken(User user) {
+        return getSecurityToken(user, false);
+    }
+
+    /**
+     * Returns the first SecurityToken instance found for the specified User. Null is returned if a token doesn't
+     * exist for the specified User.
+     *
+     * @param user       the User to use to find the SecurityToken
+     * @param notExpired if true only valid tokens are considered.
+     * @return the first SecurityToken instance found for the specified User. Null is returned if a token doesn't
+     * exist for the specified User.
+     */
+    @Override
+    public SecurityToken getSecurityToken(User user, boolean notExpired) {
+        SecurityToken securityToken = securityTokenDao.findOne(user, notExpired);
+
+        return securityToken;
+    }
+
+    /**
+     * Returns the SecurityTokens for the specified User. An empty list is returned if a token doesn't
+     * exist for the specified User.
+     *
+     * @param user the User to use to find the SecurityToken
+     * @return the SecurityTokens for the specified User. An empty list is returned if a token doesn't
+     * exist for the specified User.
+     */
+    @Override
+    public List<SecurityToken> getSecurityTokens(User user) {
+        return getSecurityTokens(user, false);
+    }
+
+    /**
+     * Returns the SecurityTokens for the specified User. An empty list is returned if a token doesn't
+     * exist for the specified User.
+     *
+     * @param user       the User to use to find the SecurityToken
+     * @param notExpired if true only valid tokens are considered.
+     * @return the SecurityTokens for the specified User. An empty list is returned if a token doesn't
+     * exist for the specified User.
+     */
+    @Override
+    public List<SecurityToken> getSecurityTokens(User user, boolean notExpired) {
+        List<SecurityToken> securityTokens = securityTokenDao.find(user, notExpired);
+
+        return securityTokens;
+    }
+
+    /**
+     * Encrypts and sets the password of the specified User to the specified new password
+     *
+     * @param user the User to change the password for
+     * @param password the User's new password
+     */
+    @Override
+    public void changePassword(User user, String password) {
+        user.setPassword(passwordEncoder.encode(password));
+        userDao.save(user);
+    }
+
+    /**
+     * Returns true if the specified password string matches the current password for the
+     * specified user; otherwise false is returned.
+     *
+     * @param user the User to validate the password for
+     * @param currentPassword the User's current password
+     *
+     * @return true if the specified password string matches the current password for the
+     *         specified user; otherwise false is returned.
+     */
+    @Override
+    public boolean isCurrentPasswordValid(User user, String currentPassword) {
+        return passwordEncoder.matches(currentPassword, user.getPassword());
+    }
+
+    /**
+     * Records a failed login for the specified user. If the failure exceeds the max failed
+     * consecutive logins the account is then locked.
+     *
+     * @param user the User to fail the login for.
+     */
+    @Override
+    public void failLogin(User user) {
+        user.setLastVisitedOn(new Date());
+        user.setFailedLogins(user.getFailedLogins() + 1);
+        if (user.getFailedLogins() >= 5) {
+            user.setStatus(UserStatus.LOCKED);
+        }
+    }
+
+    /**
+     * Records a successful login for the specified user. A successful login resets the user's failed
+     * logins.
+     *
+     * @param user the User to succeed the login for.
+     */
+    @Override
+    public void successLogin(User user) {
+        user.setLastVisitedOn(new Date());
+        user.setFailedLogins(0);
+    }
 }

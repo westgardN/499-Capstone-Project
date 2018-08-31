@@ -1,20 +1,14 @@
 package edu.metrostate.ics499.prim.repository;
 
-import edu.metrostate.ics499.prim.model.Interaction;
-import edu.metrostate.ics499.prim.model.InteractionType;
-import edu.metrostate.ics499.prim.model.SocialNetwork;
+import edu.metrostate.ics499.prim.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Repository("interactionDao")
@@ -109,7 +103,7 @@ public class InteractionDaoImpl extends AbstractDao<Integer, Interaction> implem
         CriteriaBuilder builder = getCriteriaBuilder();
         CriteriaQuery<Interaction> crit = builder.createQuery(Interaction.class);
         Root<Interaction> from = crit.from(Interaction.class);
-        Predicate clause = builder.equal(from.get("source"), interactionType);
+        Predicate clause = builder.equal(from.get("type"), interactionType);
         crit.select(from).where(clause);
         TypedQuery<Interaction> query = getSession().createQuery(crit);
 
@@ -125,12 +119,32 @@ public class InteractionDaoImpl extends AbstractDao<Integer, Interaction> implem
      * an empty List is returned.
      */
     @Override
-    public List<Interaction> findByFlag(String flag) {
+    public List<Interaction> findByFlag(InteractionFlag flag) {
         CriteriaBuilder builder = getCriteriaBuilder();
         CriteriaQuery<Interaction> crit = builder.createQuery(Interaction.class);
         Root<Interaction> from = crit.from(Interaction.class);
         Predicate clause = builder.equal(from.get("flag"), flag);
         crit.select(from).where(clause);
+        TypedQuery<Interaction> query = getSession().createQuery(crit);
+
+        return query.getResultList();
+    }
+
+    /**
+     * Returns a List of persistent Interactions for the specified state. If no Interactions exist,
+     * an empty List is returned.
+     *
+     * @param state the flag to find Interactions for.
+     * @return a List of persistent Interactions for the specified state. If no Interactions exist,
+     * an empty List is returned.
+     */
+    @Override
+    public List<Interaction> findByState(InteractionState state) {
+        CriteriaBuilder builder = getCriteriaBuilder();
+        CriteriaQuery<Interaction> crit = builder.createQuery(Interaction.class);
+        Root<Interaction> from = crit.from(Interaction.class);
+        Predicate clause = builder.equal(from.get("state"), state);
+        crit.select(from).where(clause).orderBy(builder.asc(from.get("createdTime")), builder.desc(from.get("sentiment")));
         TypedQuery<Interaction> query = getSession().createQuery(crit);
 
         return query.getResultList();
@@ -230,5 +244,53 @@ public class InteractionDaoImpl extends AbstractDao<Integer, Interaction> implem
         TypedQuery<Long> query = getSession().createQuery(crit);
 
         return query.getSingleResult() > 0;
+    }
+
+    /**
+     * Returns a List of all Open persistent Interactions. If no Open Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Open persistent Interactions. If no Open Interactions exist,
+     * an empty List is returned.
+     */
+    @Override
+    public List<Interaction> findAllOpen() {
+        return findByState(InteractionState.OPEN);
+    }
+
+    /**
+     * Returns a List of all Closed persistent Interactions. If no Closed Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Closed persistent Interactions. If no Closed Interactions exist,
+     * an empty List is returned.
+     */
+    @Override
+    public List<Interaction> findAllClosed() {
+        return findByState(InteractionState.CLOSED);
+    }
+
+    /**
+     * Returns a List of all Deferred persistent Interactions. If no Deferred Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Deferred persistent Interactions. If no Deferred Interactions exist,
+     * an empty List is returned.
+     */
+    @Override
+    public List<Interaction> findAllDeferred() {
+        return findByState(InteractionState.FOLLOWUP);
+    }
+
+    /**
+     * Returns a List of all Deleted persistent Interactions. If no Deleted Interactions exist,
+     * an empty List is returned.
+     *
+     * @return a List of all Deleted persistent Interactions. If no Deleted Interactions exist,
+     * an empty List is returned.
+     */
+    @Override
+    public List<Interaction> findAllDeleted() {
+        return findByState(InteractionState.IGNORED);
     }
 }

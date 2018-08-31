@@ -5,7 +5,7 @@
 
 DROP DATABASE IF EXISTS prim;
 
-CREATE DATABASE prim;
+CREATE DATABASE prim CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 USE prim;
 
@@ -19,12 +19,11 @@ CREATE TABLE SCHEMA_VERSION(
 	minor INT NOT NULL,
 	revision INT NOT NULL,
 	PRIMARY KEY (id)
-);
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 /*
  * Populate the version table
  */
-DELETE FROM SCHEMA_VERSION;
 INSERT INTO SCHEMA_VERSION(major, minor, revision)
 VALUES (1, 0, 0);
 
@@ -45,13 +44,12 @@ CREATE TABLE USER(
    last_visited_on DATETIME NULL,
    last_visited_from VARCHAR(100) NULL,
    last_password_changed_on DATETIME NULL,
-   user_key VARCHAR(100) NULL,
    activated_on DATETIME NULL,
    PRIMARY KEY (id),
    UNIQUE (username),
    UNIQUE (email),
    UNIQUE (sso_id)
-);
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 /*
  * Role table to determine what actions a user can perform
@@ -61,7 +59,7 @@ CREATE TABLE ROLE(
    type VARCHAR(64) NOT NULL,
    PRIMARY KEY (id),
    UNIQUE (type)
-); 
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 /*
  * Weak entity to resolve the many-to-many relationship between
@@ -73,7 +71,20 @@ CREATE TABLE USER_ROLE(
 	PRIMARY KEY (user_id, role_id),
 	CONSTRAINT FK_USER FOREIGN KEY (user_id) REFERENCES USER(id),
 	CONSTRAINT FK_ROLE FOREIGN KEY (role_id) REFERENCES ROLE(id)
-);
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+/*
+ * Security Token table is used for user authentication and authorization
+ */
+CREATE TABLE SECURITY_TOKEN(
+   id BIGINT NOT NULL AUTO_INCREMENT,
+   user_id BIGINT NOT NULL,
+   token VARCHAR(100) NOT NULL,
+   created_date DATETIME NOT NULL DEFAULT NOW(),
+   expiration_date DATETIME NULL,
+   PRIMARY KEY (id),
+   CONSTRAINT FK_USER_TOKEN FOREIGN KEY (user_id) REFERENCES USER(id)
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 /*
  * Setup the default roles
@@ -115,7 +126,7 @@ CREATE TABLE PERSISTENT_LOGINS (
 	token VARCHAR(64) NOT NULL,
 	last_used TIMESTAMP NOT NULL,
 	PRIMARY KEY (series)
-);
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 /*
  * Interaction table to store interactions received from a social network
@@ -129,14 +140,14 @@ CREATE TABLE PERSISTENT_LOGINS (
    from_name  VARCHAR(128) NULL,
    message_id VARCHAR(128) NULL,
    message_link VARCHAR(512) NULL,
-   message TEXT NULL,
+   message TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
    sentiment INT NULL,
    social_network VARCHAR(128) NULL,
    type VARCHAR(128) NULL,
    state VARCHAR(128) NOT NULL DEFAULT 'OPEN',
    flag VARCHAR(128) NULL,
    PRIMARY KEY (id)
- );
+ ) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
  /*
   * Interaction Response stores the response action to an interaction. The
@@ -153,7 +164,7 @@ CREATE TABLE PERSISTENT_LOGINS (
    PRIMARY KEY (id),
    CONSTRAINT FK_USER_RESPONSE FOREIGN KEY (response_by) REFERENCES USER(id),
    CONSTRAINT FK_INTERACTION_RESPONSE FOREIGN KEY (response_to) REFERENCES INTERACTION(id)
- );
+ ) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
  /*
   * Sentiment Queue stores interactions waiting to have their message
@@ -167,7 +178,7 @@ CREATE TABLE SENTIMENT_QUEUE (
   processed TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   CONSTRAINT FK_INTERACTION_QUEUE FOREIGN KEY (interaction_id) REFERENCES INTERACTION(id)
-);
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 /*
  * The Social Network Registration stores the registration of the social
@@ -175,6 +186,7 @@ CREATE TABLE SENTIMENT_QUEUE (
  */
 CREATE TABLE SOCIAL_NETWORK_REGISTRATION (
   id BIGINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(64) NOT NULL,
   created_time DATETIME NOT NULL,
   social_network VARCHAR(128) NOT NULL,
   token VARCHAR(512) NOT NULL,
@@ -182,7 +194,7 @@ CREATE TABLE SOCIAL_NETWORK_REGISTRATION (
   expires DATETIME NULL,
   last_used TIMESTAMP NULL,
   PRIMARY KEY (id)
-);
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 /*
  * The Data Refresh Request stores information about a data retrieval request.
@@ -198,7 +210,7 @@ CREATE TABLE DATA_REFRESH_REQUEST (
   finish_time DATETIME NULL,
   type VARCHAR(128),
   PRIMARY KEY (id)
-);
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 /*
  * Setup the database user for prim
